@@ -2,18 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreateSSEConnection } from '../service/chatService';
 import useChat from '../hook/useChatPage';
-import ReactMarkdown from 'react-markdown';
-import { useSendFeedback } from '../hook/useFeedback';
+import { MarkdownResponse } from '../../utils/utils';
 
 
 
-const MarkdownResponse = ({ text }) => {
-    return (
-        <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl">
-        <ReactMarkdown>{text}</ReactMarkdown>
-        </div>
-    );
-};
 
 
 const ChatPage = () => {
@@ -23,8 +15,10 @@ const ChatPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { chatId, modelAssignments, problemStatement } = location.state;
-    const { toggleHide, copyResponse, getModelBackgroundColor, hiddenModels, handleModelFeedback } = useChat();
-
+    console.log("my data from state",chatId, modelAssignments, problemStatement, modelResponses)
+    const { toggleHide, copyResponse, getModelBackgroundColor, hiddenModels, setHiddenModels } = useChat();
+    
+    
     useEffect(() => {
         if (Object.keys(modelResponses).length > 0) {
             setIsLoading(false);
@@ -34,12 +28,11 @@ const ChatPage = () => {
 
     useEffect(() => {
         if (chatId) {
+            if (!isProcessingResponses) return; 
+            
             const cleanup = CreateSSEConnection(chatId, (data) => {
-                if (!isProcessingResponses) return; // Ignore further responses if processing is stopped
-
-                console.log('Received data:', data);
                 const modelResponsesArray = Array.isArray(data.modelResponses) ? data.modelResponses : [];
-
+    
                 modelResponsesArray.forEach(modelResponse => {
                     const response = modelResponse.responses?.response;
                     if (response) {
@@ -50,40 +43,36 @@ const ChatPage = () => {
                                     ...(prev[modelResponse.modelName]?.responses || []),
                                     response
                                 ],
-                                loading: false // Mark as loaded
+                                loading: false
                             }
                         }));
                     }
                 });
             });
-
-            return () => {
-                cleanup(); // Ensure cleanup on component unmount
-            };
+    
+            return cleanup; 
         }
-    }, [chatId, isProcessingResponses]); // Add isProcessingResponses as a dependency
+    }, [chatId, isProcessingResponses]);
+    
 
-    const IndividualModelResponse = ({ modelName, role }) => {
+    
+
+    const IndividualModelResponse = React.memo(({ modelName, role }) => {
         const modelRes = modelResponses[modelName];
         const responses = modelRes ? modelRes.responses : [];
         const isHidden = hiddenModels[modelName];
         const [showFullRole, setShowFullRole] = useState(false);
-    
-        console.log(`Model Name: ${modelName}, Responses:`, modelRes);
     
         const handleToggleRole = () => {
             setShowFullRole(prev => !prev);
         };
     
         const getTruncatedRole = (text) => {
-            const sentences = text.split('. ');
-            if (sentences.length <= 1) return text;
-            return sentences.slice(0, 1).join('. ') + '...';
+            const sentences = text.split(':');
+            if (sentences.length <= 2) return text;
+            return sentences.slice(0, 2).join('. ') + '...';
         };
-        
-        const response = responses.map((response, index) => {
-            return response
-        });
+    
         return (
             <div
                 className={`chat-response ${isHidden ? 'hidden' : ''}`}
@@ -95,15 +84,22 @@ const ChatPage = () => {
                     </button>
                     <label style={{ fontWeight: 'bold', fontSize: '1.2em' }}>{modelName}</label>
                     <div className="chat-response-buttons">
-                        {/* passing my model responses and to  */}
-                        <button className='enlarge-chat' 
-                        onClick={() => {navigate(`/singlechat`, {state:{role:role, 
-                            modelResponse:responses.map((response, index) => {
-                                return { modelName: modelName, response: response.response }
-                            })}}
-                            )}}
-                        >
-                            <i className="fa fa-window-maximize"></i> Chat Window</button>
+                        <button className='enlarge-chat' onClick={() => {
+                            
+                            navigate(`/chat/${chatId}/${modelName}`, {
+                                state: {
+                                    role: role,
+                                    problemStatement,
+                                    responses,
+                                    modelAssignments,
+                                    chatId,
+                                    modelResponses,
+                                    modelName
+                                },
+                            });
+                        }}>
+                            <i className="fa fa-window-maximize"></i> Chat Window
+                        </button>
                         <button onClick={() => toggleHide(modelName)}>
                             {isHidden ? 'Show' : 'Hide'}
                         </button>
@@ -111,15 +107,15 @@ const ChatPage = () => {
                 </div>
                 {!isHidden && (
                     <>
-                        <p style={{ margin: '8px 0', fontStyle: 'italic' }}>
+                        <div style={{ margin: '8px 0', fontStyle: 'italic' }}>
                             Roles Assigned: <MarkdownResponse text={showFullRole ? role : getTruncatedRole(role)} />
                             <button onClick={handleToggleRole} style={{ marginLeft: '8px', cursor: 'pointer' }}>
                                 {showFullRole ? 'Show Less' : 'Show More'}
                             </button>
-                        </p>
+                        </div>
                         <div className="response-area" style={{ marginTop: '12px' }}>
                             {responses.length === 0 ? (
-                                <p>No responses available yet.</p>
+                                <div>No responses available yet.</div>
                             ) : (
                                 responses.map((response, index) => (
                                     <div key={index} className="response-item" style={{ padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
@@ -128,32 +124,12 @@ const ChatPage = () => {
                                 ))
                             )}
                         </div>
-                        <form className="model-feedback" onSubmit={(e) => {
-                            e.preventDefault();
-                            handleModelFeedback({
-                                modelName,
-                                feedback: e.target.elements.feedback.value
-                            });
-                            e.target.elements.feedback.value = ''; // Clear the input after submission
-                        }} style={{ marginTop: '12px' }}>
-                            <label htmlFor={`feedback-${modelName}`}>Re-run Instructions</label>
-                            <input 
-                                type="text" 
-                                id={`feedback-${modelName}`} 
-                                name="feedback" 
-                                className="model-feedback-input" 
-                                placeholder="Enter your feedback here..." 
-                                style={{ width: '100%', padding: '8px', marginTop: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
-                            />
-                            <button type="submit" className="submit-feedback" style={{ marginTop: '6px', padding: '8px 12px', borderRadius: '4px', backgroundColor: '#007bff', color: '#fff' }}>
-                                Submit
-                            </button>
-                        </form>
                     </>
                 )}
             </div>
         );
-    };
+    });
+    
 
     if (isLoading) {
         return <div className="loading">Initializing chat session...</div>;
@@ -165,10 +141,29 @@ const ChatPage = () => {
             
                 <p>Question: {problemStatement || 'No problem statement available'}</p>
             </div>
-            
+            {Object.keys(hiddenModels).length > 0 && (
+            <div className='hidden-responses'>
+                <h3>Hidden Responses</h3>
+                <ul>
+                    {Object.keys(hiddenModels).map(modelName => (
+                        <li key={modelName}>{modelName}</li>
+                    ))}
+                </ul>
+
+                <button
+                    className='show-all-responses'
+                    onClick={() => {
+                        setHiddenModels({});
+                    }}
+                >
+                    Show All Responses
+                </button>
+                    </div>
+            )}
+
             <div className="models-container">
-                {modelAssignments.map(({ model, role }) => (
-                    <IndividualModelResponse key={model} modelName={model} role={role} />
+                {modelAssignments.map(({ model, role }, idx) => (
+                    <IndividualModelResponse key={model || idx} modelName={model} role={role} />
                 ))}
             </div>
             
