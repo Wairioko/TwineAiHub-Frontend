@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
-import ChatService from "../service/chatService";
+import {sendFeedback} from "../service/chatService.js";
+
 
 const useChat = () => {
-    const [hiddenModels, setHiddenModels] = useState({});
-    const [hideHiddenModels, setHideHiddenModels] = useState(false);
+    const [hiddenModels, setHiddenModels] = useState(false);
     const [modelResponses, setModelResponses] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        setHideHiddenModels(Object.keys(hiddenModels).length === 0);
-    }, [hiddenModels]);
 
 
+    // Function to toggle hide/show for each model
     const toggleHide = (modelName) => {
         setHiddenModels(prev => {
             const updatedHiddenModels = { ...prev };
             if (updatedHiddenModels[modelName]) {
+                // Unhide the model by removing it from hiddenModels
                 delete updatedHiddenModels[modelName];
             } else {
+                // Hide the model by adding it to hiddenModels
                 updatedHiddenModels[modelName] = true;
             }
             return updatedHiddenModels;
@@ -38,23 +38,15 @@ const useChat = () => {
         }
     };
 
-    const handleModelFeedback = async ({ modelName, feedback }) => {
-        try {
-            const response = await ChatService.submitFeedback({ modelName, feedback });
-            // Assuming you want to perform some logic with response
-            return response;
-        } catch (error) {
-            console.error("Error providing feedback:", error);
-        }
-    };
+   
 
     return {
         hiddenModels,
-        handleModelFeedback,
+        setHiddenModels,
         toggleHide,
         copyResponse,
         getModelBackgroundColor,
-        hideHiddenModels,
+      
         modelResponses,
         isLoading,
     };
