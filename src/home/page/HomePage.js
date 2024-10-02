@@ -2,6 +2,7 @@ import React from 'react';
 import useSendProblem from '../hooks/useSendProblemToAssisstant';
 import Dropdown from '../components/dropdown';
 import RoleInput from '../components/roleinput';
+import ReactMarkdown from 'react-markdown'
 
 const HomePage = () => {
     
@@ -16,6 +17,8 @@ const HomePage = () => {
         handleSubmitToBuild,
         handleToggleChange, isLoading,
     } = useSendProblem();
+
+    
 
     const handleModelSelect = (index, model) => {
         setSelectedModels(prevModels => {
@@ -74,12 +77,15 @@ const HomePage = () => {
         <label htmlFor="assistant-breakdown" className='assistant-breakdown-label'>
           Assistant Problem Breakdown:
         </label>
-        <textarea 
-          id="assistant-breakdown" 
-          className='assistant-breakdown-textarea' 
-          value={isLoading ? 'Generating...' : assistantBreakdown.analysis} 
-          readOnly 
-        />
+        <div className='assistant-breakdown-content'>
+                {isLoading ? (
+                    <p>Generating...</p>
+                ) : (
+                    <ReactMarkdown>
+                        {assistantBreakdown?.analysis || 'No analysis available'}
+                    </ReactMarkdown>
+                )}
+        </div>
       </div>
     </form>
     );
