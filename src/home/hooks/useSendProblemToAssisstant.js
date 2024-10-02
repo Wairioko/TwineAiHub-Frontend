@@ -49,7 +49,7 @@ const useSendProblem = () => {
 
     
     const handleSubmitToBuild = async (e) => {
-        e.preventDefault();
+        e.preventDefault();  // Prevent the default form submit action
     
         const modelAssignments = selectedModels.map((model, index) => ({
             model,
@@ -64,23 +64,29 @@ const useSendProblem = () => {
         
         console.log("data to server", dataToSend);
         
-        // Call the handler function with the prepared data
-        
-        
-        // Navigate to the '/chat' route and pass the state
-        const data = await ProblemToModels(dataToSend);
-        const { chatId } = data;
-        if(chatId){
-            console.log(chatId);
-            console.log(problemStatement)
-            console.log(modelAssignments)
-            // Redirect to ChatPage or set up SSE connection with chatId
-            navigate('/chat', { state: { chatId:chatId, problemStatement:problemStatement, modelAssignments:modelAssignments} });
-
+        try {
+            // Send the data to the server
+            const data = await ProblemToModels(dataToSend);
+            const { chatId } = data;
+            
+            if (chatId) {
+                console.log(chatId);
+                console.log(problemStatement);
+                console.log(modelAssignments);
+                
+                // Navigate to the ChatPage and pass only serializable data in the state
+                navigate(`/chat/${chatId}`, { 
+                    state: { 
+                        chatId, 
+                        problemStatement, 
+                        modelAssignments 
+                    } 
+                });
+            }
+        } catch (error) {
+            console.error("Error sending problem to models:", error);
         }
-        
     };
-    
     
 
     return {problemStatement, setProblemStatement,isAssistantEnabled, setIsAssistantEnabled 
