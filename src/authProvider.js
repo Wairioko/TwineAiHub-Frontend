@@ -9,26 +9,27 @@ const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     const handleLogout = useCallback(() => {
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('token');
+        localStorage.removeItem('persist:root');
         setIsAuthenticated(false);
-        navigate('/login'); // Redirect to login page after logout
+        navigate('/login');
     }, [navigate]);
 
     useEffect(() => {
         const checkToken = () => {
-            const token = localStorage.getItem('authToken');
+            const token = localStorage.getItem('token');
             if (token) {
                 try {
                     const decodedToken = jwtDecode(token);
-                    const currentTime = Date.now() / 1000; // Convert to seconds
+                    const currentTime = Date.now() / 1000;
                     if (decodedToken.exp < currentTime) {
-                        handleLogout(); // Token expired, log out user
+                        handleLogout();
                     } else {
                         setIsAuthenticated(true);
                     }
                 } catch (error) {
                     console.error('Invalid token:', error);
-                    handleLogout(); // Handle invalid token
+                    handleLogout();
                 }
             } else {
                 setIsAuthenticated(false);
@@ -37,14 +38,14 @@ const AuthProvider = ({ children }) => {
 
         checkToken();
 
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
                 const timeUntilExpiry = (decodedToken.exp * 1000) - Date.now();
                 const timeoutId = setTimeout(checkToken, timeUntilExpiry);
 
-                return () => clearTimeout(timeoutId); // Clear timeout on unmount
+                return () => clearTimeout(timeoutId);
             } catch (error) {
                 console.error('Token decode error:', error);
             }
