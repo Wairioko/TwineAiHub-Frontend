@@ -1,177 +1,324 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CreateSSEConnection } from '../service/chatService';
 import useChat from '../hook/useChatPage';
 import { MarkdownResponse } from '../../utils/utils';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { HiddenResponsesPanel } from '../components/HiddenResponsesPanel';
 
 
+// Navigation utility
+const handleNavigateToChat = (navigate, chatId, modelName) => {
+    navigate(`/chat/${chatId}/${modelName}`, { 
+        state: { chatId, modelName } 
+    });
+};
 
+// Helper function to create a unique ID for each response
+const createResponseId = (response, index) => {
+    if (typeof response === 'string') return `${response}-${index}`;
+    if (response?.response) return `${response.response}-${index}`;
+    return `${JSON.stringify(response)}-${index}`;
+};
 
+const IndividualModelResponse = React.memo(({ 
+    modelName, 
+    role, 
+    responses,
+    isHidden,
+    onNavigate,
+    onToggleHide,
+    onCopy,
+    getModelBackgroundColor,
+    isLoading,
+    dataInitialized,
+}) => {
+    const [showFullRole, setShowFullRole] = useState(false);
+    
+    const handleToggleRole = useCallback(() => {
+        setShowFullRole(prev => !prev);
+    }, []);
 
-const ChatPage = () => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [modelResponses, setModelResponses] = useState({});
-    const [isProcessingResponses, setIsProcessingResponses] = useState(true); // Flag to control response processing
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { chatId, modelAssignments, problemStatement } = location.state;
-    console.log("my data from state",chatId, modelAssignments, problemStatement, modelResponses)
-    const { toggleHide, copyResponse, getModelBackgroundColor, hiddenModels, setHiddenModels } = useChat();
-    
-    
-    useEffect(() => {
-        if (Object.keys(modelResponses).length > 0) {
-            setIsLoading(false);
-            setIsProcessingResponses(false); // Stop processing responses
-        }
-    }, [modelResponses]);
+    const getTruncatedRole = useCallback((role) => {
+        if (!role) return '';
+        const sentences = role.split(/[: ,]/);
+        if (sentences.length <= 20) return role;   
+        return sentences.slice(0, 15).join(' ') + '...';
+    }, []);
 
-    useEffect(() => {
-        if (chatId) {
-            if (!isProcessingResponses) return; 
-            
-            const cleanup = CreateSSEConnection(chatId, (data) => {
-                const modelResponsesArray = Array.isArray(data.modelResponses) ? data.modelResponses : [];
-    
-                modelResponsesArray.forEach(modelResponse => {
-                    const response = modelResponse.responses?.response;
-                    if (response) {
-                        setModelResponses(prev => ({
-                            ...prev,
-                            [modelResponse.modelName]: {
-                                responses: [
-                                    ...(prev[modelResponse.modelName]?.responses || []),
-                                    response
-                                ],
-                                loading: false
-                            }
-                        }));
-                    }
-                });
-            });
-    
-            return cleanup; 
-        }
-    }, [chatId, isProcessingResponses]);
-    
-
-    
-
-    const IndividualModelResponse = React.memo(({ modelName, role }) => {
-        const modelRes = modelResponses[modelName];
-        const responses = modelRes ? modelRes.responses : [];
-        const isHidden = hiddenModels[modelName];
-        const [showFullRole, setShowFullRole] = useState(false);
-    
-        const handleToggleRole = () => {
-            setShowFullRole(prev => !prev);
-        };
-    
-        const getTruncatedRole = (text) => {
-            const sentences = text.split(':');
-            if (sentences.length <= 2) return text;
-            return sentences.slice(0, 2).join('. ') + '...';
-        };
-    
-        return (
-            <div
-                className={`chat-response ${isHidden ? 'hidden' : ''}`}
-                style={{ backgroundColor: getModelBackgroundColor(modelName), borderRadius: '8px', padding: '16px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}
-            >
-                <div className="chat-response-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <button className="copy-button" onClick={() => copyResponse(responses.map(res => res.response).join('\n\n'))}>
-                        <i className="fa fa-copy"></i> Copy
+    return (
+        <div
+            className={`chat-response ${isHidden ? 'hidden' : ''}`}
+            style={{ 
+                backgroundColor: getModelBackgroundColor(modelName), 
+                borderRadius: '8px', 
+                padding: '16px', 
+                boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                marginBottom: '16px'
+            }}
+        >
+            <div className="chat-response-header">
+                <button
+                    className="copy-button"
+                    onClick={onCopy}
+                    disabled={isLoading}
+                    style={{
+                        cursor: !isLoading ? 'pointer' : 'not-allowed',
+                    }}
+                >
+                    <i className="fa fa-copy"></i> Copy
+                </button>
+                <label style={{ fontWeight: 'bold', fontSize: '1.2em' }}>{modelName}</label>
+                <div className="chat-response-buttons">
+                    <button
+                        className='enlarge-chat'
+                        onClick={onNavigate}
+                        disabled={isLoading}
+                        style={{
+                            cursor: !isLoading ? 'pointer' : 'not-allowed'
+                        }}
+                    >
+                        <i className="fa fa-window-maximize"></i> Chat Window
                     </button>
-                    <label style={{ fontWeight: 'bold', fontSize: '1.2em' }}>{modelName}</label>
-                    <div className="chat-response-buttons">
-                        <button className='enlarge-chat' onClick={() => {
-                            
-                            navigate(`/chat/${chatId}/${modelName}`, {
-                                state: {
-                                    role: role,
-                                    problemStatement,
-                                    responses,
-                                    modelAssignments,
-                                    chatId,
-                                    modelResponses,
-                                    modelName
-                                },
-                            });
-                        }}>
-                            <i className="fa fa-window-maximize"></i> Chat Window
-                        </button>
-                        <button onClick={() => toggleHide(modelName)}>
-                            {isHidden ? 'Show' : 'Hide'}
+                    <button
+                        onClick={onToggleHide}
+                        disabled={isLoading}
+                        style={{
+                            cursor: !isLoading ? 'pointer' : 'not-allowed'
+                        }}
+                    >
+                        {isHidden ? 'Show' : 'Hide'}
+                    </button>
+                </div>
+            </div>
+            {!isHidden && (
+                <>
+                    <div style={{ margin: '8px 0', fontStyle: 'italic' }}>
+                        Roles Assigned: {showFullRole ? role : getTruncatedRole(role)}
+                        <button
+                            onClick={handleToggleRole}
+                            disabled={isLoading}
+                        >
+                            {showFullRole ? 'Show Less' : 'Show More'}
                         </button>
                     </div>
-                </div>
-                {!isHidden && (
-                    <>
-                        <div style={{ margin: '8px 0', fontStyle: 'italic' }}>
-                            Roles Assigned: <MarkdownResponse text={showFullRole ? role : getTruncatedRole(role)} />
-                            <button onClick={handleToggleRole} style={{ marginLeft: '8px', cursor: 'pointer' }}>
-                                {showFullRole ? 'Show Less' : 'Show More'}
-                            </button>
-                        </div>
-                        <div className="response-area" style={{ marginTop: '12px' }}>
-                            {responses.length === 0 ? (
-                                <div>No responses available yet.</div>
-                            ) : (
-                                responses.map((response, index) => (
-                                    <div key={index} className="response-item" style={{ padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
-                                        <MarkdownResponse text={response} />
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-        );
-    });
-    
+                    <div className="response-item">
+                        {isLoading ? (
+                            <LoadingSpinner message="Loading response..." />
+                        ) : (
+                            responses.map((response, index) => (
+                                <div key={createResponseId(response, index)} className={index === 0 ? 'primary-response' : 'additional-response'}>
+                                    <strong>{index === 0 ? 'Primary Response:' : `Response ${index + 1}:`}</strong>
+                                    <MarkdownResponse text={response?.response || response} />
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+});
 
-    if (isLoading) {
-        return <div className="loading">Initializing chat session...</div>;
-    }
+IndividualModelResponse.displayName = 'IndividualModelResponse';
+
+const RefreshOverlay = () => (
+    <div className="refresh-overlay">
+        <LoadingSpinner message="Refreshing data..." />
+    </div>
+);
+
+const getUniqueModels = (modelResponses) => {
+    const uniqueModels = new Map();  // Use Map to store unique models
+
+    modelResponses.forEach((modelResponse) => {
+        const { modelName, responses } = modelResponse;
+
+        if (!uniqueModels.has(modelName)) {
+            // If the model is not yet added, add it
+            uniqueModels.set(modelName, { ...modelResponse });
+        } else {
+            // If the model is already added, choose to keep the latest or merge responses if necessary
+            const existingModel = uniqueModels.get(modelName);
+            uniqueModels.set(modelName, {
+                ...existingModel,
+                responses: [...existingModel.responses, ...responses]  // Combine responses
+            });
+        }
+    });
+
+    // Convert Map values back to an array
+    return Array.from(uniqueModels.values());
+};
+
+
+
+const ChatPage = ({ handleRateLimitError }) => {
+    const params = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { modelAssignments } = location.state || {};
+    const [problemStatement, setProblemStatement] = useState('');
+    const { toggleHide, copyResponse, getModelBackgroundColor, hiddenModels, setHiddenModels } = useChat();
+    const chatId = params.chatid;
+    const previousChatIdRef = useRef(chatId);
     
+    const [pageState, setPageState] = useState({
+        isInitialLoading: true,
+        isRefreshing: false,
+        error: null,
+        lastUpdated: null
+    });
+
+    const [modelResponses, setModelResponses] = useState({
+        data: [],
+        loadingStates: {}
+    });
+
+    const maxResponsesToShow = 2;
+
+    useEffect(() => {
+        setProblemStatement(location.state?.problemStatement || '');
+    }, [location.state]);
+
+    useEffect(() => {
+        if (modelAssignments && Array.isArray(modelAssignments)) {
+            const initialModelData = modelAssignments.map(({ model, role }) => ({
+                modelName: model,
+                role,
+                responses: [],
+                loading: true
+            }));
+
+            setModelResponses(prev => ({
+                ...prev,
+                data: initialModelData,
+                loadingStates: initialModelData.reduce((acc, { modelName }) => ({
+                    ...acc,
+                    [modelName]: true
+                }), {})
+            }));
+
+            setPageState(prev => ({ ...prev, isInitialLoading: false }));
+        }
+    }, [modelAssignments]);
+
+    const normalizeResponses = useCallback((responses) => {
+        if (!responses) return [];
+        if (typeof responses === 'string') return [{ response: responses }];
+        if (!Array.isArray(responses)) return [responses];
+        return responses.map(r => typeof r === 'string' ? { response: r } : r);
+    }, []);
+
+    useEffect(() => {
+        if (!chatId) return;
+
+        const createSSEConnectionWithRateLimit = async () => {
+            try {
+                const cleanup = await CreateSSEConnection(
+                    chatId,
+                    async (data) => {
+                        if (data && data.modelResponses && data.modelResponses.length > 0) {
+                            setProblemStatement(data.userProblemBreakdown.problemStatement.description);
+            
+                            setModelResponses(prev => {
+                                const updatedData = prev.data.map(item => {
+                                    const newModelResponse = data.modelResponses.find(r => r.modelName === item.modelName);
+                                    if (newModelResponse) {
+                                        return {
+                                            ...item,
+                                            responses: normalizeResponses(newModelResponse.responses),
+                                            loading: false
+                                        };
+                                    }
+                                    return item;
+                                });
+
+                                const newModels = data.modelResponses.filter(r => !prev.data.some(item => item.modelName === r.modelName))
+                                    .map(newModel => ({
+                                        ...newModel,
+                                        responses: normalizeResponses(newModel.responses),
+                                        loading: false
+                                    }));
+
+                                return {
+                                    ...prev,
+                                    data: [...updatedData, ...newModels]
+                                };
+                            });
+                        } else {
+                            console.log("Received empty data, not updating responses.");
+                        }
+                    },
+                    () => console.log('SSE connection closed'),
+                    handleRateLimitError  // Pass the rate limit handler to the SSE connection
+                );
+                return cleanup;
+            } catch (error) {
+                if (error.status === 429) {
+                    handleRateLimitError();
+                    return () => {};
+                }
+                throw error;
+            }
+        };
+
+        const cleanup = createSSEConnectionWithRateLimit();
+        return () => {
+            if (cleanup && typeof cleanup.then === 'function') {
+                cleanup.then(cleanupFn => cleanupFn && cleanupFn());
+            } else if (typeof cleanup === 'function') {
+                cleanup();
+            }
+        };
+    }, [chatId, normalizeResponses, handleRateLimitError]);
+
+    const uniqueModelResponses = getUniqueModels(modelResponses.data);
+    const modelCount = uniqueModelResponses.length;
+
+    const modelWidth = useMemo(() => {
+        if (modelCount === 1) return '100%';
+        if (modelCount === 2) return '50%';
+        if (modelCount === 3) return '33.33%';
+        return '100%';
+    }, [modelCount]);
+
     return (
         <div className="chat-page">
             <div className="problem-statement">
-            
                 <p>Question: {problemStatement || 'No problem statement available'}</p>
             </div>
-            {Object.keys(hiddenModels).length > 0 && (
-            <div className='hidden-responses'>
-                <h3>Hidden Responses</h3>
-                <ul>
-                    {Object.keys(hiddenModels).map(modelName => (
-                        <li key={modelName}>{modelName}</li>
-                    ))}
-                </ul>
 
-                <button
-                    className='show-all-responses'
-                    onClick={() => {
-                        setHiddenModels({});
-                    }}
-                >
-                    Show All Responses
-                </button>
-                    </div>
+            {pageState.isRefreshing && <RefreshOverlay />}
+
+            {Object.keys(hiddenModels).length > 0 && (
+                <HiddenResponsesPanel 
+                    hiddenModels={hiddenModels} 
+                    setHiddenModels={setHiddenModels}
+                    dataInitialized={!pageState.isInitialLoading}
+                />
             )}
 
             <div className="models-container">
-                {modelAssignments.map(({ model, role }, idx) => (
-                    <IndividualModelResponse key={model || idx} modelName={model} role={role} />
-                ))}
+            {uniqueModelResponses.map(({ modelName, role, responses, loading }, index) => (
+                <IndividualModelResponse 
+                    key={`${modelName}-${index}`}
+                    modelName={modelName}
+                    role={role}
+                    responses={responses.slice(0, maxResponsesToShow)}
+                    isHidden={hiddenModels[modelName]}
+                    onNavigate={() => handleNavigateToChat(navigate, chatId, modelName)}
+                    onToggleHide={() => toggleHide(modelName)}
+                    onCopy={() => copyResponse(responses[0])}
+                    getModelBackgroundColor={getModelBackgroundColor}
+                    isLoading={loading}
+                    dataInitialized={!pageState.isInitialLoading}
+                    style={{
+                        width: modelWidth
+                    }}
+                />
+            ))}
             </div>
-            
-            <button className='summarise-button' onClick={() => {
-                console.log('Summarize content');
-            }}>
-                Summarise Content
-            </button>
         </div>
     );
 };
