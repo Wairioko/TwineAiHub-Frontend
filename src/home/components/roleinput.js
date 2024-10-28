@@ -9,6 +9,7 @@ const RoleInput = ({ role, onRoleChange }) => {
                 type="text"
                 value={role}
                 onChange={(e) => onRoleChange(e.target.value)}
+                placeholder='paste role for each model from above or write '
                 required
             />
         </div>
