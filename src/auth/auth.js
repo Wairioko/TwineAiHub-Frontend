@@ -1,33 +1,37 @@
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { AuthContext } from '../../src/authProvider';
 
+const GoogleCallback = () => {
+    const { checkAuthStatus } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-const GoogleCallbackHandler = () => {
-  const navigate = useNavigate();
+    useEffect(() => {
+        const handleCallback = async () => {
+            const params = new URLSearchParams(location.search);
+            const status = params.get('status');
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+            if (status === 'success') {
+                try {
+                    await checkAuthStatus();
+                    navigate('/');
+                } catch (error) {
+                    console.error('Callback error:', error);
+                    navigate('/login');
+                }
+            } else {
+                navigate('/login');
+            }
+        };
 
-    try{
-      if(token){
-          // Store the token in local storage
-        localStorage.setItem('token', token);
-        // Redirect to the home page
-        navigate('/');
+        handleCallback();
+    }, [checkAuthStatus, navigate, location]);
 
-      }
-      
-    }catch(err){
-      // Handle error if token is not found
-      console.error('Authentication failed', err);
-      navigate('/login');
-    };
-
-  }, [navigate]);
-
-  return <div>Loading...</div>;
+    return <div>Completing authentication...</div>;
 };
 
-export default GoogleCallbackHandler;
+export default GoogleCallback;
+
+
 
