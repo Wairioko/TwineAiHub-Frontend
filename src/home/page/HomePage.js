@@ -4,21 +4,24 @@ import Dropdown from '../components/dropdown';
 import RoleInput from '../components/roleinput';
 import ReactMarkdown from 'react-markdown'
 
+
+
 const HomePage = () => {
-    
-
     const {
-        modelRoles, setModelRoles,selectedModels, setSelectedModels,
-        problemStatement, 
-        setProblemStatement, 
-        assistantBreakdown, 
+        formData,
+        handleInputChange,
+        modelRoles,
+        setModelRoles,
+        selectedModels,
+        setSelectedModels,
+        assistantBreakdown,
         handleSubmitProblemToAssistant,
-        isAssistantEnabled, 
+        isAssistantEnabled,
         handleSubmitToBuild,
-        handleToggleChange, isLoading,
+        handleToggleChange,
+        isLoading,
+        handleFileUpload, error
     } = useSendProblem();
-
-    
 
     const handleModelSelect = (index, model) => {
         setSelectedModels(prevModels => {
@@ -49,45 +52,58 @@ const HomePage = () => {
         </div>
     );
 
+    
     const renderProblemInput = () => (
-        <form >
+        <form>
             <label htmlFor="problem-init" className="problem-init">Problem Overview:</label>
-            <textarea
-                id="problem-init"
-                name="problem-init"
-                value={problemStatement}
-                onChange={(e) => setProblemStatement(e.target.value)}
-                required
-            />
-            
+            <div className="input-container">
+                <textarea
+                    id="problem-init"
+                    name="problemStatement"
+                    value={formData.problemStatement}
+                    onChange={handleInputChange}
+                    required
+                    placeholder='Type the problem you want to solve here'
+                    className="problem-textarea"
+                />
+                <div className="file-upload-container">
+                    <input
+                        type="file"
+                        id="file-upload"
+                        className="file-input"
+                        onChange={handleFileUpload}
+                    />
+                </div>
+            </div>
         </form>
     );
 
     const renderAssistantAnalysis = () => (
         <form onSubmit={handleSubmitProblemToAssistant}>
-      <button 
-        type="button" 
-        className="submit-to-assistant" 
-        onClick={handleSubmitProblemToAssistant}
-        disabled={isLoading}
-      >
-        Assistant Analysis
-      </button>
-      <div className='assistant-breakdown-container'>
-        <label htmlFor="assistant-breakdown" className='assistant-breakdown-label'>
-          Assistant Problem Breakdown:
-        </label>
-        <div className='assistant-breakdown-content'>
-                {isLoading ? (
-                    <p>Generating...</p>
-                ) : (
-                    <ReactMarkdown>
-                        {assistantBreakdown?.analysis || 'No analysis available'}
-                    </ReactMarkdown>
-                )}
-        </div>
-      </div>
-    </form>
+            <button
+                type="button"
+                className="submit-to-assistant"
+                onClick={handleSubmitProblemToAssistant}
+                disabled={isLoading}
+            >
+                Assistant Analysis
+            </button>
+            <div className='assistant-breakdown-container'>
+                <label htmlFor="assistant-breakdown" className='assistant-breakdown-label'>
+                    Assistant Problem Breakdown:
+                </label>
+                <div className='assistant-breakdown-content'>
+                    {isLoading ? (
+                        <p>Generating...</p>
+                    ) : (
+                        <ReactMarkdown>
+                            {assistantBreakdown || 'No analysis available'}
+                        </ReactMarkdown>
+                    )}
+                </div>
+            </div>
+            <p className='error-message'>{error}</p>
+        </form>
     );
 
     const renderModelAssignment = () => (
@@ -118,23 +134,24 @@ const HomePage = () => {
             <div className="home-init-form">
                 {renderAssistantToggle()}
                 {renderProblemInput()}
-                
-                
-                    {!isAssistantEnabled && renderModelAssignment()}
-                    {isAssistantEnabled && (
-                        <>
-                            {renderAssistantAnalysis()}
-                            {renderModelAssignment()}
-                        </>
-                    )}
-                    <button type="submit" className="submit-form"
-                    onClick={handleSubmitToBuild}>Send To Models For Construction</button>
-               
+                {!isAssistantEnabled && renderModelAssignment()}
+                {isAssistantEnabled && (
+                    <>
+                        {renderAssistantAnalysis()}
+                        {renderModelAssignment()}
+                    </>
+                )}
+                <button
+                    type="submit"
+                    className="submit-form"
+                    onClick={handleSubmitToBuild}
+                >
+                    Send To Models For Construction
+                </button>
             </div>
         </div>
     );
 };
-
 
 export default HomePage;
 
