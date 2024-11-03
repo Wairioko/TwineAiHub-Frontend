@@ -18,29 +18,6 @@ export const GoogleLoginButton = () => {
     );
 };
 
-  
-
-
-  export const AppleLoginButton = () => {
-    const handleAppleLogin = () => {
-      // Add Apple login logic here
-      console.log('Apple login clicked');
-    };
-  
-    return (
-      <button className="signup-btn" onClick={handleAppleLogin}>
-        <span className="social-logo-wrapper">
-          <img className="social-logo" src="/public/apple-logo-tAoxPOUx.png" alt="Apple logo" />
-        </span>
-        <span className="social-text">Login with Apple</span>
-      </button>
-    );
-  };
-  
-
-
-
-
 
 export const LoginPage = () => {
     const {
@@ -60,8 +37,8 @@ export const LoginPage = () => {
             <div className="login">
                 <h1 className="header">Login</h1>
 
-                {error && <div className="error">{error}</div>}  {/* Display error */}
-                {isLoading && <div className="loading">Loading...</div>}  {/* Loading state */}
+                {error && <div className="error">{error}</div>}  
+                {isLoading && <div className="loading">Loading...</div>}  
 
                 <form onSubmit={handleSubmit} className="login-form">
                     <div>
@@ -105,12 +82,11 @@ export const LoginPage = () => {
                     
                 </form>
                 <div className="signup-options">
-       
+                <span className="login-span">Or Continue With</span>
                     {/* Use GoogleLoginButton as a component */}
                     <GoogleLoginButton />
 
-                    {/* Use AppleLoginButton as a component */}
-                    <AppleLoginButton />
+                   
                 </div>
             </div>
         </div>
