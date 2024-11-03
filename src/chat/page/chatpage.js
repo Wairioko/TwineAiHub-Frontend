@@ -162,6 +162,7 @@ const ChatPage = ({ handleRateLimitError }) => {
     const { toggleHide, copyResponse, getModelBackgroundColor, hiddenModels, setHiddenModels } = useChat();
     const chatId = params.chatid;
     const previousChatIdRef = useRef(chatId);
+    const [error, setError] = useState(null);
     
     const [pageState, setPageState] = useState({
         isInitialLoading: true,
@@ -169,6 +170,15 @@ const ChatPage = ({ handleRateLimitError }) => {
         error: null,
         lastUpdated: null
     });
+
+    const getErrorMessage = (error) => {
+        console.log("this is the error message", error);
+        if (!error) return null;
+        if (typeof error === 'string') return error;
+        if (error.message) return error.message;
+        if (error.status === 429) return 'Rate limit exceeded. Please try again later.';
+        return 'An error occurred. Please try again.';
+    };
 
     const [modelResponses, setModelResponses] = useState({
         data: [],
@@ -247,19 +257,31 @@ const ChatPage = ({ handleRateLimitError }) => {
                                 };
                             });
                         } else {
-                            console.log("Received empty data, not updating responses.");
+                            setError("Received empty data, not updating responses.");
                         }
                     },
                     () => console.log('SSE connection closed'),
-                    handleRateLimitError  // Pass the rate limit handler to the SSE connection
+                    (error) => {
+                        // Handle connection close with potential error
+                        console.log('SSE connection closed');
+                        if (error) {
+                            setError(error);
+                        }
+                    },
+                    () => {
+                        setError({ status: 429, message: 'Rate limit exceeded. Please try again later.' });
+                        handleRateLimitError();
+                    }
                 );
+                
                 return cleanup;
             } catch (error) {
+                console.error('Error in SSE connection:', error);
+                setError(error);
                 if (error.status === 429) {
                     handleRateLimitError();
-                    return () => {};
                 }
-                throw error;
+                return () => {};
             }
         };
 
@@ -286,8 +308,15 @@ const ChatPage = ({ handleRateLimitError }) => {
     return (
         <div className="chat-page">
             <div className="problem-statement">
+            {error && (
+                    <div className="error-message">
+                        {getErrorMessage(error)}
+                    </div>
+                )}
                 <p>Question: {problemStatement || 'No problem statement available'}</p>
+                
             </div>
+            
 
             {pageState.isRefreshing && <RefreshOverlay />}
 
@@ -323,4 +352,6 @@ const ChatPage = ({ handleRateLimitError }) => {
     );
 };
 
+
 export default ChatPage;
+
