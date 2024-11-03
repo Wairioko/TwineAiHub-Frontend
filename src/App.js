@@ -1,66 +1,78 @@
+import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react';
 import Navbar from './components/navbar';
-import {BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './home/page/HomePage';
 import AuthProvider from './authProvider';
 import ChatPage from './chat/page/chatpage';
 import SingleChatPage from './chat/page/singleChat';
-import { Provider } from 'react-redux';
-import {store, persistor} from './store/index';
-import { PersistGate } from 'redux-persist/integration/react';
-import {LoginPage} from './users/pages/Login'
-import SignupPage from './users/pages/Signup'
+import { store, persistor } from './store/index';
+import { LoginPage } from './users/pages/Login';
+import SignupPage from './users/pages/Signup';
 import SignupEmail from './users/pages/SignUpEmail';
 import GoogleCallbackHandler from './auth/auth';
 import UsagePage from './usage/page/usagePage';
 import ProfilePage from './profile/page/Profile';
-import { useContext } from 'react';
-import { useLocation, useNavigate } from'react-router-dom';
-import { AuthContext } from './authProvider';
-
-
-
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useContext(AuthContext);
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  if (loading) {
-      return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-
-      // Save the attempted URL
-      return navigate('/login');
-  }
-
-  return children;
-};
+import SubscriptionPage from './subscribe/page/subscribe';
+import { PaddleProvider } from './paddle/PaddleProvider';
+import { SubscriptionManagement } from './subscribe/page/subscriptionManagement';
 
 
 function App() {
+  const paddleVendorId = process.env.REACT_APP_PADDLE_VENDOR_ID;
+
+  if (!paddleVendorId) {
+    console.error('REACT_APP_PADDLE_VENDOR_ID is not defined in environment variables');
+  }
+
   return (
+    
     <Provider store={store}>
+      <PaddleProvider vendorId={paddleVendorId}>
       <PersistGate loading={null} persistor={persistor}>
         <Router>
           <AuthProvider>
-            
             <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/chat/:chatid" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
-              <Route path="/chat/:chatid/:name" element={<ProtectedRoute><SingleChatPage /></ProtectedRoute>} />
+              <Route 
+                path="/chat/:chatid" 
+                element={<ChatPage />} 
+              />
+              <Route 
+                path="/chat/:chatid/:name" 
+                element={
+                
+                    <SingleChatPage />
+                 
+                } 
+              />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/signup-email" element={<SignupEmail />} />
               <Route path="/google/auth/callback" element={<GoogleCallbackHandler />} />
-              <Route path="/user/usage" element={<ProtectedRoute><UsagePage /></ProtectedRoute>} />
-              <Route path='/user/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route 
+                path="/user/usage" 
+                element={
+             
+                    <UsagePage />
+            
+                } 
+              />
+              <Route 
+                path="/user/profile" 
+                element={  <ProfilePage />} 
+              />
+              <Route path='/user/subscription' element={ <SubscriptionPage />} />
+              <Route path='/user/subscription/management' element={ <SubscriptionManagement />} />
             </Routes>
           </AuthProvider>
         </Router>
       </PersistGate>
+      </PaddleProvider>
     </Provider>
+
   );
 }
 
