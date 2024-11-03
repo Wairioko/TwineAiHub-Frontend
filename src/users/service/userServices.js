@@ -6,6 +6,7 @@ export const userLogin = async (userData) => {
             },
             method: 'POST',
             body: JSON.stringify(userData),
+            credentials:"include"
         });
 
         if (!response.ok) {
@@ -14,7 +15,7 @@ export const userLogin = async (userData) => {
 
         const data = await response.json(); // Parse the response as JSON
         console.log(data);
-        // localStorage.setItem('token', JSON.stringify(data.token)); // Store token
+       
         return data;  // Return full data object
     } catch (error) {
         throw new Error(`Failed to log in: ${error}`);
