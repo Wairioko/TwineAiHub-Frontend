@@ -1,17 +1,21 @@
 import { createContext, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 export const AuthContext = createContext();
+
 
 const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+
     const checkAuthStatus = useCallback(async () => {
         try {
-            console.log('Checking auth status...'); // Debugging log
+            
             const response = await fetch('http://localhost:4000/auth/status', {
                 method: 'GET',
                 credentials: 'include',
@@ -21,9 +25,9 @@ const AuthProvider = ({ children }) => {
             });
 
             const data = await response.json();
-            console.log('Auth status response:', data); // Debugging log
-
-            if (response.ok && data.isAuthenticated) {
+     
+            if (response.ok && data.isAuthenticated || data.isSubscribed) {
+                setIsSubscribed(true)
                 setIsAuthenticated(true);
                 setUser(data.user);
                 setLoading(false);
@@ -34,25 +38,23 @@ const AuthProvider = ({ children }) => {
                 }
             } else {
                 setIsAuthenticated(false);
+                setIsSubscribed(false)
                 setUser(null);
                 setLoading(false);
                 
-                // Only redirect to login if not already there and not on callback route
-                if (window.location.pathname !== '/login' && 
-                    window.location.pathname !== '/google/auth/callback') {
-                    navigate('/login');
-                }
+               
             }
         } catch (error) {
             console.error('Error checking auth status:', error);
             setIsAuthenticated(false);
+            setIsSubscribed(false);
             setUser(null);
             setLoading(false);
             
             // Only redirect to login if not already there and not on callback route
-            if (window.location.pathname !== '/login' && 
-                window.location.pathname !== '/google/auth/callback') {
-                navigate('/login');
+            if (window.location.pathname !== '/' && 
+                window.location.pathname !== '/') {
+                navigate('/');
             }
         }
     }, [navigate]);
@@ -77,7 +79,8 @@ const AuthProvider = ({ children }) => {
         } finally {
             setIsAuthenticated(false);
             setUser(null);
-            navigate('/login');
+            setIsSubscribed(false);
+            navigate('/');
         }
     }, [navigate]);
 
