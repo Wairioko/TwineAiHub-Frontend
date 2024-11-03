@@ -1,55 +1,124 @@
-export const ProblemToAssistant = async (problemStatement) => {
-    try {
-      const response = await fetch('http://localhost:4000/api/assistant/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ problemstatement: problemStatement }),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log("Received data from server:", data);
-      return data;
-    } catch (error) {
-      console.error("Error in ProblemToAssistant:", error);
-      throw error;
-    }
-};
-
-export const ProblemToModels = async (data) => {
-  const { problemStatement, modelAssignments } = data;
-
+export const ProblemToAssistant = async (formData) => {
+  console.log("this is the form data", formData)
   try {
-      console.log("Data being sent to server:", JSON.stringify(data, null, 2));
-      
-      const response = await fetch('http://localhost:4000/api/chat/solve', {
+      const response = await fetch('http://localhost:4000/api/assistant/analyze', {
           method: 'POST',
+          credentials: 'include',
           headers: {
-              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              // Don't set Content-Type for FormData
           },
-          body: JSON.stringify({ problemStatement, modelAssignments }),
+          body: formData
       });
 
-      console.log("Response status:", response.status);
-
       if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Error response body:", errorText);
-          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+          const errorData = await response.json();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message}`);
       }
 
-      // Parse the JSON response
-      const responseData = await response.json();
-      console.log("Response data:", responseData);
-
-      // Return the data (including chatId) from the response
-      return responseData;
+      const data = await response.json();
+      console.log("this is response", data)
+      return data;
   } catch (error) {
-      console.error("Error in ProblemToModels:", error);
+      
+      console.error('Error in ProblemToAssistant:', error);
       throw error;
   }
 };
+
+
+export const ProblemToModels = async (formData) => {
+  try {
+      const problemStatement = formData.get('problemStatement');
+      const modelAssignments = JSON.parse(formData.get('modelAssignments'));
+      const file = formData.get('file');
+      
+      // Create the request body as a JSON object
+      const requestBody = {
+          problemStatement: problemStatement,
+          modelAssignments: modelAssignments
+      };
+
+      // Initialize request options
+      let requestOptions;
+      if (file) {
+          const newFormData = new FormData();
+          newFormData.append('problemStatement', problemStatement);
+          newFormData.append('modelAssignments', JSON.stringify(modelAssignments));
+          newFormData.append('file', file);
+          
+          requestOptions = {
+              method: 'POST',
+              body: newFormData,
+              credentials: 'include', // Include credentials for file upload as well
+          };
+      } else {
+          requestOptions = {
+              method: "POST",
+              credentials: 'include', // Include credentials for JSON body as well
+              headers: {
+                  "Accept": "application/json",
+                  "Content-Type": "application/json", // Explicitly set Content-Type for JSON
+              },
+              body: JSON.stringify(requestBody)
+          };
+      }
+
+      const response = await fetch('http://localhost:4000/api/chat/solve', requestOptions);
+
+      if (!response.ok) {
+          const errorBody = await response.json();
+          throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(errorBody)}`);
+      }
+
+      return await response.json();
+  } catch (error) {
+      console.error("Error sending problem to models:", error);
+      throw error;
+  }
+};
+
+
+export const getChatHistory = async () => {
+  
+  const response = await fetch('http://localhost:4000/api/user/history', {
+    method: "GET",
+    credentials: 'include', 
+    headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+  })
+
+  if(!response.ok){
+    throw new Error("Error getting chat history")
+  }
+  const data = await response.json()
+  
+  return data.chats
+}
+
+
+export const DeleteChat = async (chatid) => {
+  
+  try {
+    const response = await fetch(`http://localhost:4000/api/chat/${chatid}`,{
+      method: "DELETE",
+      credentials: 'include', // This tells fetch to include cookies
+      headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+      }
+    }
+    );
+
+    const message = await response.json();
+    return message
+    
+  } catch (error) {
+    console.log("the error while deleting chat", error)
+    throw new Error('Error deleting data from history')
+  }
+ 
+}
 
