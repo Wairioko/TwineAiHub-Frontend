@@ -1,11 +1,9 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom'
-
+import { useNavigate } from 'react-router-dom';
 
 export const GoogleLoginButton = () => {
   const handleGoogleLogin = () => {
-    
-    window.location.href = 'http://localhost:4000/auth/google';   
+    window.location.href = 'http://localhost:4000/auth/google';
   };
 
   return (
@@ -18,49 +16,30 @@ export const GoogleLoginButton = () => {
   );
 };
 
-
-
-// AppleLoginButton remains the same; implement your own logic here
-export const AppleLoginButton = () => {
-  const handleAppleLogin = () => {
-    // Add Apple login logic here
-    console.log('Apple login clicked');
-  };
-
-  return (
-    <button className="signup-btn" onClick={handleAppleLogin}>
-      <span className="social-logo-wrapper">
-        <img className="social-logo" src="/public/apple-logo-tAoxPOUx.png" alt="Apple logo" />
-      </span>
-      <span className="social-text">Continue with Apple</span>
-    </button>
-  );
-};
-
 const SignupPage = () => {
   const navigate = useNavigate();
 
   const redirectToEmailSignup = () => {
-    navigate('/signup-email'); // Redirect to email signup form
+    navigate('/signup-email');
   };
 
   return (
     <div className="signup-options-container">
-      <h2>Sign Up</h2>
+      <div className="signup-card">
+        <h2>Sign Up</h2>
+        <div className="signup-options">
+          <button className="signup-btn" onClick={redirectToEmailSignup}>
+            Register with Email
+          </button>
+          
+          <div className="separator">OR</div>
 
-      <div className="signup-options">
-        <button className="signup-btn" onClick={redirectToEmailSignup}>
-          Register with Email
-        </button>
-
-        {/* Use GoogleLoginButton as a component */}
-        <GoogleLoginButton />
-
-        {/* Use AppleLoginButton as a component */}
-        <AppleLoginButton />
+          <GoogleLoginButton />
+        </div>
       </div>
     </div>
   );
 };
 
 export default SignupPage;
+
