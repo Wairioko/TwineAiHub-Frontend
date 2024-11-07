@@ -2,6 +2,7 @@ import { useState } from "react";
 import { userRegister } from "../service/userServices";
 import { useNavigate } from "react-router-dom";
 
+
 const useSignup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -13,6 +14,13 @@ const useSignup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Ensure email is a company email
+        const companyEmailRegex = /^[\w.%+-]+@yourcompany\.com$/;
+        if (!companyEmailRegex.test(email)) {
+            setError('Please use your company email to register.');
+            return;
+        }
 
         // Ensure password and confirm password match
         if (password !== confirmPassword) {
@@ -58,7 +66,6 @@ const useSignup = () => {
     };
 };
 
+
 export default useSignup;
-
-
 
