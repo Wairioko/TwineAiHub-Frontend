@@ -140,7 +140,7 @@ const Navbar = () => {
         <div className="navbar-container">
           <div className="navbar-logo">
             <Link to='/' className="logo-link">
-              <h1>AIFlow</h1>
+              <h1>TwineAiHub</h1>
               <p>Seamless AI Integration, Infinite Possibilities</p>
             </Link>
           </div>
