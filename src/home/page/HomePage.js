@@ -20,7 +20,8 @@ const HomePage = () => {
         handleSubmitToBuild,
         handleToggleChange,
         isLoading,
-        handleFileUpload, error
+        handleFileUpload,
+        error
     } = useSendProblem();
 
     const handleModelSelect = (index, model) => {
@@ -39,6 +40,13 @@ const HomePage = () => {
         });
     };
 
+    const getFilteredOptions = (currentIndex) => {
+        const allOptions = ['ChatGpt', 'Claude', 'Gemini'];
+        return allOptions.filter(
+            option => !selectedModels.includes(option) || selectedModels[currentIndex] === option
+        );
+    };
+
     const renderAssistantToggle = () => (
         <div className="assistant-toggle">
             <label>
@@ -52,7 +60,6 @@ const HomePage = () => {
         </div>
     );
 
-    
     const renderProblemInput = () => (
         <form>
             <label htmlFor="problem-init" className="problem-init">Problem Overview:</label>
@@ -113,7 +120,7 @@ const HomePage = () => {
                 {selectedModels.map((model, index) => (
                     <li key={index}>
                         <Dropdown
-                            options={['ChatGpt', 'Claude', 'Gemini']}
+                            options={getFilteredOptions(index)}
                             selectedOption={model}
                             onSelect={(model) => handleModelSelect(index, model)}
                         />
@@ -154,4 +161,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
