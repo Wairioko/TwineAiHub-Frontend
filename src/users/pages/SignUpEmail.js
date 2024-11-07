@@ -31,6 +31,7 @@ function SignupEmail() {
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            placeholder='username'
             required
           />
         </div>
@@ -43,6 +44,7 @@ function SignupEmail() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            placeholder='register using company email address only.'
           />
         </div>
 
@@ -53,6 +55,7 @@ function SignupEmail() {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder='password'
             required
           />
         </div>
@@ -64,6 +67,7 @@ function SignupEmail() {
             id="confirmPassword"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder='confirm password'
             required
           />
         </div>
