@@ -3,7 +3,7 @@ import useSendProblem from '../hooks/useSendProblemToAssisstant';
 import Dropdown from '../components/dropdown';
 import RoleInput from '../components/roleinput';
 import ReactMarkdown from 'react-markdown'
-
+import CookieBanner from '../../components/cookieBanner';
 
 
 const HomePage = () => {
@@ -138,6 +138,7 @@ const HomePage = () => {
 
     return (
         <div className="home-container">
+            <CookieBanner />
             <div className="home-init-form">
                 {renderAssistantToggle()}
                 {renderProblemInput()}
@@ -157,7 +158,9 @@ const HomePage = () => {
                 </button>
             </div>
         </div>
+        
     );
+    
 };
 
 export default HomePage;
