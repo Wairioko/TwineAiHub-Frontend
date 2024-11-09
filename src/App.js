@@ -16,6 +16,8 @@ import UsagePage from './usage/page/usagePage';
 import ProfilePage from './profile/page/Profile';
 import SubscriptionPage from './subscribe/page/subscribe';
 import { PaddleProvider } from './paddle/PaddleProvider';
+import  {Analytics} from "@vercel/analytics/react"
+import {SpeedInsights} from "@vercel/speed-insights/react"
 import { SubscriptionManagement } from './subscribe/page/subscriptionManagement';
 
 
@@ -27,11 +29,13 @@ function App() {
   }
 
   return (
-    
+   
     <Provider store={store}>
       <PaddleProvider vendorId={paddleVendorId}>
       <PersistGate loading={null} persistor={persistor}>
         <Router>
+        <Analytics/>
+        <SpeedInsights/>
           <AuthProvider>
             <Navbar />
             <Routes>
