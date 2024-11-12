@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const ProblemToAssistant = async (formData) => {
   try {
-      const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/assistant/analyze', {
+      const response = await axios.post(`${process.env.AWS_URL}/api/assistant/analyze`, {
           
           withCredentials: true,
           headers: {
@@ -68,7 +68,7 @@ export const ProblemToModels = async (formData) => {
           };
       }
 
-      const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/solve', requestOptions);
+      const response = await axios.get(`${process.env.AWS_URL}/api/chat/solve`, requestOptions);
 
       if (!response.ok) {
           const errorBody = await response.json();
@@ -85,7 +85,7 @@ export const ProblemToModels = async (formData) => {
 
 export const getChatHistory = async () => {
   
-  const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/user/history', {
+  const response = await axios.get(`${process.env.AWS_URL}/api/user/history`, {
     
     withCredentials: true, 
     headers: {
@@ -106,7 +106,7 @@ export const getChatHistory = async () => {
 export const DeleteChat = async (chatid) => {
   
   try {
-    const response = await axios.delete(`https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/${chatid}`,{
+    const response = await axios.delete(`${process.env.AWS_URL}/api/chat/${chatid}`,{
       withCredentials: true,
       headers: {
           "Accept": "application/json",

@@ -2,7 +2,7 @@ import axios from "axios";
 export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
     let connectionClosed = false;
     
-    const eventSource = new EventSource(`https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/${chatId}`);
+    const eventSource = new EventSource(`${process.env.AWS_URL}/api/chat/${chatId}`);
     
     eventSource.onmessage = (event) => {
         if (connectionClosed) return;
@@ -49,7 +49,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
 
 export const getChatByIdName = async (chatid, name) => {
     try {
-        const response = await axios.get(`https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/${chatid}/${name}`, {
+        const response = await axios.get(`${process.env.AWS_URL}/api/chat/${chatid}/${name}`, {
             
             headers: {
                 'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ export const getChatByIdName = async (chatid, name) => {
 
 export const sendFeedback = async (feedbackData) => {
     try {
-        const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/feedback', {
+        const response = await axios.post(`${process.env.AWS_URL}/api/chat/feedback`, {
             
             headers: {
                 'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ export const sendFeedback = async (feedbackData) => {
 
 export const sendEditMessage = async (editData) => {
     try {
-        const response = await axios.put('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/edit', {
+        const response = await axios.put(`${process.env.AWS_URL}/api/chat/edit`, {
             
             headers: {
                 'Content-Type': 'application/json',

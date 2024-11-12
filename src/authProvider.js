@@ -16,7 +16,7 @@ const AuthProvider = ({ children }) => {
     const checkAuthStatus = useCallback(async () => {
         try {
             
-            const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/auth/status', {
+            const response = await axios.get(`${process.env.AWS_URL}/auth/status`, {
                 withCredentials: true,
                 headers: {
                     'Accept': 'application/json',
@@ -69,7 +69,7 @@ const AuthProvider = ({ children }) => {
 
     const handleLogout = useCallback(async () => {
         try {
-            await axios.get(' https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/auth/logout', {
+            await axios.get(`${process.env.AWS_URL}/auth/logout`, {
                 withCredentials: true,
             });
         } catch (error) {

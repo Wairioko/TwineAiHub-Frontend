@@ -5,7 +5,7 @@ import { useState } from "react";
 export const GoogleLoginButton = () => {
     const handleGoogleSignIn = () => {
         // Redirect to Google OAuth URL
-        window.location.href = "https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/auth/google";
+        window.location.href = `${process.env.AWS_URL}/auth/google`;
     };
     
     return (
