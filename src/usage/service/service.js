@@ -10,7 +10,7 @@ export const GetUserTokenUsage = async () => {
             }
         });
     
-        const data = response.json();
+        const data = response.data;
         return data
 
     }catch(error){

@@ -74,7 +74,7 @@ export const getChatByIdName = async (chatid, name) => {
             }
         }
 
-        const data = await response.json();
+        const data = await response.data;
         return data;
 
     } catch (err) {
@@ -100,7 +100,7 @@ export const sendFeedback = async (feedbackData) => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const responseData = await response.json();
+        const responseData = await response.data;
         
         return { status: response.status, data: responseData }; // Return status and data properly
     } catch (error) {
@@ -135,7 +135,7 @@ export const sendEditMessage = async (editData) => {
             throw new Error(`HTTP error! status: ${response.status}`);
 
         }
-        const responseData = await response.json();
+        const responseData = await response.data;
         return { status: response.status, data: responseData }; 
         
     } catch (error) {

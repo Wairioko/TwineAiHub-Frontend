@@ -23,7 +23,7 @@ const AuthProvider = ({ children }) => {
                 }
             });
 
-            const data = await response.json();
+            const data = await response.data;
      
             if (response.ok && data.isAuthenticated || data.isSubscribed) {
                 setIsSubscribed(true)

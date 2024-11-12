@@ -39,7 +39,7 @@ export const subscriptionService = {
         body: options.body ? JSON.stringify(options.body) : undefined,
       });
   
-      const data = await response.json();
+      const data = await response.data;
   
       if (!response.ok) {
         throw new Error(data.message || 'Request failed');

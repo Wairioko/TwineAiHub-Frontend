@@ -16,11 +16,11 @@ export const ProblemToAssistant = async (formData) => {
       });
 
       if (!response.ok) {
-          const errorData = await response.json();
+          const errorData = await response.data;
           throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message}`);
       }
 
-      const data = await response.json();
+      const data = await response.data;
       console.log("this is response", data)
       return data;
   } catch (error) {
@@ -71,11 +71,11 @@ export const ProblemToModels = async (formData) => {
       const response = await axios.get(`${process.env.AWS_URL}/api/chat/solve`, requestOptions);
 
       if (!response.ok) {
-          const errorBody = await response.json();
+          const errorBody = await response.data;
           throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(errorBody)}`);
       }
 
-      return await response.json();
+      return await response.data;
   } catch (error) {
       console.error("Error sending problem to models:", error);
       throw error;
@@ -97,7 +97,7 @@ export const getChatHistory = async () => {
   if(!response.ok){
     throw new Error("Error getting chat history")
   }
-  const data = await response.json()
+  const data = await response.data
   
   return data.chats
 }
@@ -115,7 +115,7 @@ export const DeleteChat = async (chatid) => {
     }
     );
 
-    const message = await response.json();
+    const message = await response.data;
     return message
     
   } catch (error) {

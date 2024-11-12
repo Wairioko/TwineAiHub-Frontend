@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const userLogin = async (userData) => {
     try {
-        const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/auth/login', {
+        const response = await axios.post(`${process.env.AWS_URL}/api/auth/login`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -15,7 +15,7 @@ export const userLogin = async (userData) => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json(); // Parse the response as JSON
+        const data = await response.data; // Parse the response as JSON
         console.log(data);
        
         return data;  // Return full data object
@@ -28,7 +28,7 @@ export const userLogin = async (userData) => {
 
 export const userRegister = async (userData) => {
     try {
-        const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/auth/signup', {
+        const response = await axios.post(`${process.env.AWS_URL}/api/auth/signup`, {
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -37,11 +37,11 @@ export const userRegister = async (userData) => {
         });
 
         if (!response.ok) {
-            const errorResponse = await response.json(); // Parse the error response from backend
+            const errorResponse = await response.data; // Parse the error response from backend
             throw new Error(errorResponse.message || `HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json(); // Parse the response as JSON
+        const data = await response.data; // Parse the response as JSON
         
         return data;
     } catch (error) {

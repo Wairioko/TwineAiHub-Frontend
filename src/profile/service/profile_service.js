@@ -14,7 +14,7 @@ export const GetUserProfile = async () => {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data = await response.data;
         console.log("this is the json response", data);
         return data;
     } catch (error) {
