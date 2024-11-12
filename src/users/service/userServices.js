@@ -1,12 +1,14 @@
+import axios from "axios";
+
+
 export const userLogin = async (userData) => {
     try {
-        const response = await fetch('http://localhost:4000/api/auth/login', {
+        const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/auth/login', {
             headers: {
                 'Content-Type': 'application/json',
             },
-            method: 'POST',
             body: JSON.stringify(userData),
-            credentials:"include"
+            withCredentials: true
         });
 
         if (!response.ok) {
@@ -26,11 +28,11 @@ export const userLogin = async (userData) => {
 
 export const userRegister = async (userData) => {
     try {
-        const response = await fetch('http://localhost:4000/api/auth/signup', {
+        const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/auth/signup', {
             headers: {
                 'Content-Type': 'application/json'
             },
-            method: 'POST',
+            withCredentials: true,
             body: JSON.stringify(userData)
         });
 

@@ -1,13 +1,17 @@
+import axios from "axios";
+
+
 export const ProblemToAssistant = async (formData) => {
-  console.log("this is the form data", formData)
   try {
-      const response = await fetch('http://localhost:4000/api/assistant/analyze', {
-          method: 'POST',
-          credentials: 'include',
+      const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/assistant/analyze', {
+          
+          withCredentials: true,
           headers: {
               'Accept': 'application/json',
               // Don't set Content-Type for FormData
+              
           },
+        
           body: formData
       });
 
@@ -64,7 +68,7 @@ export const ProblemToModels = async (formData) => {
           };
       }
 
-      const response = await fetch('http://localhost:4000/api/chat/solve', requestOptions);
+      const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/solve', requestOptions);
 
       if (!response.ok) {
           const errorBody = await response.json();
@@ -81,9 +85,9 @@ export const ProblemToModels = async (formData) => {
 
 export const getChatHistory = async () => {
   
-  const response = await fetch('http://localhost:4000/api/user/history', {
-    method: "GET",
-    credentials: 'include', 
+  const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/user/history', {
+    
+    withCredentials: true, 
     headers: {
         "Accept": "application/json",
         "Content-Type": "application/json"
@@ -102,9 +106,8 @@ export const getChatHistory = async () => {
 export const DeleteChat = async (chatid) => {
   
   try {
-    const response = await fetch(`http://localhost:4000/api/chat/${chatid}`,{
-      method: "DELETE",
-      credentials: 'include', // This tells fetch to include cookies
+    const response = await axios.delete(`https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/${chatid}`,{
+      withCredentials: true,
       headers: {
           "Accept": "application/json",
           "Content-Type": "application/json"

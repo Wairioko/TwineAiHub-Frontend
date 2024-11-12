@@ -1,8 +1,7 @@
 export const GetUserProfile = async () => {
     try {
-        const response = await fetch('http://localhost:4000/api/user/profile', {
-            method: "GET",
-            credentials: 'include', // This tells fetch to include cookies
+        const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev//api/user/profile', {
+            withCredentials: true,
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json"

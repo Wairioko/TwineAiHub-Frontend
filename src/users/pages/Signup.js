@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const GoogleLoginButton = () => {
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:4000/auth/google';
+    window.location.href = 'https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/auth/google';
   };
 
   return (

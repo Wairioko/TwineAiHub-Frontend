@@ -1,6 +1,6 @@
 import { createContext, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 export const AuthContext = createContext();
 
@@ -16,9 +16,8 @@ const AuthProvider = ({ children }) => {
     const checkAuthStatus = useCallback(async () => {
         try {
             
-            const response = await fetch('http://localhost:4000/auth/status', {
-                method: 'GET',
-                credentials: 'include',
+            const response = await axios.get('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/auth/status', {
+                withCredentials: true,
                 headers: {
                     'Accept': 'application/json',
                 }
@@ -70,9 +69,8 @@ const AuthProvider = ({ children }) => {
 
     const handleLogout = useCallback(async () => {
         try {
-            await fetch('http://localhost:4000/auth/logout', {
-                method: 'GET',
-                credentials: 'include',
+            await axios.get(' https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/auth/logout', {
+                withCredentials: true,
             });
         } catch (error) {
             console.error('Logout error:', error);

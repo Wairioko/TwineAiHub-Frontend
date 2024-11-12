@@ -1,7 +1,8 @@
+import axios from "axios";
 export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
     let connectionClosed = false;
     
-    const eventSource = new EventSource(`http://localhost:4000/api/chat/${chatId}`);
+    const eventSource = new EventSource(`https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/${chatId}`);
     
     eventSource.onmessage = (event) => {
         if (connectionClosed) return;
@@ -48,12 +49,12 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
 
 export const getChatByIdName = async (chatid, name) => {
     try {
-        const response = await fetch(`http://localhost:4000/api/chat/${chatid}/${name}`, {
-            method: 'GET',
+        const response = await axios.get(`https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/${chatid}/${name}`, {
+            
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: 'include'  
+            withCredentials: true
         });
 
         if (!response.ok) {
@@ -85,13 +86,13 @@ export const getChatByIdName = async (chatid, name) => {
 
 export const sendFeedback = async (feedbackData) => {
     try {
-        const response = await fetch('http://localhost:4000/api/chat/feedback', {
-            method: 'POST',
+        const response = await axios.post('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/feedback', {
+            
             headers: {
                 'Content-Type': 'application/json',
                 
             },
-            credentials: "include",
+            withCredentials: true,
             body: JSON.stringify(feedbackData),
         });
 
@@ -111,13 +112,13 @@ export const sendFeedback = async (feedbackData) => {
 
 export const sendEditMessage = async (editData) => {
     try {
-        const response = await fetch('http://localhost:4000/api/chat/edit', {
-            method: 'PUT',
+        const response = await axios.put('https://2tzlahwab9.execute-api.us-east-1.amazonaws.com/dev/api/chat/edit', {
+            
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer '+ localStorage.getItem('token'),
             },
-            credentials: "include",
+            withCredentials: true,
             body: JSON.stringify(editData),
         });
         console.log("the chat edit data ", editData)
