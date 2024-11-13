@@ -47,12 +47,7 @@ const AuthProvider = ({ children }) => {
             setIsSubscribed(false);
             setUser(null);
             setLoading(false);
-    
-            // Redirect to login if not already on login or callback route
-            if (window.location.pathname !== '/login' && 
-                window.location.pathname !== '/google/auth/callback') {
-                navigate('/login');
-            }
+
         }
     }, [navigate]);
     
