@@ -1,22 +1,20 @@
 import axios from "axios";
 export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
     let connectionClosed = false;
-    
     const eventSource = new EventSource(`${process.env.AWS_URL}/api/chat/${chatId}`);
     
     eventSource.onmessage = (event) => {
         if (connectionClosed) return;
-        
+
         try {
             const data = JSON.parse(event.data);
             if (typeof callback === 'function') {
                 callback(data);
             } else {
-                throw new Error('Callback is not a function');
+                console.warn('Callback is not a function');
             }
         } catch (error) {
             console.error('Error parsing SSE data:', error);
-            throw error; // Propagate the error
         }
     };
     
@@ -24,19 +22,21 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
         console.log('SSE connection closed by the server.');
         connectionClosed = true;
         eventSource.close();
-        if (onClose) onClose();
+        if (typeof onClose === 'function') onClose();
     });
     
     eventSource.onerror = (error) => {
-        if (error.status === 429 || (error.target && error.target.status === 429)) {
-            onRateLimit();
+        const status = error.status || (error.target && error.target.status);
+
+        if (status === 429) {
+            if (typeof onRateLimit === 'function') onRateLimit();
             connectionClosed = true;
             eventSource.close();
         } else {
             console.error('Error with SSE connection:', error);
             connectionClosed = true;
             eventSource.close();
-            if (onClose) onClose(error); // Pass the error to onClose
+            if (typeof onClose === 'function') onClose(error);
         }
     };
     
@@ -50,15 +50,18 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
 export const getChatByIdName = async (chatid, name) => {
     try {
         const response = await axios.get(`${process.env.AWS_URL}/api/chat/${chatid}/${name}`, {
-            
             headers: {
                 'Content-Type': 'application/json'
             },
             withCredentials: true
         });
 
-        if (!response.ok) {
-            switch (response.status) {
+        return response.data;
+
+    } catch (error) {
+        // Handle specific error statuses
+        if (error.response) {
+            switch (error.response.status) {
                 case 403:
                     throw new Error('Access denied');
                 case 401:
@@ -70,39 +73,30 @@ export const getChatByIdName = async (chatid, name) => {
                 case 500:
                     throw new Error('Internal Server Error');
                 default:
-                    throw new Error(`Error fetching chat data (Status: ${response.statusText})`);
+                    throw new Error(`Error fetching chat data (Status: ${error.response.statusText || error.message})`);
             }
+        } else {
+            console.log("Failed to fetch chat:", error.message);
+            throw new Error('Network error or server unavailable');
         }
-
-        const data = await response.data;
-        return data;
-
-    } catch (err) {
-        console.log("Failed to fetch chat:", err.message);
-        throw err;
     }
 };
 
 
 export const sendFeedback = async (feedbackData) => {
     try {
-        const response = await axios.post(`${process.env.AWS_URL}/api/chat/feedback`, {
-            
-            headers: {
-                'Content-Type': 'application/json',
-                
-            },
-            withCredentials: true,
-            body: JSON.stringify(feedbackData),
-        });
+        const response = await axios.post(`${process.env.AWS_URL}/api/chat/feedback`, 
+            feedbackData, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true
+            }
+        );
+        const data = response.data;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const responseData = await response.data;
-        
-        return { status: response.status, data: responseData }; // Return status and data properly
+        return data 
     } catch (error) {
         console.error("Error in sendFeedback:", error);
         throw error;
@@ -110,39 +104,42 @@ export const sendFeedback = async (feedbackData) => {
 };
 
 
+
 export const sendEditMessage = async (editData) => {
     try {
-        const response = await axios.put(`${process.env.AWS_URL}/api/chat/edit`, {
-            
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+ localStorage.getItem('token'),
-            },
-            withCredentials: true,
-            body: JSON.stringify(editData),
-        });
-        console.log("the chat edit data ", editData)
-        if (!response.ok) {
-            if (response.status === 403) {
-                throw new Error('Access denied');
+        const response = await axios.put(
+            `${process.env.AWS_URL}/api/chat/edit`,
+            editData, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                },
+                withCredentials: true,
             }
-            if (response.status === 401) {
-                throw new Error('Authentication failed');
-            }
-            if(response.status === 409){
-                throw new Error("Please upgrade your account to access more features");
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
+        );
 
-        }
-        const responseData = await response.data;
-        return { status: response.status, data: responseData }; 
-        
+        const responseData = response.data; 
+        return responseData
+
     } catch (error) {
-        console.error("Error in sendEditMessage:", error);
-        throw error;
+        if (error.response) {
+            switch (error.response.status) {
+                case 403:
+                    throw new Error('Access denied');
+                case 401:
+                    throw new Error('Authentication failed');
+                case 409:
+                    throw new Error('Please upgrade your account to access more features');
+                default:
+                    throw new Error(`HTTP error! status: ${error.response.status}`);
+            }
+        } else {
+            console.error("Network or server error in sendEditMessage:", error);
+            throw error;
+        }
     }
-}
+};
 
 
 

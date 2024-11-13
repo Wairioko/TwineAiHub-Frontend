@@ -3,25 +3,18 @@ import axios from "axios";
 
 export const ProblemToAssistant = async (formData) => {
   try {
-      const response = await axios.post(`${process.env.AWS_URL}/api/assistant/analyze`, {
-          
-          withCredentials: true,
-          headers: {
-              'Accept': 'application/json',
-              // Don't set Content-Type for FormData
-              
-          },
-        
-          body: formData
-      });
-
-      if (!response.ok) {
-          const errorData = await response.data;
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message}`);
-      }
-
+      const response = await axios.post(`${process.env.AWS_URL}/api/assistant/analyze`, 
+        formData, 
+        {
+            withCredentials: true,
+            headers: {
+                'Accept': 'application/json',
+            }
+        }
+    );
+  
       const data = await response.data;
-      console.log("this is response", data)
+     
       return data;
   } catch (error) {
       
@@ -36,46 +29,41 @@ export const ProblemToModels = async (formData) => {
       const problemStatement = formData.get('problemStatement');
       const modelAssignments = JSON.parse(formData.get('modelAssignments'));
       const file = formData.get('file');
-      
-      // Create the request body as a JSON object
+
+      // Create the request body as a JSON object for non-file uploads
       const requestBody = {
           problemStatement: problemStatement,
           modelAssignments: modelAssignments
       };
 
-      // Initialize request options
-      let requestOptions;
+      let response;
       if (file) {
+          // Use FormData for file upload
           const newFormData = new FormData();
           newFormData.append('problemStatement', problemStatement);
           newFormData.append('modelAssignments', JSON.stringify(modelAssignments));
           newFormData.append('file', file);
-          
-          requestOptions = {
-              method: 'POST',
-              body: newFormData,
-              credentials: 'include', // Include credentials for file upload as well
-          };
+
+          response = await axios.post(`${process.env.AWS_URL}/api/chat/solve`, newFormData, {
+              withCredentials: true,
+          });
       } else {
-          requestOptions = {
-              method: "POST",
-              credentials: 'include', // Include credentials for JSON body as well
+          // Send JSON data if there's no file
+          response = await axios.post(`${process.env.AWS_URL}/api/chat/solve`, requestBody, {
+              withCredentials: true,
               headers: {
                   "Accept": "application/json",
-                  "Content-Type": "application/json", // Explicitly set Content-Type for JSON
-              },
-              body: JSON.stringify(requestBody)
-          };
+                  "Content-Type": "application/json",
+              }
+          });
       }
 
-      const response = await axios.get(`${process.env.AWS_URL}/api/chat/solve`, requestOptions);
-
-      if (!response.ok) {
-          const errorBody = await response.data;
-          throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(errorBody)}`);
+      // Handle non-2xx status codes as errors
+      if (response.status < 200 || response.status >= 300) {
+          throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(response.data)}`);
       }
 
-      return await response.data;
+      return response.data;
   } catch (error) {
       console.error("Error sending problem to models:", error);
       throw error;
@@ -84,44 +72,38 @@ export const ProblemToModels = async (formData) => {
 
 
 export const getChatHistory = async () => {
-  
-  const response = await axios.get(`${process.env.AWS_URL}/api/user/history`, {
-    
-    withCredentials: true, 
-    headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-    }
-  })
+  try {
+      const response = await axios.get(`${process.env.AWS_URL}/api/user/history`, {
+          withCredentials: true, 
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+          }
+      });
 
-  if(!response.ok){
-    throw new Error("Error getting chat history")
+      // Directly return response data
+      return response.data.chats;
+  } catch (error) {
+      console.error("Error getting chat history:", error);
+      throw new Error("Error getting chat history");
   }
-  const data = await response.data
-  
-  return data.chats
-}
-
+};
 
 export const DeleteChat = async (chatid) => {
-  
   try {
-    const response = await axios.delete(`${process.env.AWS_URL}/api/chat/${chatid}`,{
-      withCredentials: true,
-      headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-      }
-    }
-    );
+      const response = await axios.delete(`${process.env.AWS_URL}/api/chat/${chatid}`, {
+          withCredentials: true,
+          headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+          }
+      });
 
-    const message = await response.data;
-    return message
-    
+      return response.data;  
   } catch (error) {
-    console.log("the error while deleting chat", error)
-    throw new Error('Error deleting data from history')
+      console.error("Error while deleting chat:", error);
+      throw new Error("Error deleting data from history");
   }
- 
-}
+};
+
 

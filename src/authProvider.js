@@ -15,33 +15,31 @@ const AuthProvider = ({ children }) => {
 
     const checkAuthStatus = useCallback(async () => {
         try {
-            
             const response = await axios.get(`${process.env.AWS_URL}/auth/status`, {
                 withCredentials: true,
                 headers: {
                     'Accept': 'application/json',
                 }
             });
-
-            const data = await response.data;
-     
-            if (response.ok && data.isAuthenticated || data.isSubscribed) {
-                setIsSubscribed(true)
-                setIsAuthenticated(true);
+    
+            const data = response.data;
+    
+            // Update auth status based on response data
+            if (data.isAuthenticated || data.isSubscribed) {
+                setIsSubscribed(data.isSubscribed);
+                setIsAuthenticated(data.isAuthenticated);
                 setUser(data.user);
-                setLoading(false);
-                
-                // Check if we're on the callback route
-                if (window.location.pathname === '/google/auth/callback') {
-                    navigate('/');
-                }
             } else {
                 setIsAuthenticated(false);
-                setIsSubscribed(false)
+                setIsSubscribed(false);
                 setUser(null);
-                setLoading(false);
-                
-               
+            }
+    
+            setLoading(false);
+    
+            // Redirect to home if on the callback route
+            if (window.location.pathname === '/google/auth/callback') {
+                navigate('/');
             }
         } catch (error) {
             console.error('Error checking auth status:', error);
@@ -49,14 +47,15 @@ const AuthProvider = ({ children }) => {
             setIsSubscribed(false);
             setUser(null);
             setLoading(false);
-            
-            // Only redirect to login if not already there and not on callback route
-            if (window.location.pathname !== '/' && 
-                window.location.pathname !== '/') {
-                navigate('/');
+    
+            // Redirect to login if not already on login or callback route
+            if (window.location.pathname !== '/login' && 
+                window.location.pathname !== '/google/auth/callback') {
+                navigate('/login');
             }
         }
     }, [navigate]);
+    
 
     // Separate function to handle initial auth check
     const initialAuthCheck = useCallback(async () => {
@@ -69,7 +68,7 @@ const AuthProvider = ({ children }) => {
 
     const handleLogout = useCallback(async () => {
         try {
-            await axios.get(`${process.env.AWS_URL}/auth/logout`, {
+            await axios.post(`${process.env.AWS_URL}/auth/logout`, {}, {
                 withCredentials: true,
             });
         } catch (error) {
@@ -81,6 +80,7 @@ const AuthProvider = ({ children }) => {
             navigate('/');
         }
     }, [navigate]);
+    
 
     return (
         <AuthContext.Provider value={{

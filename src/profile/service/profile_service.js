@@ -9,13 +9,9 @@ export const GetUserProfile = async () => {
             }
         });
 
-        // Check if response is okay
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
 
-        const data = await response.data;
-        console.log("this is the json response", data);
+        const data =response.data;
+       
         return data;
     } catch (error) {
         console.error("Unable to fetch user profile:", error);
