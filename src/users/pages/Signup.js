@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const GoogleLoginButton = () => {
   const handleGoogleLogin = () => {
-    window.location.href = `${process.env.AWS_URL}/auth/google`;
+    window.location.href = `${process.env.REACT_APP_AWS_URL}/auth/google`;
   };
 
   return (

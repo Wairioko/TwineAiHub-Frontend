@@ -15,7 +15,7 @@ const AuthProvider = ({ children }) => {
 
     const checkAuthStatus = useCallback(async () => {
         try {
-            const response = await axios.get(`${process.env.AWS_URL}/auth/status`, {
+            const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/auth/status`, {
                 withCredentials: true,
                 headers: {
                     'Accept': 'application/json',
@@ -68,7 +68,7 @@ const AuthProvider = ({ children }) => {
 
     const handleLogout = useCallback(async () => {
         try {
-            await axios.post(`${process.env.AWS_URL}/auth/logout`, {}, {
+            await axios.post(`${process.env.REACT_APP_AWS_URL}/auth/logout`, {}, {
                 withCredentials: true,
             });
         } catch (error) {

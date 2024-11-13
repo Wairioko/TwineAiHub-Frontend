@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const ProblemToAssistant = async (formData) => {
   try {
-      const response = await axios.post(`${process.env.AWS_URL}/api/assistant/analyze`, 
+      const response = await axios.post(`${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`, 
         formData, 
         {
             withCredentials: true,
@@ -44,12 +44,12 @@ export const ProblemToModels = async (formData) => {
           newFormData.append('modelAssignments', JSON.stringify(modelAssignments));
           newFormData.append('file', file);
 
-          response = await axios.post(`${process.env.AWS_URL}/api/chat/solve`, newFormData, {
+          response = await axios.post(`${process.env.REACT_APP_AWS_URL}/api/chat/solve`, newFormData, {
               withCredentials: true,
           });
       } else {
           // Send JSON data if there's no file
-          response = await axios.post(`${process.env.AWS_URL}/api/chat/solve`, requestBody, {
+          response = await axios.post(`${process.env.REACT_APP_AWS_URL}/api/chat/solve`, requestBody, {
               withCredentials: true,
               headers: {
                   "Accept": "application/json",
@@ -73,7 +73,7 @@ export const ProblemToModels = async (formData) => {
 
 export const getChatHistory = async () => {
   try {
-      const response = await axios.get(`${process.env.AWS_URL}/api/user/history`, {
+      const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/api/user/history`, {
           withCredentials: true, 
           headers: {
               "Accept": "application/json",
@@ -91,7 +91,7 @@ export const getChatHistory = async () => {
 
 export const DeleteChat = async (chatid) => {
   try {
-      const response = await axios.delete(`${process.env.AWS_URL}/api/chat/${chatid}`, {
+      const response = await axios.delete(`${process.env.REACT_APP_AWS_URL}/api/chat/${chatid}`, {
           withCredentials: true,
           headers: {
               "Accept": "application/json",
