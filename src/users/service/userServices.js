@@ -3,48 +3,44 @@ import axios from "axios";
 
 export const userLogin = async (userData) => {
     try {
-        const response = await axios.post(`${process.env.AWS_URL}/api/auth/login`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(userData),
-            withCredentials: true
-        });
+        const response = await axios.post(
+            `${process.env.REACT_APP_AWS_URL}/api/auth/login`,
+            userData, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            }
+        );
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.data; // Parse the response as JSON
+        const data = response.data;
         console.log(data);
-       
-        return data;  // Return full data object
+        return data;
     } catch (error) {
-        throw new Error(`Failed to log in: ${error}`);
+        console.error("Login error:", error);
+        throw new Error(`Failed to log in: ${error.response?.statusText || error.message}`);
     }
 };
 
 
-
 export const userRegister = async (userData) => {
     try {
-        const response = await axios.post(`${process.env.AWS_URL}/api/auth/signup`, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            withCredentials: true,
-            body: JSON.stringify(userData)
-        });
+        const response = await axios.post(
+            `${process.env.REACT_APP_AWS_URL}/api/auth/signup`,
+            userData, 
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            }
+        );
 
-        if (!response.ok) {
-            const errorResponse = await response.data; // Parse the error response from backend
-            throw new Error(errorResponse.message || `HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.data; // Parse the response as JSON
-        
+        const data = response.data; 
         return data;
     } catch (error) {
-        throw new Error(`Failed to register: ${error.message}`);
+        console.error("Registration error:", error);
+        throw new Error(`Failed to register: ${error.response?.statusText || error.message}`);
     }
 };
