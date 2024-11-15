@@ -1,8 +1,11 @@
 import axios from "axios";
 
 
+
 export const ProblemToAssistant = async (formData) => {
     try {
+        const cookiesAuth = axios.defaults.withCredentials 
+        cookiesAuth = true; 
         // Get the cookies from the browser
         const cookies = document.cookie.split(';').reduce((acc, cookie) => {
           const [key, value] = cookie.trim().split('=');
@@ -25,7 +28,8 @@ export const ProblemToAssistant = async (formData) => {
           formData,
           {
             headers,
-            withCredentials: true,
+            cookiesAuth
+            
           }
         );
     
