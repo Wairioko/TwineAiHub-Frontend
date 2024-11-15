@@ -2,26 +2,39 @@ import axios from "axios";
 
 
 export const ProblemToAssistant = async (formData) => {
-  try {
-      const response = await axios.post(`${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`, 
-        formData, 
-        {
+    try {
+        // Get the cookies from the browser
+        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {});
+    
+        // Extract the authToken and anonToken cookies
+        const { authToken, anonToken } = cookies;
+    
+        // Set the cookies in the request headers
+        const headers = {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data',
+          'Cookie': `authToken=${authToken}; anonToken=${anonToken}`,
+        };
+    
+        const response = await axios.post(
+          `${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`,
+          formData,
+          {
+            headers,
             withCredentials: true,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data'
-            }
-        }
-    );
-  
-      const data = await response.data;
-     
-      return data;
-  } catch (error) {
-      
-      console.error('Error in ProblemToAssistant:', error);
-      throw error;
-  }
+          }
+        );
+    
+        const data = await response.data;
+        return data;
+      } catch (error) {
+        console.error('Error in ProblemToAssistant:', error);
+        throw error;
+      }
 };
 
 
