@@ -12,6 +12,42 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_AWS_URL,
+    withCredentials: true,
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+    });
+
+    // Add request interceptor for debugging
+    axiosInstance.interceptors.request.use(
+    config => {
+        console.log('Request config:', config);
+        return config;
+    },
+    error => {
+        console.error('Request error:', error);
+        return Promise.reject(error);
+    }
+    );
+
+    // Add response interceptor for debugging
+    axiosInstance.interceptors.response.use(
+    response => {
+        console.log('Response:', response);
+        return response;
+    },
+    error => {
+        console.error('Response error:', error);
+        if (error.response) {
+        console.error('Error response:', error.response);
+        }
+        return Promise.reject(error);
+    }
+    );
+
 
     const checkAuthStatus = useCallback(async () => {
         try {
@@ -19,6 +55,7 @@ const AuthProvider = ({ children }) => {
                 withCredentials: true,
                 headers: {
                     'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             });
     

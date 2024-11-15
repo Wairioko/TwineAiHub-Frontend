@@ -9,6 +9,7 @@ export const ProblemToAssistant = async (formData) => {
             withCredentials: true,
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data'
             }
         }
     );
