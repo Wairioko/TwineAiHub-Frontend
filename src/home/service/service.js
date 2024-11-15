@@ -1,46 +1,30 @@
 import axios from "axios";
 
-
-
 export const ProblemToAssistant = async (formData) => {
     try {
-        const cookiesAuth = axios.defaults.withCredentials 
-        cookiesAuth = true; 
-        // Get the cookies from the browser
-        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
-          const [key, value] = cookie.trim().split('=');
-          acc[key] = value;
-          return acc;
-        }, {});
-    
-        // Extract the authToken and anonToken cookies
-        const { authToken, anonToken } = cookies;
-    
-        // Set the cookies in the request headers
-        const headers = {
-          'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
-          'Cookie': `authToken=${authToken}; anonToken=${anonToken}`,
-        };
-    
-        const response = await axios.post(
-          `${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`,
-          formData,
-          {
-            headers,
-            cookiesAuth
-            
-          }
-        );
-    
-        const data = await response.data;
-        return data;
-      } catch (error) {
-        console.error('Error in ProblemToAssistant:', error);
-        throw error;
-      }
-};
-
+      // Enable credentials globally for Axios
+      axios.defaults.withCredentials = true;
+  
+      // Sending the formData with credentials
+      const response = await axios.post(
+        `${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`,
+        formData,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+  
+      // Extract the response data
+      return response.data;
+    } catch (error) {
+      console.error('Error in ProblemToAssistant:', error);
+      throw error;
+    }
+  };
+  
 
 export const ProblemToModels = async (formData) => {
   try {
