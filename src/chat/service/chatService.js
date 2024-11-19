@@ -1,5 +1,6 @@
 import axios from "axios";
 export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
+    axios.defaults.withCredentials = true;
     let connectionClosed = false;
     const eventSource = new EventSource(`${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`);
     
@@ -49,9 +50,11 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
 
 export const getChatByIdName = async (chatid, name) => {
     try {
+        axios.defaults.withCredentials = true;
         const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/api/chat/${chatid}/${name}`, {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             withCredentials: true
         });
@@ -85,11 +88,15 @@ export const getChatByIdName = async (chatid, name) => {
 
 export const sendFeedback = async (feedbackData) => {
     try {
+        axios.defaults.withCredentials = true;
         const response = await axios.post(`${process.env.REACT_APP_AWS_URL}/api/chat/feedback`, 
             feedbackData, 
             {
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    
+                    
                 },
                 withCredentials: true
             }
@@ -107,13 +114,14 @@ export const sendFeedback = async (feedbackData) => {
 
 export const sendEditMessage = async (editData) => {
     try {
+        axios.defaults.withCredentials = true;
         const response = await axios.put(
             `${process.env.REACT_APP_AWS_URL}/api/chat/edit`,
             editData, 
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Accept': 'application/json'
                 },
                 withCredentials: true,
             }

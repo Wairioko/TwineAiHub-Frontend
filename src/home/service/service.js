@@ -38,6 +38,8 @@ export const ProblemToModels = async (formData) => {
           modelAssignments: modelAssignments
       };
 
+      axios.defaults.withCredentials = true;
+
       let response;
       if (file) {
           // Use FormData for file upload
@@ -75,6 +77,7 @@ export const ProblemToModels = async (formData) => {
 
 export const getChatHistory = async () => {
   try {
+      axios.defaults.withCredentials = true;
       const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/api/user/history`, {
           withCredentials: true, 
           headers: {
@@ -93,6 +96,7 @@ export const getChatHistory = async () => {
 
 export const DeleteChat = async (chatid) => {
   try {
+      axios.defaults.withCredentials = true;
       const response = await axios.delete(`${process.env.REACT_APP_AWS_URL}/api/chat/${chatid}`, {
           withCredentials: true,
           headers: {
