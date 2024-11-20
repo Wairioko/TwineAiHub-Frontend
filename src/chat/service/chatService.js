@@ -13,7 +13,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
 
     const cleanup = () => {
         connectionClosed = true;
-        if (eventSource) {
+        if (eventSource && eventSource.close) {
             eventSource.close();
             eventSource = null;
         }
@@ -66,6 +66,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                 if (connectionClosed) return;
                 
                 try {
+                    // const data = event.json
                     const data = JSON.parse(event.data);
                     if (typeof callback === 'function') {
                         callback(data);
@@ -143,6 +144,8 @@ export const getChatByIdName = async (chatid, name) => {
 
         // Return the parsed body data
         return parsedBody;
+        // const data = response.json
+        // return data
 
     } catch (error) {
         // Handle specific error statuses
@@ -189,6 +192,8 @@ export const sendFeedback = async (feedbackData) => {
 
         // Return the parsed body data
         return parsedBody; 
+    //     const data = response.json
+    // return data
     } catch (error) {
         console.error("Error in sendFeedback:", error);
         throw error;
@@ -217,6 +222,8 @@ export const sendEditMessage = async (editData) => {
 
         // Return the parsed body data
         return parsedBody;
+    //     const data = response.json
+    // return data
 
     } catch (error) {
         if (error.response) {

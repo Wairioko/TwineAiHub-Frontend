@@ -22,6 +22,8 @@ export const ProblemToAssistant = async (formData) => {
 
     // Return the parsed body data
     return parsedBody;
+    // const data = response.data
+    // return data
   } catch (error) {
     console.error('Error in ProblemToAssistant:', error);
     throw error;
@@ -70,11 +72,13 @@ export const ProblemToModels = async (formData) => {
           throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(response.data)}`);
       }
 
-      // Extract the response body
+    //   // Extract the response body
     const parsedBody = JSON.parse(response.data.body);
 
     // Return the parsed body data
     return parsedBody;
+    // const data = response.data
+    // return data
   } catch (error) {
       console.error("Error sending problem to models:", error);
       throw error;
