@@ -68,6 +68,8 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                 try {
                     // const data = event.json
                     const data = JSON.parse(event.data);
+                    console.log("this is the data", data);
+
                     if (typeof callback === 'function') {
                         callback(data);
                     }
