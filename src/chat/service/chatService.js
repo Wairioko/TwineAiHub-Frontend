@@ -1,52 +1,134 @@
 import axios from "axios";
 export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
-    axios.defaults.withCredentials = true;
+    if (!chatId) {
+        console.error('ChatId is required');
+        return () => {};
+    }
+
     let connectionClosed = false;
-    const eventSource = new EventSource(`${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`);
-    
-    eventSource.onmessage = (event) => {
+    let reconnectAttempts = 0;
+    let eventSource = null;
+    const MAX_RECONNECT_ATTEMPTS = 5;
+    const INITIAL_RECONNECT_DELAY = 1000;
+
+    const cleanup = () => {
+        connectionClosed = true;
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+    };
+
+    const handleReconnection = () => {
+        if (connectionClosed || reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+            console.log('Max reconnection attempts reached or connection closed');
+            cleanup();
+            if (onClose) onClose();
+            return;
+        }
+
+        reconnectAttempts++;
+        const delay = Math.min(
+            INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectAttempts - 1),
+            30000
+        );
+
+        console.log(`Attempting reconnection ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}
+            in ${delay}ms`);
+        
+        setTimeout(() => {
+            if (!connectionClosed) {
+                initializeConnection();
+            }
+        }, delay);
+    };
+
+    const initializeConnection = () => {
+        cleanup();
+        
         if (connectionClosed) return;
 
         try {
-            const data = JSON.parse(event.data);
-            if (typeof callback === 'function') {
-                callback(data);
-            } else {
-                console.warn('Callback is not a function');
-            }
-        } catch (error) {
-            console.error('Error parsing SSE data:', error);
-        }
-    };
-    
-    eventSource.addEventListener('close', () => {
-        console.log('SSE connection closed by the server.');
-        connectionClosed = true;
-        eventSource.close();
-        if (typeof onClose === 'function') onClose();
-    });
-    
-    eventSource.onerror = (error) => {
-        const status = error.status || (error.target && error.target.status);
+            eventSource = new EventSource(
+                `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`,
+                { withCredentials: true }
+            );
 
-        if (status === 429) {
-            if (typeof onRateLimit === 'function') onRateLimit();
-            connectionClosed = true;
-            eventSource.close();
-        } else {
-            console.error('Error with SSE connection:', error);
-            connectionClosed = true;
-            eventSource.close();
-            if (typeof onClose === 'function') onClose(error);
+            // Handle regular messages
+            eventSource.onmessage = (event) => {
+                if (connectionClosed) return;
+
+                try {
+                    const data = JSON.parse(event.data);
+                    if (typeof callback === 'function') {
+                        callback(data);
+                    }
+                    // Reset reconnect attempts on successful message
+                    reconnectAttempts = 0;
+                } catch (error) {
+                    console.error('Error parsing SSE data:', error);
+                }
+            };
+
+            // Handle specific events
+            eventSource.addEventListener('complete', (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (typeof callback === 'function') {
+                        callback(data);
+                    }
+                    cleanup();
+                    if (onClose) onClose();
+                } catch (error) {
+                    console.error('Error parsing complete event:', error);
+                }
+            });
+
+            eventSource.addEventListener('heartbeat', () => {
+                // Reset reconnection attempts on successful heartbeat
+                reconnectAttempts = 0;
+            });
+
+            eventSource.addEventListener('error', (event) => {
+                const status = event?.target?.status;
+
+                if (status === 429) {
+                    console.log('Rate limit reached');
+                    cleanup();
+                    if (typeof onRateLimit === 'function') {
+                        onRateLimit();
+                    }
+                    return;
+                }
+
+                // Handle other errors
+                console.error('SSE connection error:', event);
+                
+                if (eventSource?.readyState === EventSource.CLOSED) {
+                    handleReconnection();
+                }
+            });
+
+            eventSource.addEventListener('close', () => {
+                console.log('SSE connection closed by server');
+                cleanup();
+                if (onClose) onClose();
+            });
+
+        } catch (error) {
+            console.error('Error establishing SSE connection:', error);
+            handleReconnection();
         }
     };
-    
+
+    // Start the initial connection
+    initializeConnection();
+
+    // Return cleanup function
     return () => {
-        connectionClosed = true;
-        eventSource.close();
+        cleanup();
     };
 };
-
 
 export const getChatByIdName = async (chatid, name) => {
     try {
