@@ -33,8 +33,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
             30000
         );
 
-        console.log(`Attempting reconnection ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}
-            in ${delay}ms`);
+        console.log(`Attempting reconnection ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS} in ${delay}ms`);
         
         setTimeout(() => {
             if (!connectionClosed) {
@@ -44,8 +43,6 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
     };
 
     const initializeConnection = () => {
-        cleanup();
-        
         if (connectionClosed) return;
 
         try {
@@ -54,18 +51,27 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                 { withCredentials: true }
             );
 
+            let heartbeatTimeout;
+            const resetHeartbeatTimeout = () => {
+                if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
+                heartbeatTimeout = setTimeout(() => {
+                    console.log('Heartbeat timeout - reconnecting');
+                    eventSource.close();
+                    handleReconnection();
+                }, 45000); 
+            };
+
             // Handle regular messages
             eventSource.onmessage = (event) => {
                 if (connectionClosed) return;
-                console.log('Received message:', event.data)
-
+                
                 try {
                     const data = JSON.parse(event.data);
                     if (typeof callback === 'function') {
                         callback(data);
                     }
-                    // Reset reconnect attempts on successful message
                     reconnectAttempts = 0;
+                    resetHeartbeatTimeout();
                 } catch (error) {
                     console.error('Error parsing SSE data:', error);
                 }
@@ -86,14 +92,12 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
             });
 
             eventSource.addEventListener('heartbeat', () => {
-                // Reset reconnection attempts on successful heartbeat
                 reconnectAttempts = 0;
+                resetHeartbeatTimeout();
             });
 
             eventSource.addEventListener('error', (event) => {
-                const status = event?.target?.status;
-
-                if (status === 429) {
+                if (event?.target?.status === 429) {
                     console.log('Rate limit reached');
                     cleanup();
                     if (typeof onRateLimit === 'function') {
@@ -102,19 +106,14 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                     return;
                 }
 
-                // Handle other errors
                 console.error('SSE connection error:', event);
-                
                 if (eventSource?.readyState === EventSource.CLOSED) {
                     handleReconnection();
                 }
             });
 
-            eventSource.addEventListener('close', () => {
-                console.log('SSE connection closed by server');
-                cleanup();
-                if (onClose) onClose();
-            });
+            // Initial heartbeat timeout
+            resetHeartbeatTimeout();
 
         } catch (error) {
             console.error('Error establishing SSE connection:', error);
@@ -122,13 +121,8 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
         }
     };
 
-    // Start the initial connection
     initializeConnection();
-
-    // Return cleanup function
-    return () => {
-        cleanup();
-    };
+    return cleanup;
 };
 
 
