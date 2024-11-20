@@ -41,8 +41,11 @@ export const userRegister = async (userData) => {
             }
         );
 
-        const data = response.data; 
-        return data;
+        // Extract the response body
+        const parsedBody = JSON.parse(response.data.body);
+
+        // Return the parsed body data
+        return parsedBody;
     } catch (error) {
         console.error("Registration error:", error);
         throw new Error(`Failed to register: ${error.response?.statusText || error.message}`);

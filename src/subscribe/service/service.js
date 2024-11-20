@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const subscriptionService = {
     async subscribeToPlan(plan, billingCycle) {
       return await apiRequest('/api/subscribe', {
@@ -54,3 +56,5 @@ export const subscriptionService = {
       throw error;
     }
   };
+
+  
