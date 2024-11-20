@@ -16,7 +16,7 @@ export const ProblemToAssistant = async (formData) => {
           },
         }
       );
-      console.log("this is the response", response);
+      console.log("this is the response", response.data);
   
       // Extract the response data
       return response.data;
