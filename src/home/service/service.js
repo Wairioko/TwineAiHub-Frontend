@@ -1,32 +1,33 @@
 import axios from "axios";
 
 export const ProblemToAssistant = async (formData) => {
-    try {
-      // Enable credentials globally for Axios
-      axios.defaults.withCredentials = true;
-  
-      // Sending the formData with credentials
-      const response = await axios.post(
-        `${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`,
-        formData,
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      const data = response.data
-      console.log("this is the response", data.body.analysis);
-  
-      // Extract the response data
-      return response.data;
-    } catch (error) {
-      console.error('Error in ProblemToAssistant:', error);
-      throw error;
-    }
-  };
-  
+  try {
+    // Enable credentials globally for Axios
+    axios.defaults.withCredentials = true;
+
+    // Sending the formData with credentials
+    const response = await axios.post(
+      `${process.env.REACT_APP_AWS_URL}/api/assistant/analyze`,
+      formData,
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    // Extract the response body
+    const parsedBody = JSON.parse(response.data.body);
+
+    // Return the parsed body data
+    return parsedBody;
+  } catch (error) {
+    console.error('Error in ProblemToAssistant:', error);
+    throw error;
+  }
+};
+
 
 export const ProblemToModels = async (formData) => {
   try {
