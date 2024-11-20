@@ -233,7 +233,8 @@ const ChatPage = ({ handleRateLimitError }) => {
             
                             setModelResponses(prev => {
                                 const updatedData = prev.data.map(item => {
-                                    const newModelResponse = data.modelResponses.find(r => r.modelName === item.modelName);
+                                    const newModelResponse = data.modelResponses.find(r => r.modelName 
+                                        === item.modelName);
                                     if (newModelResponse) {
                                         return {
                                             ...item,
@@ -256,7 +257,9 @@ const ChatPage = ({ handleRateLimitError }) => {
                                     data: [...updatedData, ...newModels]
                                 };
                             });
+                            console.log("this is the data", data)
                         } else {
+                            console.log("empty data")
                             setError("Received empty data, not updating responses.");
                         }
                     },

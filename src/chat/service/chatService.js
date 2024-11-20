@@ -57,6 +57,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
             // Handle regular messages
             eventSource.onmessage = (event) => {
                 if (connectionClosed) return;
+                console.log('Received message:', event.data)
 
                 try {
                     const data = JSON.parse(event.data);
@@ -129,6 +130,8 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
         cleanup();
     };
 };
+
+
 
 export const getChatByIdName = async (chatid, name) => {
     try {
