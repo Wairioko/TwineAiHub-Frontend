@@ -12,8 +12,11 @@ export const GetUserTokenUsage = async () => {
             }
         });
     
-        const data = response.data;
-        return data
+        // Extract the response body
+        const parsedBody = JSON.parse(response.data.body);
+
+        // Return the parsed body data
+        return parsedBody;
 
     }catch(error){
         throw new Error("Error fetching usage stats", error.message)

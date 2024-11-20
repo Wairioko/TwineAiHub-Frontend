@@ -29,6 +29,7 @@ export const subscriptionService = {
   // Helper function for API requests
   const apiRequest = async (endpoint, options = {}) => {
     try {
+      axios.defaults.withCredentials = true;
       const response = await fetch(endpoint, {
         ...options,
         headers: {
@@ -39,7 +40,10 @@ export const subscriptionService = {
         body: options.body ? JSON.stringify(options.body) : undefined,
       });
   
-      const data = await response.data;
+      // Extract the response body
+      const data = JSON.parse(response.data.body);
+
+      
   
       if (!response.ok) {
         throw new Error(data.message || 'Request failed');

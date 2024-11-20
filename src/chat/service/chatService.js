@@ -141,7 +141,11 @@ export const getChatByIdName = async (chatid, name) => {
             withCredentials: true
         });
 
-        return response.data;
+        // Extract the response body
+        const parsedBody = JSON.parse(response.data.body);
+
+        // Return the parsed body data
+        return parsedBody;
 
     } catch (error) {
         // Handle specific error statuses
@@ -183,9 +187,11 @@ export const sendFeedback = async (feedbackData) => {
                 withCredentials: true
             }
         );
-        const data = response.data;
+        // Extract the response body
+        const parsedBody = JSON.parse(response.data.body);
 
-        return data 
+        // Return the parsed body data
+        return parsedBody; 
     } catch (error) {
         console.error("Error in sendFeedback:", error);
         throw error;
@@ -209,8 +215,11 @@ export const sendEditMessage = async (editData) => {
             }
         );
 
-        const responseData = response.data; 
-        return responseData
+        // Extract the response body
+        const parsedBody = JSON.parse(response.data.body);
+
+        // Return the parsed body data
+        return parsedBody;
 
     } catch (error) {
         if (error.response) {

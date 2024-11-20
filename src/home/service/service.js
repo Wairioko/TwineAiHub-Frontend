@@ -70,7 +70,11 @@ export const ProblemToModels = async (formData) => {
           throw new Error(`HTTP error! status: ${response.status}, body: ${JSON.stringify(response.data)}`);
       }
 
-      return response.data;
+      // Extract the response body
+    const parsedBody = JSON.parse(response.data.body);
+
+    // Return the parsed body data
+    return parsedBody;
   } catch (error) {
       console.error("Error sending problem to models:", error);
       throw error;
@@ -89,8 +93,11 @@ export const getChatHistory = async () => {
           }
       });
 
-      // Directly return response data
-      return response.data.chats;
+      // Extract the response body
+    const parsedBody = JSON.parse(response.data.body);
+
+    // Return the parsed body data
+    return parsedBody.chats;
   } catch (error) {
       console.error("Error getting chat history:", error);
       throw new Error("Error getting chat history");
@@ -108,7 +115,11 @@ export const DeleteChat = async (chatid) => {
           }
       });
 
-      return response.data;  
+      // Extract the response body
+    const parsedBody = JSON.parse(response.data.body);
+
+    // Return the parsed body data
+    return parsedBody; 
   } catch (error) {
       console.error("Error while deleting chat:", error);
       throw new Error("Error deleting data from history");
