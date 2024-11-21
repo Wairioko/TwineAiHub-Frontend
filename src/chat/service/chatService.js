@@ -66,6 +66,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                 if (connectionClosed) return;
                 
                 try {
+                    console.log("this is the event", event)
                     // const data = event.json
                     const data = JSON.parse(event.data);
                     console.log("this is the data", data);
@@ -83,6 +84,7 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
             // Handle specific events
             eventSource.addEventListener('complete', (event) => {
                 try {
+                    console.log("this is the event2", event)
                     const data = JSON.parse(event.data);
                     if (typeof callback === 'function') {
                         callback(data);
