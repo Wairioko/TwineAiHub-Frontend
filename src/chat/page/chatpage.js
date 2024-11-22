@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { CreateWebSocketConnection } from '../service/chatService';
+import { CreateSSEConnection } from '../service/chatService';
 import useChat from '../hook/useChatPage';
 import { MarkdownResponse } from '../../utils/utils';
 import { LoadingSpinner } from '../components/LoadingSpinner';
