@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { CreateSSEConnection } from '../service/chatService';
+import { CreateWebSocketConnection } from '../service/chatService';
 import useChat from '../hook/useChatPage';
 import { MarkdownResponse } from '../../utils/utils';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -223,18 +223,18 @@ const ChatPage = ({ handleRateLimitError }) => {
     useEffect(() => {
         if (!chatId) return;
 
-        const createSSEConnectionWithRateLimit = async () => {
+        const createWebSocketConnectionWithRateLimit = async () => {
             try {
-                const cleanup = await CreateSSEConnection(
+                const cleanup = await CreateWebSocketConnection(
                     chatId,
                     async (data) => {
                         if (data && data.modelResponses && data.modelResponses.length > 0) {
                             setProblemStatement(data.userProblemBreakdown.problemStatement.description);
-            
+        
                             setModelResponses(prev => {
                                 const updatedData = prev.data.map(item => {
-                                    const newModelResponse = data.modelResponses.find(r => r.modelName 
-                                        === item.modelName);
+                                    const newModelResponse = data.modelResponses.find(r => 
+                                        r.modelName === item.modelName);
                                     if (newModelResponse) {
                                         return {
                                             ...item,
@@ -244,42 +244,35 @@ const ChatPage = ({ handleRateLimitError }) => {
                                     }
                                     return item;
                                 });
-
-                                const newModels = data.modelResponses.filter(r => !prev.data.some(item => item.modelName === r.modelName))
+        
+                                const newModels = data.modelResponses
+                                    .filter(r => !prev.data.some(item => item.modelName === r.modelName))
                                     .map(newModel => ({
                                         ...newModel,
                                         responses: normalizeResponses(newModel.responses),
                                         loading: false
                                     }));
-
+        
                                 return {
                                     ...prev,
                                     data: [...updatedData, ...newModels]
                                 };
                             });
-                            console.log("this is the data", data)
                         } else {
-                            console.log("empty data")
+                            console.log("empty data");
                             setError("Received empty data, not updating responses.");
                         }
                     },
-                    () => console.log('SSE connection closed'),
-                    (error) => {
-                        // Handle connection close with potential error
-                        console.log('SSE connection closed');
-                        if (error) {
-                            setError(error);
-                        }
-                    },
+                    () => console.log('WebSocket connection closed'),
                     () => {
                         setError({ status: 429, message: 'Rate limit exceeded. Please try again later.' });
                         handleRateLimitError();
                     }
                 );
-                
+        
                 return cleanup;
             } catch (error) {
-                console.error('Error in SSE connection:', error);
+                console.error('Error in WebSocket connection:', error);
                 setError(error);
                 if (error.status === 429) {
                     handleRateLimitError();
@@ -288,7 +281,7 @@ const ChatPage = ({ handleRateLimitError }) => {
             }
         };
 
-        const cleanup = createSSEConnectionWithRateLimit();
+        const cleanup = createWebSocketConnectionWithRateLimit();
         return () => {
             if (cleanup && typeof cleanup.then === 'function') {
                 cleanup.then(cleanupFn => cleanupFn && cleanupFn());
@@ -296,6 +289,7 @@ const ChatPage = ({ handleRateLimitError }) => {
                 cleanup();
             }
         };
+
     }, [chatId, normalizeResponses, handleRateLimitError]);
 
     const uniqueModelResponses = getUniqueModels(modelResponses.data);
