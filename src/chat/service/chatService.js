@@ -1,22 +1,23 @@
 import axios from "axios";
 
-export const CreateWebSocketConnection = (chatId, callback, onClose, onRateLimit) => {
+
+export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
     if (!chatId) {
         console.error('ChatId is required');
         return () => {};
     }
 
-    let ws = null;
+    let connectionClosed = false;
     let reconnectAttempts = 0;
+    let eventSource = null;
     const MAX_RECONNECT_ATTEMPTS = 5;
     const INITIAL_RECONNECT_DELAY = 1000;
-    let connectionClosed = false;
 
     const cleanup = () => {
         connectionClosed = true;
-        if (ws) {
-            ws.close();
-            ws = null;
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
         }
     };
 
@@ -46,49 +47,80 @@ export const CreateWebSocketConnection = (chatId, callback, onClose, onRateLimit
     const initializeConnection = () => {
         if (connectionClosed) return;
 
-        const wsUrl = `${process.env.REACT_APP_WS_URL}/api/chat/${chatId}`;
-        ws = new WebSocket(wsUrl);
+        try {
+            eventSource = new EventSource(
+                `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`,
+                { withCredentials: true }
+            );
 
-        ws.onopen = () => {
-            console.log('WebSocket connected');
-            reconnectAttempts = 0;
-        };
+            let heartbeatTimeout;
+            const resetHeartbeatTimeout = () => {
+                if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
+                heartbeatTimeout = setTimeout(() => {
+                    console.log('Heartbeat timeout - reconnecting');
+                    eventSource.close();
+                    handleReconnection();
+                }, 45000); 
+            };
 
-        ws.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                if (data.type === 'update' && typeof callback === 'function') {
-                    callback(data.data);
-                } else if (data.type === 'error') {
-                    console.error('Server error:', data.message);
+            // Handle regular messages
+            eventSource.onmessage = (event) => {
+                if (connectionClosed) return;
+                
+                try {
+                    const data = JSON.parse(event.data);
+                    if (typeof callback === 'function') {
+                        callback(data);
+                    }
+                    reconnectAttempts = 0;
+                    resetHeartbeatTimeout();
+                } catch (error) {
+                    console.error('Error parsing SSE data:', error);
                 }
-            } catch (error) {
-                console.error('Error parsing WebSocket data:', error);
-            }
-        };
+            };
 
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            if (error.code === 429) {
-                cleanup();
-                if (typeof onRateLimit === 'function') {
-                    onRateLimit();
-                }
-                return;
-            }
-        };
-
-        ws.onclose = (event) => {
-            if (!connectionClosed) {
-                if (event.code === 1008) {
-                    console.error('WebSocket closed due to authentication error');
+            // Handle specific events
+            eventSource.addEventListener('complete', (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (typeof callback === 'function') {
+                        callback(data);
+                    }
                     cleanup();
                     if (onClose) onClose();
-                } else {
+                } catch (error) {
+                    console.error('Error parsing complete event:', error);
+                }
+            });
+
+            eventSource.addEventListener('heartbeat', () => {
+                reconnectAttempts = 0;
+                resetHeartbeatTimeout();
+            });
+
+            eventSource.addEventListener('error', (event) => {
+                if (event?.target?.status === 429) {
+                    console.log('Rate limit reached');
+                    cleanup();
+                    if (typeof onRateLimit === 'function') {
+                        onRateLimit();
+                    }
+                    return;
+                }
+
+                console.error('SSE connection error:', event);
+                if (eventSource?.readyState === EventSource.CLOSED) {
                     handleReconnection();
                 }
-            }
-        };
+            });
+
+            // Initial heartbeat timeout
+            resetHeartbeatTimeout();
+
+        } catch (error) {
+            console.error('Error establishing SSE connection:', error);
+            handleReconnection();
+        }
     };
 
     initializeConnection();

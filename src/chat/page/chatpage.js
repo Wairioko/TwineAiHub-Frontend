@@ -223,18 +223,18 @@ const ChatPage = ({ handleRateLimitError }) => {
     useEffect(() => {
         if (!chatId) return;
 
-        const createWebSocketConnectionWithRateLimit = async () => {
+        const createSSEConnectionWithRateLimit = async () => {
             try {
-                const cleanup = await CreateWebSocketConnection(
+                const cleanup = await CreateSSEConnection(
                     chatId,
                     async (data) => {
                         if (data && data.modelResponses && data.modelResponses.length > 0) {
                             setProblemStatement(data.userProblemBreakdown.problemStatement.description);
-        
+
                             setModelResponses(prev => {
                                 const updatedData = prev.data.map(item => {
-                                    const newModelResponse = data.modelResponses.find(r => 
-                                        r.modelName === item.modelName);
+                                    const newModelResponse = data.modelResponses.find(r => r.modelName 
+                                        === item.modelName);
                                     if (newModelResponse) {
                                         return {
                                             ...item,
@@ -244,35 +244,42 @@ const ChatPage = ({ handleRateLimitError }) => {
                                     }
                                     return item;
                                 });
-        
-                                const newModels = data.modelResponses
-                                    .filter(r => !prev.data.some(item => item.modelName === r.modelName))
+
+                                const newModels = data.modelResponses.filter(r => !prev.data.some(item => item.modelName === r.modelName))
                                     .map(newModel => ({
                                         ...newModel,
                                         responses: normalizeResponses(newModel.responses),
                                         loading: false
                                     }));
-        
+
                                 return {
                                     ...prev,
                                     data: [...updatedData, ...newModels]
                                 };
                             });
+                            console.log("this is the data", data)
                         } else {
-                            console.log("empty data");
+                            console.log("empty data")
                             setError("Received empty data, not updating responses.");
                         }
                     },
-                    () => console.log('WebSocket connection closed'),
+                    () => console.log('SSE connection closed'),
+                    (error) => {
+                        // Handle connection close with potential error
+                        console.log('SSE connection closed');
+                        if (error) {
+                            setError(error);
+                        }
+                    },
                     () => {
                         setError({ status: 429, message: 'Rate limit exceeded. Please try again later.' });
                         handleRateLimitError();
                     }
                 );
-        
+
                 return cleanup;
             } catch (error) {
-                console.error('Error in WebSocket connection:', error);
+                console.error('Error in SSE connection:', error);
                 setError(error);
                 if (error.status === 429) {
                     handleRateLimitError();
@@ -281,7 +288,7 @@ const ChatPage = ({ handleRateLimitError }) => {
             }
         };
 
-        const cleanup = createWebSocketConnectionWithRateLimit();
+        const cleanup = createSSEConnectionWithRateLimit();
         return () => {
             if (cleanup && typeof cleanup.then === 'function') {
                 cleanup.then(cleanupFn => cleanupFn && cleanupFn());
@@ -289,8 +296,9 @@ const ChatPage = ({ handleRateLimitError }) => {
                 cleanup();
             }
         };
-
     }, [chatId, normalizeResponses, handleRateLimitError]);
+
+        
 
     const uniqueModelResponses = getUniqueModels(modelResponses.data);
     const modelCount = uniqueModelResponses.length;
