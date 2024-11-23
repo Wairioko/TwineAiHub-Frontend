@@ -1,147 +1,43 @@
 import axios from "axios";
 
-export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
-    if (!chatId) {
-        console.error('ChatId is required');
-        return () => {};
-    }
+export const CreateSSEConnection = (chatId, callback) => {
+    console.log('Attempting to connect to SSE...');
+    
+    const eventSource = new EventSource(
+        `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`,
+        { withCredentials: true }
+    );
 
-    let connectionClosed = false;
-    let reconnectAttempts = 0;
-    let eventSource = null;
-    const MAX_RECONNECT_ATTEMPTS = 5;
-    const INITIAL_RECONNECT_DELAY = 1000;
-
-    const cleanup = () => {
-        connectionClosed = true;
-        if (eventSource) {
-            eventSource.close();
-            eventSource = null;
-        }
+    // Log connection open
+    eventSource.onopen = () => {
+        console.log('SSE connection opened');
     };
 
-    const handleReconnection = () => {
-        if (connectionClosed || reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-            console.log('Max reconnection attempts reached or connection closed');
-            cleanup();
-            if (onClose) onClose();
-            return;
-        }
-
-        reconnectAttempts++;
-        const delay = Math.min(
-            INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectAttempts - 1),
-            30000
-        );
-
-        console.log(`Attempting reconnection ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS} in ${delay}ms`);
-        
-        setTimeout(() => {
-            if (!connectionClosed) {
-                initializeConnection();
+    // Log all messages
+    eventSource.onmessage = (event) => {
+        console.log('Received SSE message:', event.data);
+        if (callback) {
+            try {
+                const data = JSON.parse(event.data);
+                callback(data);
+            } catch (error) {
+                console.error('Error parsing message:', error);
             }
-        }, delay);
-    };
-
-    const initializeConnection = () => {
-        if (connectionClosed) return;
-
-        try {
-            eventSource = new EventSource(
-                `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`,
-                { withCredentials: true }
-            );
-
-            let heartbeatTimeout;
-            const resetHeartbeatTimeout = () => {
-                if (heartbeatTimeout) clearTimeout(heartbeatTimeout);
-                heartbeatTimeout = setTimeout(() => {
-                    console.log('Heartbeat timeout - reconnecting');
-                    eventSource.close();
-                    handleReconnection();
-                }, 45000); // Should be longer than the server's heartbeat interval
-            };
-
-            // Connected event
-            eventSource.addEventListener('connected', (event) => {
-                console.log('SSE Connection established');
-                reconnectAttempts = 0;
-                resetHeartbeatTimeout();
-            });
-
-            // Regular messages
-            eventSource.addEventListener('message', (event) => {
-                if (connectionClosed) return;
-                
-                try {
-                    const data = JSON.parse(event.data);
-                    if (typeof callback === 'function') {
-                        callback(data);
-                    }
-                    resetHeartbeatTimeout();
-                } catch (error) {
-                    console.error('Error parsing SSE data:', error);
-                }
-            });
-
-            // Complete event
-            eventSource.addEventListener('complete', (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    if (typeof callback === 'function') {
-                        callback(data);
-                    }
-                    cleanup();
-                    if (onClose) onClose();
-                } catch (error) {
-                    console.error('Error parsing complete event:', error);
-                }
-            });
-
-            // Error event
-            eventSource.addEventListener('error', (event) => {
-                console.error('SSE error event:', event);
-                if (event?.data) {
-                    try {
-                        const errorData = JSON.parse(event.data);
-                        console.error('Error data:', errorData);
-                    } catch (e) {
-                        console.error('Could not parse error data');
-                    }
-                }
-                
-                if (event?.target?.status === 429) {
-                    console.log('Rate limit reached');
-                    cleanup();
-                    if (typeof onRateLimit === 'function') {
-                        onRateLimit();
-                    }
-                    return;
-                }
-
-                if (eventSource?.readyState === EventSource.CLOSED) {
-                    handleReconnection();
-                }
-            });
-
-            // Heartbeat event
-            eventSource.addEventListener('heartbeat', () => {
-                console.log('Heartbeat received');
-                reconnectAttempts = 0;
-                resetHeartbeatTimeout();
-            });
-
-            // Initial heartbeat timeout
-            resetHeartbeatTimeout();
-
-        } catch (error) {
-            console.error('Error establishing SSE connection:', error);
-            handleReconnection();
         }
     };
 
-    initializeConnection();
-    return cleanup;
+    // Log errors
+    eventSource.onerror = (error) => {
+        console.error('SSE Error:', error);
+        if (eventSource.readyState === EventSource.CLOSED) {
+            console.log('Connection was closed');
+        }
+    };
+
+    return () => {
+        console.log('Cleaning up SSE connection');
+        eventSource.close();
+    };
 };
 
 
