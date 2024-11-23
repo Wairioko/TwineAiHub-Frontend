@@ -1,46 +1,88 @@
 import axios from "axios";
 
+
 export const CreateSSEConnection = (chatId, callback) => {
     console.log('Attempting to connect to SSE...');
     
-    const eventSource = new EventSource(
-        `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`,
-        { withCredentials: true }
-    );
+    let eventSource = null;
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    
+    const connect = () => {
+        // Close existing connection if any
+        if (eventSource) {
+            eventSource.close();
+        }
 
-    // Log connection open
-    eventSource.onopen = () => {
-        console.log('SSE connection opened');
-    };
+        const url = `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`;
+        console.log('Connecting to:', url);
 
-    // Log all messages
-    eventSource.onmessage = (event) => {
-        console.log('Received SSE message:', event.data);
-        if (callback) {
+        eventSource = new EventSource(url, { 
+            withCredentials: true,
+            // Add retry timeout
+            retry: 3000
+        });
+
+        // Connection opened
+        eventSource.onopen = (event) => {
+            console.log('SSE Connection opened:', event);
+            retryCount = 0; // Reset retry count on successful connection
+        };
+
+        // Message received
+        eventSource.onmessage = (event) => {
+            console.log('Raw SSE message received:', event.data);
+            
             try {
                 const data = JSON.parse(event.data);
-                callback(data);
+                console.log('Parsed SSE data:', data);
+                if (callback) {
+                    callback(data);
+                }
             } catch (error) {
-                console.error('Error parsing message:', error);
+                console.error('Error parsing SSE message:', error);
+                console.log('Raw message was:', event.data);
             }
+        };
+
+        // Error handling
+        eventSource.onerror = (error) => {
+            console.error('SSE Error:', error);
+            
+            if (eventSource.readyState === EventSource.CLOSED) {
+                console.log('Connection was closed, readyState:', eventSource.readyState);
+                
+                // Implement retry logic
+                if (retryCount < MAX_RETRIES) {
+                    retryCount++;
+                    const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000);
+                    console.log(`Attempting retry ${retryCount}/${MAX_RETRIES} in ${retryDelay}ms`);
+                    
+                    setTimeout(() => {
+                        connect();
+                    }, retryDelay);
+                } else {
+                    console.log('Max retries reached, giving up');
+                    cleanup();
+                }
+            }
+        };
+    };
+
+    const cleanup = () => {
+        if (eventSource) {
+            console.log('Cleaning up SSE connection');
+            eventSource.close();
+            eventSource = null;
         }
     };
 
-    // Log errors
-    eventSource.onerror = (error) => {
-        console.error('SSE Error:', error);
-        if (eventSource.readyState === EventSource.CLOSED) {
-            console.log('Connection was closed');
-        }
-    };
+    // Initial connection
+    connect();
 
-    return () => {
-        console.log('Cleaning up SSE connection');
-        eventSource.close();
-    };
+    // Return cleanup function
+    return cleanup;
 };
-
-
 export const getChatByIdName = async (chatid, name) => {
     try {
         axios.defaults.withCredentials = true;
