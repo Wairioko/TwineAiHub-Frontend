@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
     if (!chatId) {
         console.error('ChatId is required');
@@ -60,11 +59,18 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                     console.log('Heartbeat timeout - reconnecting');
                     eventSource.close();
                     handleReconnection();
-                }, 45000); 
+                }, 45000); // Should be longer than the server's heartbeat interval
             };
 
-            // Handle regular messages
-            eventSource.onmessage = (event) => {
+            // Connected event
+            eventSource.addEventListener('connected', (event) => {
+                console.log('SSE Connection established');
+                reconnectAttempts = 0;
+                resetHeartbeatTimeout();
+            });
+
+            // Regular messages
+            eventSource.addEventListener('message', (event) => {
                 if (connectionClosed) return;
                 
                 try {
@@ -72,14 +78,13 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                     if (typeof callback === 'function') {
                         callback(data);
                     }
-                    reconnectAttempts = 0;
                     resetHeartbeatTimeout();
                 } catch (error) {
                     console.error('Error parsing SSE data:', error);
                 }
-            };
+            });
 
-            // Handle specific events
+            // Complete event
             eventSource.addEventListener('complete', (event) => {
                 try {
                     const data = JSON.parse(event.data);
@@ -93,12 +98,18 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                 }
             });
 
-            eventSource.addEventListener('heartbeat', () => {
-                reconnectAttempts = 0;
-                resetHeartbeatTimeout();
-            });
-
+            // Error event
             eventSource.addEventListener('error', (event) => {
+                console.error('SSE error event:', event);
+                if (event?.data) {
+                    try {
+                        const errorData = JSON.parse(event.data);
+                        console.error('Error data:', errorData);
+                    } catch (e) {
+                        console.error('Could not parse error data');
+                    }
+                }
+                
                 if (event?.target?.status === 429) {
                     console.log('Rate limit reached');
                     cleanup();
@@ -108,10 +119,16 @@ export const CreateSSEConnection = (chatId, callback, onClose, onRateLimit) => {
                     return;
                 }
 
-                console.error('SSE connection error:', event);
                 if (eventSource?.readyState === EventSource.CLOSED) {
                     handleReconnection();
                 }
+            });
+
+            // Heartbeat event
+            eventSource.addEventListener('heartbeat', () => {
+                console.log('Heartbeat received');
+                reconnectAttempts = 0;
+                resetHeartbeatTimeout();
             });
 
             // Initial heartbeat timeout
