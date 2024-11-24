@@ -14,6 +14,7 @@ export const fetchChatDetails = async (chatId) => {
             withCredentials: true
             }
         );
+        console.log("the response is: " + JSON.stringify(response));
         return response.data;
     } catch (error) {
         console.error('Error fetching chat details:', error);
