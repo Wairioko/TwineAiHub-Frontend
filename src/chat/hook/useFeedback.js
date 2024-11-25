@@ -38,7 +38,7 @@ export const useChatSubmit = (params) => {
 
       const modelResponseMessage = { 
         role: 'model', 
-        text: response.data.response 
+        text: response.response 
       };
       dispatch(addMessage({ 
         modelName: currentModel,
