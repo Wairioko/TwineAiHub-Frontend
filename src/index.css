@@ -2801,3 +2801,25 @@ body {
   padding-left: 20px;
   margin: 10px 0;
 }
+
+/* Terms container */
+.terms-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Courier New', monospace; /* Monospace for plain text */
+  line-height: 1.5;
+  color: #333;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word; /* Prevent text from overflowing */
+}
+
+/* Preformatted text */
+.terms-content {
+  white-space: pre-wrap; /* Preserve line breaks and spaces */
+  font-size: 16px;
+  text-align: left;
+}

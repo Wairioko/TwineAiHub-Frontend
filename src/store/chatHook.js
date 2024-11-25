@@ -10,6 +10,7 @@ export const useSSEConnection = (chatId) => {
         eventSource = CreateSSEConnection(chatId, (data) => {
           if (data.type === 'initial') {
             setChatSession(chatId, data);
+            
           } else if (data.type === 'update') {
             data.modelResponses?.forEach(modelResponse => {
               updateModelResponse(chatId, modelResponse.modelName, modelResponse.responses?.response);
@@ -26,5 +27,5 @@ export const useSSEConnection = (chatId) => {
         }
       };
     }, [chatId, setChatSession, updateModelResponse]);
-  };
+};
   
