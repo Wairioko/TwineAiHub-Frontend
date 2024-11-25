@@ -180,6 +180,7 @@ const ChatPage = ({ handleRateLimitError }) => {
         return 'An error occurred. Please try again.';
     };
 
+    // Fixed modelResponses state initialization
     const [modelResponses, setModelResponses] = useState({
         data: [],
         loadingStates: {}
@@ -200,14 +201,13 @@ const ChatPage = ({ handleRateLimitError }) => {
                 loading: true
             }));
 
-            setModelResponses(prev => ({
-                ...prev,
+            setModelResponses({
                 data: initialModelData,
                 loadingStates: initialModelData.reduce((acc, { modelName }) => ({
                     ...acc,
                     [modelName]: true
                 }), {})
-            }));
+            });
 
             setPageState(prev => ({ ...prev, isInitialLoading: false }));
         }
@@ -227,10 +227,12 @@ const ChatPage = ({ handleRateLimitError }) => {
             if (data && data.modelResponses && data.modelResponses.length > 0) {
                 setProblemStatement(data.userProblemBreakdown.problemStatement.description);
 
-                setModelResponses((prev) => {
-                    const updatedData = prev.map((item) => {
+                setModelResponses(prev => {
+                    // Create a new array based on existing data
+                    const currentModels = [...prev.data];
+                    const updatedData = currentModels.map(item => {
                         const newModelResponse = data.modelResponses.find(
-                            (r) => r.modelName === item.modelName
+                            r => r.modelName === item.modelName
                         );
                         if (newModelResponse) {
                             return {
@@ -242,16 +244,28 @@ const ChatPage = ({ handleRateLimitError }) => {
                         return item;
                     });
 
+                    // Add any new models that weren't in the previous state
                     const newModels = data.modelResponses
-                        .filter((r) => !prev.some((item) => item.modelName === r.modelName))
-                        .map((newModel) => ({
-                            ...newModel,
+                        .filter(r => !currentModels.some(item => item.modelName === r.modelName))
+                        .map(newModel => ({
+                            modelName: newModel.modelName,
+                            role: newModel.role || 'default',
                             responses: normalizeResponses(newModel.responses),
                             loading: false,
                         }));
 
-                    return [...updatedData, ...newModels];
+                    return {
+                        data: [...updatedData, ...newModels],
+                        loadingStates: {
+                            ...prev.loadingStates,
+                            ...newModels.reduce((acc, { modelName }) => ({
+                                ...acc,
+                                [modelName]: false
+                            }), {})
+                        }
+                    };
                 });
+                
                 console.log("Updated data:", data);
             } else {
                 console.log("Empty data received");
@@ -273,9 +287,8 @@ const ChatPage = ({ handleRateLimitError }) => {
         const interval = setInterval(updateChatDetails, 5000); 
         return () => clearInterval(interval); 
     }, [updateChatDetails]);
-        
 
-    const uniqueModelResponses = getUniqueModels(modelResponses.data);
+    const uniqueModelResponses = modelResponses.data;
     const modelCount = uniqueModelResponses.length;
 
     const modelWidth = useMemo(() => {
@@ -288,15 +301,13 @@ const ChatPage = ({ handleRateLimitError }) => {
     return (
         <div className="chat-page">
             <div className="problem-statement">
-            {error && (
+                {error && (
                     <div className="error-message">
                         {getErrorMessage(error)}
                     </div>
                 )}
                 <p>Question: {problemStatement || 'No problem statement available'}</p>
-                
             </div>
-            
 
             {pageState.isRefreshing && <RefreshOverlay />}
 
@@ -309,29 +320,28 @@ const ChatPage = ({ handleRateLimitError }) => {
             )}
 
             <div className="models-container">
-            {uniqueModelResponses.map(({ modelName, role, responses, loading }, index) => (
-                <IndividualModelResponse 
-                    key={`${modelName}-${index}`}
-                    modelName={modelName}
-                    role={role}
-                    responses={responses.slice(0, maxResponsesToShow)}
-                    isHidden={hiddenModels[modelName]}
-                    onNavigate={() => handleNavigateToChat(navigate, chatId, modelName)}
-                    onToggleHide={() => toggleHide(modelName)}
-                    onCopy={() => copyResponse(responses[0])}
-                    getModelBackgroundColor={getModelBackgroundColor}
-                    isLoading={loading}
-                    dataInitialized={!pageState.isInitialLoading}
-                    style={{
-                        width: modelWidth
-                    }}
-                />
-            ))}
+                {uniqueModelResponses.map(({ modelName, role, responses, loading }, index) => (
+                    <IndividualModelResponse 
+                        key={`${modelName}-${index}`}
+                        modelName={modelName}
+                        role={role}
+                        responses={responses.slice(0, maxResponsesToShow)}
+                        isHidden={hiddenModels[modelName]}
+                        onNavigate={() => handleNavigateToChat(navigate, chatId, modelName)}
+                        onToggleHide={() => toggleHide(modelName)}
+                        onCopy={() => copyResponse(responses[0])}
+                        getModelBackgroundColor={getModelBackgroundColor}
+                        isLoading={loading}
+                        dataInitialized={!pageState.isInitialLoading}
+                        style={{
+                            width: modelWidth
+                        }}
+                    />
+                ))}
             </div>
         </div>
     );
 };
-
 
 export default ChatPage;
 
