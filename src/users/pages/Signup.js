@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from "../../../public/"
 
 export const GoogleLoginButton = () => {
   const handleGoogleLogin = () => {
@@ -9,7 +10,7 @@ export const GoogleLoginButton = () => {
   return (
     <button className="signup-btn" onClick={handleGoogleLogin}>
       <span className="social-logo-wrapper">
-        <img className="social-logo" src="/assets/google-logo-NePEveMl.svg" alt="Google logo" />
+        <img className="social-logo" src="../../../public/google-logo.svg" alt="Google logo" />
       </span>
       <span className="social-text">Continue with Google</span>
     </button>

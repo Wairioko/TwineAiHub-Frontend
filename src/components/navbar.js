@@ -134,43 +134,47 @@ const Navbar = () => {
     return () => document.removeEventListener('click', closeMenu);
   }, [isMenuOpen]);
 
+  
   return (
     <>
       <nav className="navbar">
         <div className="navbar-container">
           <div className="navbar-logo">
-            <Link to='/' className="logo-link">
+            <Link to="/" className="logo-link">
               <h1>TwineAiHub</h1>
               <p>Seamless AI Integration, Infinite Possibilities</p>
             </Link>
           </div>
           <div className="navbar-links">
-            {!isAuthenticated ? (
-              <>
-                <NavLink to="/login">Login</NavLink>
-                <NavLink to="/signup">Sign Up</NavLink>
-              </>
-            ) : (
-              <button onClick={toggleMenu} className="menu-toggle">
-                ☰
-              </button>
-            )}
+            <button onClick={toggleMenu} className="menu-toggle">
+              ☰
+            </button>
           </div>
         </div>
       </nav>
-      {isAuthenticated && (
-        <Sidebar
-          isOpen={isMenuOpen}
-          onClose={() => setIsMenuOpen(false)}
-          handleLogout={handleLogout}
-          chatHistory={chatHistory}
-          setChatHistory={setChatHistory} // Pass the function to update chat history
-        />
-      )}
+      <Sidebar
+        isOpen={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        handleLogout={handleLogout}
+        chatHistory={chatHistory}
+        setChatHistory={setChatHistory} // Pass the function to update chat history
+      >
+        {!isAuthenticated ? (
+          <div className="auth-buttons">
+            <NavLink to="/login" onClick={() => setIsMenuOpen(false)}>
+              Login
+            </NavLink>
+            <NavLink to="/signup" onClick={() => setIsMenuOpen(false)}>
+              Sign Up
+            </NavLink>
+          </div>
+        ) : (
+          <button onClick={handleLogout}>Logout</button>
+        )}
+      </Sidebar>
     </>
   );
-};
-
+}  
 
 export default Navbar;
 
