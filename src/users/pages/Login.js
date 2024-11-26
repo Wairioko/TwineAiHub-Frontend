@@ -5,13 +5,15 @@ import { useState } from "react";
 export const GoogleLoginButton = () => {
     const handleGoogleSignIn = async () => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_AWS_URL}/auth/google`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
+          // Making the GET request to your Lambda function
+          const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/auth/google`, {
+            withCredentials: true, // Include cookies in the request
           });
-          if (response.ok) {
-            const redirectURL = await response.text();
-            window.location.href = redirectURL;
+      
+          // If the response is successful, perform the redirection
+          if (response.status === 200) {
+            
+            window.location.href = "/"
           } else {
             console.error('Failed to redirect to Google login.');
           }
