@@ -34,6 +34,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
         
         {!isAuthenticated ? (
           <div className="sidebar-links">
+            <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={onClose}>Login</NavLink>
             <NavLink to="/signup" onClick={onClose}>Sign Up</NavLink>
           </div>
