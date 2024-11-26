@@ -1,29 +1,12 @@
 import React from "react";
 import { UseLogin } from "../hooks/useLogin";
 import { useState } from "react";
-import axios from "axios";
-
 
 export const GoogleLoginButton = () => {
-    const handleGoogleSignIn = async () => {
-        try {
-          // Making the GET request to your Lambda function
-          const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/auth/google`, {
-            withCredentials: true, // Include cookies in the request
-          });
-      
-          // If the response is successful, perform the redirection
-          if (response.status === 200) {
-            
-            window.location.href = "/"
-          } else {
-            console.error('Failed to redirect to Google login.');
-          }
-        } catch (error) {
-          console.error('Error initiating Google login:', error);
-        }
-      };
-      
+    const handleGoogleSignIn = () => {
+        // Redirect to Google OAuth URL
+        window.location.href = `${process.env.REACT_APP_AWS_URL}/auth/google`;
+    };
     
     return (
       <button className="signup-btn" onClick={handleGoogleSignIn}>
