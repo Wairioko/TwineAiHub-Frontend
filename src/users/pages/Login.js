@@ -11,7 +11,7 @@ export const GoogleLoginButton = () => {
     return (
       <button className="signup-btn" onClick={handleGoogleSignIn}>
         <span className="social-logo-wrapper">
-          <img className="social-logo" src="/public/google-logo.svg" alt="Google logo" />
+          <img className="social-logo" src="/src/google-logo.svg" alt="Google logo" />
         </span>
         <span className="social-text">Sign in with Google</span>
       </button>
