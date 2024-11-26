@@ -3,10 +3,23 @@ import { UseLogin } from "../hooks/useLogin";
 import { useState } from "react";
 
 export const GoogleLoginButton = () => {
-    const handleGoogleSignIn = () => {
-        // Redirect to Google OAuth URL
-        window.location.href = `${process.env.REACT_APP_AWS_URL}/auth/google`;
-    };
+    const handleGoogleSignIn = async () => {
+        try {
+          const response = await fetch(`${process.env.REACT_APP_AWS_URL}/auth/google`, {
+            method: 'GET',
+            credentials: 'include', // Include cookies in the request
+          });
+          if (response.ok) {
+            const redirectURL = await response.text();
+            window.location.href = redirectURL;
+          } else {
+            console.error('Failed to redirect to Google login.');
+          }
+        } catch (error) {
+          console.error('Error initiating Google login:', error);
+        }
+      };
+      
     
     return (
       <button className="signup-btn" onClick={handleGoogleSignIn}>

@@ -3,12 +3,27 @@ import { useNavigate } from 'react-router-dom';
 // import { useGoogleLogin } from "../service/userServices"
 
 export const GoogleLoginButton = () => {
-  const handleGoogleLogin = () => {
-    window.location.href = `${process.env.REACT_APP_AWS_URL}/auth/google`;
+  const handleGoogleSignIn = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_AWS_URL}/auth/google`, {
+        method: 'GET',
+        credentials: 'include', // Include cookies in the request
+      });
+      if (response.ok) {
+        const redirectURL = await response.text();
+        window.location.href = redirectURL;
+      } else {
+        console.error('Failed to redirect to Google login.');
+      }
+    } catch (error) {
+      console.error('Error initiating Google login:', error);
+    }
   };
+  
+  
 
   return (
-    <button className="signup-btn" onClick={handleGoogleLogin}>
+    <button className="signup-btn" onClick={handleGoogleSignIn}>
       <span className="social-logo-wrapper">
         <img className="social-logo" src="/src/google-logo.svg" alt="Google logo" />
       </span>
