@@ -12,11 +12,11 @@ const SidebarButton = ({ onClick, children }) => (
     {children}
   </button>
 );
-
-const Sidebar = ({ isOpen, onClose, handleLogout, chatHistory, setChatHistory }) => {
+const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-
+  const { isAuthenticated, handleLogout } = useContext(AuthContext) || {};
+  
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
       .then(() => {
@@ -31,66 +31,73 @@ const Sidebar = ({ isOpen, onClose, handleLogout, chatHistory, setChatHistory })
     <div className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
-
-        <div className="sidebar-links">
-          <NavLink to="/user/profile" onClick={onClose}>Profile</NavLink>
-          <NavLink to="/user/subscription" onClick={onClose}>Upgrade Plan</NavLink>
-          <NavLink to="/user/subscription/management" onClick={onClose}>Subscription Management</NavLink>
-          <NavLink to="/user/usage" onClick={onClose}>Usage</NavLink>
-
-        </div>
-
-        <div className="divider"></div>
-        <div className="logout-section">
-          <SidebarButton onClick={() => { handleLogout(); onClose(); }}>Logout</SidebarButton>
-        </div>
-
-        <div className="divider"></div>
-        <div className="chat-history">
-          <h3>Chat History</h3>
-          {chatHistory && chatHistory.length > 0 ? (
-            <div className="card-container">
-              {chatHistory.map((chat, index) => {
-                
-                const description = chat?.problemStatement?.description || 'No description available';
-                
-                return (
-                  <div key={chat._id || index} className="card">
-                    <div
-                      onClick={() => {
-                        navigate(`/chat/${chat._id}`, {
-                          state: {
-                            chatId: chat._id,
-                            problemStatement: description,
-                            modelResponses: chat.modelResponses || [],
-                          },
-                        });
-                        window.location.reload();
-                      }}
-                      className="card-content"
-                    >
-                      <p className="problem-statement-history">{description}</p>
-                      <p className="last-message-time">
-                        Last message: {chat.updatedAt ? getTimeDifference(chat.updatedAt) : 'Unknown'} ago
-                      </p>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteChat(chat._id);
-                      }}
-                      className="delete-button"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                );
-              })}
+        
+        {!isAuthenticated ? (
+          <div className="sidebar-links">
+            <NavLink to="/login" onClick={onClose}>Login</NavLink>
+            <NavLink to="/signup" onClick={onClose}>Sign Up</NavLink>
+          </div>
+        ) : (
+          <>
+            <div className="sidebar-links">
+              <NavLink to="/user/profile" onClick={onClose}>Profile</NavLink>
+              <NavLink to="/user/subscription" onClick={onClose}>Upgrade Plan</NavLink>
+              <NavLink to="/user/subscription/management" onClick={onClose}>Subscription Management</NavLink>
+              <NavLink to="/user/usage" onClick={onClose}>Usage</NavLink>
             </div>
-          ) : (
-            <p>No chat history</p>
-          )}
-        </div>
+
+            <div className="divider"></div>
+            <div className="logout-section">
+              <SidebarButton onClick={() => { handleLogout(); onClose(); }}>Logout</SidebarButton>
+            </div>
+
+            <div className="divider"></div>
+            <div className="chat-history">
+              <h3>Chat History</h3>
+              {chatHistory && chatHistory.length > 0 ? (
+                <div className="card-container">
+                  {chatHistory.map((chat, index) => {
+                    const description = chat?.problemStatement?.description || 'No description available';
+                    
+                    return (
+                      <div key={chat._id || index} className="card">
+                        <div
+                          onClick={() => {
+                            navigate(`/chat/${chat._id}`, {
+                              state: {
+                                chatId: chat._id,
+                                problemStatement: description,
+                                modelResponses: chat.modelResponses || [],
+                              },
+                            });
+                            window.location.reload();
+                          }}
+                          className="card-content"
+                        >
+                          <p className="problem-statement-history">{description}</p>
+                          <p className="last-message-time">
+                            Last message: {chat.updatedAt ? getTimeDifference(chat.updatedAt) : 'Unknown'} ago
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteChat(chat._id);
+                          }}
+                          className="delete-button"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p>No chat history</p>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -134,7 +141,7 @@ const Navbar = () => {
     return () => document.removeEventListener('click', closeMenu);
   }, [isMenuOpen]);
 
-  
+
   return (
     <>
       <nav className="navbar">
