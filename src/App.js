@@ -11,7 +11,7 @@ import { store, persistor } from './store/index';
 import { LoginPage } from './users/pages/Login';
 import SignupPage from './users/pages/Signup';
 import SignupEmail from './users/pages/SignUpEmail';
-import GoogleCallbackHandler from './auth/auth';
+import GoogleCallback from './auth/auth';
 import UsagePage from './usage/page/usagePage';
 import ProfilePage from './profile/page/Profile';
 import SubscriptionPage from './subscribe/page/subscribe';
@@ -55,7 +55,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/signup-email" element={<SignupEmail />} />
-              <Route path="/google/auth/callback" element={<GoogleCallbackHandler />} />
+              <Route path="/google/auth/callback" element={<GoogleCallback />} />
               <Route 
                 path="/user/usage" 
                 element={
