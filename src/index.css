@@ -2802,13 +2802,14 @@ body {
   margin: 10px 0;
 }
 
+/* Footer styling */
 .footer {
   background-color: #f8f9fa;
   text-align: center;
   padding: 20px;
-  margin-top: 20px;
   font-size: 14px;
   color: #6c757d;
+  margin-top: auto; 
 }
 
 .footer a {
