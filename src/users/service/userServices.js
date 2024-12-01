@@ -16,9 +16,10 @@ export const userLogin = async (userData) => {
             }
         );
 
-        const data = response.data;
-        console.log(data);
-        return data;
+        const parsedBody = JSON.parse(response.data.body);
+
+        // Return the parsed body data
+        return parsedBody;
     } catch (error) {
         console.error("Login error:", error);
         throw new Error(`Failed to log in: ${error.response?.statusText || error.message}`);
@@ -37,7 +38,7 @@ export const userRegister = async (userData) => {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                withCredentials: true,
+             
             }
         );
 
@@ -51,3 +52,5 @@ export const userRegister = async (userData) => {
         throw new Error(`Failed to register: ${error.response?.statusText || error.message}`);
     }
 };
+
+
