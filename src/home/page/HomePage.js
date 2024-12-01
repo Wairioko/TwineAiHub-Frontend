@@ -136,6 +136,31 @@ const HomePage = () => {
         </div>
     );
 
+    const Footer = () => (
+        <footer className="footer">
+            <p>&copy; {new Date().getFullYear()} TwineAiHub. All rights reserved.</p>
+            <p>
+                <a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a>
+            </p>
+            <p>
+                <a href="/cookies">Cookie Policy</a> | <a href="/gdpr">GDPR Compliance</a>
+            </p>
+            <p>
+                <a href="/refunds">Refund Policy</a> | <a href="/refund">Refund Policy</a>
+            </p>
+            <p>
+                <a href="/privacy">Privacy Policy</a> | <a href="/privacy">Privacy Policy</a>
+            </p>
+            <p>
+                <a href="/about">About</a> | <a href="/faq">FAQ</a></p>
+            <p>
+                <a href="/contact">Contact/Hire Dev</a> | <a href="/support">Support</a>
+            </p>
+            <p></p>
+            
+        </footer>
+    );
+
     return (
         <div className="home-container">
             <CookieBanner />
@@ -157,6 +182,7 @@ const HomePage = () => {
                     Send To Models For Construction
                 </button>
             </div>
+            <Footer />
         </div>
         
     );

@@ -2802,6 +2802,26 @@ body {
   margin: 10px 0;
 }
 
+.footer {
+  background-color: #f8f9fa;
+  text-align: center;
+  padding: 20px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.footer a {
+  color: #007bff;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+
 /* Terms container */
 .terms-container {
   max-width: 800px;
@@ -2823,3 +2843,5 @@ body {
   font-size: 16px;
   text-align: left;
 }
+
+
