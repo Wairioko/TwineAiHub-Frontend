@@ -20,6 +20,7 @@ import  {Analytics} from "@vercel/analytics/react"
 import {SpeedInsights} from "@vercel/speed-insights/react"
 import { SubscriptionManagement } from './subscribe/page/subscriptionManagement';
 import TermsAndConditions from './privacy-terms/pages/terms-conditions';
+import PrivacyTerms from './privacy-terms/pages/privacy-terms';
 
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
               <Route path='/user/subscription' element={ <SubscriptionPage />} />
               <Route path='/user/subscription/management' element={ <SubscriptionManagement />} />
               <Route path='/terms-conditions' element={ <TermsAndConditions />} />
+              <Route path='/privacy' element={ <PrivacyTerms/> } />
             </Routes>
           </AuthProvider>
         </Router>
