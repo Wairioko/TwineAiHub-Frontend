@@ -61,7 +61,7 @@ const HomePage = () => {
     );
 
     const renderProblemInput = () => (
-        <form>
+        <form className='problem-init'>
             <label htmlFor="problem-init" className="problem-init">Problem Overview:</label>
             <div className="input-container">
                 <textarea
@@ -138,27 +138,24 @@ const HomePage = () => {
 
     const Footer = () => (
         <footer className="footer">
+            <p>
+                <a href="/terms-conditions">Terms of Service</a> | 
+                <a href="/privacy">Privacy Policy</a> | 
+                <a href="/cookies">Cookie Policy</a> | 
+                <a href="/gdpr">GDPR Compliance</a>
+            </p>
+            <p>
+                <a href="/refunds">Refund Policy</a> | 
+                <a href="/about">About</a> | 
+                <a href="/faq">FAQ</a>
+            </p>
+            <p>
+                <a href="/contact">Contact/Hire Dev</a> | 
+                <a href="/support">Support</a>
+            </p>
             <p>&copy; {new Date().getFullYear()} TwineAiHub. All rights reserved.</p>
-            <p>
-                <a href="/terms">Terms of Service</a> | <a href="/privacy">Privacy Policy</a>
-            </p>
-            <p>
-                <a href="/cookies">Cookie Policy</a> | <a href="/gdpr">GDPR Compliance</a>
-            </p>
-            <p>
-                <a href="/refunds">Refund Policy</a> | <a href="/refund">Refund Policy</a>
-            </p>
-            <p>
-                <a href="/privacy">Privacy Policy</a> | <a href="/privacy">Privacy Policy</a>
-            </p>
-            <p>
-                <a href="/about">About</a> | <a href="/faq">FAQ</a></p>
-            <p>
-                <a href="/contact">Contact/Hire Dev</a> | <a href="/support">Support</a>
-            </p>
-            <p></p>
-            
         </footer>
+    
     );
 
     return (
