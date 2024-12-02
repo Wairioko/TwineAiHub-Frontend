@@ -145,7 +145,7 @@ const HomePage = () => {
                 <a href="/gdpr">GDPR Compliance</a>
             </p>
             <p>
-                <a href="/refunds">Refund Policy</a> | 
+                <a href="/refund">Refund Policy</a> | 
                 <a href="/about">About</a> | 
                 <a href="/faq">FAQ</a>
             </p>
