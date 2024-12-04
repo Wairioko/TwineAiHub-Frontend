@@ -28,7 +28,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {auth.isAuthenticated ? (
+        {!auth.isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={() => {auth.signinRedirect(); onClose()}}>Login</NavLink>
