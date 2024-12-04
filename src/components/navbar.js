@@ -45,7 +45,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
 
             <div className="divider"></div>
             <div className="logout-section">
-              <button onClick={auth.handleLogout()}>Sign out</button>
+              <button onClick={auth.handleLogout}>Sign out</button>
             </div>
 
             <div className="divider"></div>
