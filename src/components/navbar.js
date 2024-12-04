@@ -11,7 +11,7 @@ import useDeleteChat from '../home/hooks/useDeleteChat.js';
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const auth = AuthContext();
+  const auth = AuthContext;
 
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
