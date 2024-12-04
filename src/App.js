@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import Navbar from './components/navbar';
 import HomePage from './home/page/HomePage';
-import AuthProvider from './authProvider';
+// import AuthProvider from './authProvider';
 import ChatPage from './chat/page/chatpage';
 import SingleChatPage from './chat/page/singleChat';
 import { store, persistor } from './store/index';
@@ -22,6 +22,7 @@ import { SubscriptionManagement } from './subscribe/page/subscriptionManagement'
 import TermsAndConditions from './privacy-terms/pages/terms-conditions';
 import PrivacyTerms from './privacy-terms/pages/privacy-terms';
 import RefundConditions from './privacy-terms/pages/refund-conditions';
+import { AuthProvider } from "react-oidc-context";
 
 
 function App() {
@@ -31,6 +32,23 @@ function App() {
     console.error('REACT_APP_PADDLE_VENDOR_ID is not defined in environment variables');
   }
 
+  const cognitoAuthConfig = {
+    authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_LTkM1F1HZ",
+    client_id: "7hljljjtpgrqr26m8ssdiv9775",
+    redirect_uri: "https://twineaihub.com/?status=success",
+    response_type: "code",
+    scope: "email openid profile",
+  };
+
+  useEffect(() => {
+    window.gapi.load('auth2', () => {
+      window.gapi.auth2.init({
+        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID, // Replace with your actual client ID
+      });
+    });
+  }, []);
+  
+
   return (
    
     <Provider store={store}>
@@ -39,7 +57,7 @@ function App() {
         <Router>
         <Analytics/>
         <SpeedInsights/>
-          <AuthProvider>
+          <AuthProvider {...cognitoAuthConfig}>
             <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />

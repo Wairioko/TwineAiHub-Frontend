@@ -1,12 +1,14 @@
 import { useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../src/authProvider';
+import { useAuth } from 'react-oidc-context'
 
 
 const GoogleCallback = () => {
     const { checkAuthStatus } = useContext(AuthContext);
     const navigate = useNavigate();
     const location = useLocation();
+    const auth = useAuth();
 
     useEffect(() => {
         const handleCallback = async () => {
