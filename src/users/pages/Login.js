@@ -3,6 +3,7 @@ import { UseLogin } from "../hooks/useLogin";
 import { useState } from "react";
 
 export const GoogleLoginButton = () => {
+    
     const handleGoogleSignIn = () => {
         // Redirect to Google OAuth URL
         window.location.href = `${process.env.REACT_APP_AWS_URL}/auth/google`;
