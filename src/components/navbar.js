@@ -1,22 +1,25 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import  {AuthContext} from '../../src/authProvider.js';
+// import  {AuthContext} from '../../src/authProvider.js';
 import useGetHistory from '../home/hooks/useGetHistory.js'
 import {getTimeDifference} from '../utils/utils.js'
 import { useNavigate } from 'react-router-dom';
 import useDeleteChat from '../home/hooks/useDeleteChat.js';
+import { useAuth } from 'react-oidc-context';
 
 
-const SidebarButton = ({ onClick, children }) => (
-  <button onClick={onClick} className="sidebar-button">
-    {children}
-  </button>
-);
+const signOutRedirect = () => {
+  const clientId = "7hljljjtpgrqr26m8ssdiv9775";
+  const logoutUri = "<logout uri>";
+  const cognitoDomain = "https://us-east-1ltkm1f1hz.auth.us-east-1.amazoncognito.com";
+  window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
+}
+
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const { isAuthenticated, handleLogout } = useContext(AuthContext) || {};
-  
+  const auth = useAuth();
+
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
       .then(() => {
@@ -32,11 +35,11 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {!isAuthenticated ? (
+        {!auth.isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
-            <NavLink to="/login" onClick={onClose}>Login</NavLink>
-            <NavLink to="/signup" onClick={onClose}>Sign Up</NavLink>
+            <NavLink to="/login" onClick={() => {auth.signinRedirect(); onClose()}}>Login</NavLink>
+            <NavLink to="/signup" onClick={() => {auth.signinRedirect(); onClose()}}>Sign Up</NavLink>
           </div>
         ) : (
           <>
@@ -49,7 +52,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
 
             <div className="divider"></div>
             <div className="logout-section">
-              <SidebarButton onClick={() => { handleLogout(); onClose(); }}>Logout</SidebarButton>
+              <button onClick={() => signOutRedirect()}>Sign out</button>
             </div>
 
             <div className="divider"></div>
@@ -113,11 +116,11 @@ const NavLink = ({ to, onClick, children }) => (
 
 const Navbar = () => {
   const [chatHistory, setChatHistory] = useState([]);
-  const { isAuthenticated, handleLogout } = useContext(AuthContext) || {};
+  const auth = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Fetch chats 
-  const { chats } = useGetHistory(isAuthenticated);
+  const { chats } = useGetHistory(auth.isAuthenticated);
 
   // Update chatHistory state when chats are fetched
   useEffect(() => {
@@ -163,21 +166,21 @@ const Navbar = () => {
       <Sidebar
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
-        handleLogout={handleLogout}
+        // handleLogout={signOutRedirect}
         chatHistory={chatHistory}
         setChatHistory={setChatHistory} // Pass the function to update chat history
       >
-        {!isAuthenticated ? (
+        {!auth.isAuthenticated ? (
           <div className="auth-buttons">
-            <NavLink to="/login" onClick={() => setIsMenuOpen(false)}>
+            <NavLink to="/login" onClick={() => {setIsMenuOpen(false); auth.signinRedirect();}}>
               Login
             </NavLink>
-            <NavLink to="/signup" onClick={() => setIsMenuOpen(false)}>
+            <NavLink to="/signup" onClick={() => {setIsMenuOpen(false); auth.signinRedirect();}}>
               Sign Up
             </NavLink>
           </div>
         ) : (
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={() => signOutRedirect()}>Logout</button>
         )}
       </Sidebar>
     </>
