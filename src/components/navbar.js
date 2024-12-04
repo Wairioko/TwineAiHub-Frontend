@@ -1,24 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-// import  {AuthContext} from '../../src/authProvider.js';
+import  {AuthContext} from '../../src/authProvider.js';
 import useGetHistory from '../home/hooks/useGetHistory.js'
 import {getTimeDifference} from '../utils/utils.js'
 import { useNavigate } from 'react-router-dom';
 import useDeleteChat from '../home/hooks/useDeleteChat.js';
-import { useAuth } from 'react-oidc-context';
 
 
-const signOutRedirect = () => {
-  const clientId = "7hljljjtpgrqr26m8ssdiv9775";
-  const logoutUri = "<logout uri>";
-  const cognitoDomain = "https://us-east-1ltkm1f1hz.auth.us-east-1.amazoncognito.com";
-  window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-}
 
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const auth = useAuth();
+  const auth = AuthContext();
 
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
@@ -35,7 +28,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {!auth.isAuthenticated ? (
+        {auth.isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={() => {auth.signinRedirect(); onClose()}}>Login</NavLink>
@@ -52,7 +45,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
 
             <div className="divider"></div>
             <div className="logout-section">
-              <button onClick={() => signOutRedirect()}>Sign out</button>
+              <button onClick={auth.handleLogout()}>Sign out</button>
             </div>
 
             <div className="divider"></div>
@@ -116,7 +109,7 @@ const NavLink = ({ to, onClick, children }) => (
 
 const Navbar = () => {
   const [chatHistory, setChatHistory] = useState([]);
-  const auth = useAuth();
+  const auth = AuthContext;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Fetch chats 
@@ -180,7 +173,7 @@ const Navbar = () => {
             </NavLink>
           </div>
         ) : (
-          <button onClick={() => signOutRedirect()}>Logout</button>
+          <button onClick={auth.handleLogout}>Logout</button>
         )}
       </Sidebar>
     </>
