@@ -23,6 +23,7 @@ import TermsAndConditions from './privacy-terms/pages/terms-conditions';
 import PrivacyTerms from './privacy-terms/pages/privacy-terms';
 import RefundConditions from './privacy-terms/pages/refund-conditions';
 import { AuthProvider } from "react-oidc-context";
+import { useEffect } from 'react';
 
 
 function App() {
