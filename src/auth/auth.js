@@ -2,6 +2,7 @@ import { useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../src/authProvider';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 
 const GoogleCallback = () => {
