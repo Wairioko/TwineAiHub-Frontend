@@ -22,9 +22,13 @@ import { SubscriptionManagement } from './subscribe/page/subscriptionManagement'
 import TermsAndConditions from './privacy-terms/pages/terms-conditions';
 import PrivacyTerms from './privacy-terms/pages/privacy-terms';
 import RefundConditions from './privacy-terms/pages/refund-conditions';
+import { useAuth } from 'react-oidc-context';
+
 
 
 function App() {
+  
+
   const paddleVendorId = process.env.REACT_APP_PADDLE_VENDOR_ID;
 
   if (!paddleVendorId) {

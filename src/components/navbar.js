@@ -5,13 +5,14 @@ import useGetHistory from '../home/hooks/useGetHistory.js'
 import {getTimeDifference} from '../utils/utils.js'
 import { useNavigate } from 'react-router-dom';
 import useDeleteChat from '../home/hooks/useDeleteChat.js';
+import { useAuth } from 'react-oidc-context';
 
 
 
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const auth = AuthContext;
+  const auth = useAuth();
 
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
@@ -21,6 +22,13 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       .catch((err) => {
         console.error("Failed to delete chat", err);
       });
+  };
+ 
+  const signOutRedirect = () => {
+    const clientId = "7hljljjtpgrqr26m8ssdiv9775";
+    const logoutUri = "https://www.twineaihub.com/";
+    const cognitoDomain = "https://us-east-1ltkm1f1hz.auth.us-east-1.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
   };
 
   return (
@@ -45,7 +53,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
 
             <div className="divider"></div>
             <div className="logout-section">
-              <button onClick={auth.handleLogout}>Sign out</button>
+              <button onClick={signOutRedirect()}>Sign out</button>
             </div>
 
             <div className="divider"></div>
