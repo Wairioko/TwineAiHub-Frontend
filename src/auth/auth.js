@@ -10,32 +10,29 @@ const GoogleCallback = () => {
     error: null,
     backendUrl: process.env.REACT_APP_AWS_URL
   });
-
+  console.log('GoogleCallback Component State:', componentState);
   const navigate = useNavigate();
   const location = useLocation();
   const { checkAuthStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    // Debugging: Log entire location object
-    console.group('GoogleCallback Debug Information');
-    console.log('Full Location Object:', location);
-    console.log('Backend URL:', process.env.REACT_APP_AWS_URL);
-
+    // Log that the useEffect is triggered
+    console.log('useEffect triggered with location.search:', location.search);
+  
     // Extract authorization code
     const params = new URLSearchParams(location.search);
     const authCode = params.get('code');
-
+    
     console.log('Extracted Authorization Code:', authCode);
-    console.log('Location Search String:', location.search);
-
-    // Update component state with authorization code
+  
+    // Update component state with the authorization code
     setComponentState(prev => ({
       ...prev,
       authCode,
       isLoading: !!authCode
     }));
-
-    // Perform authentication if code exists
+  
+    // Only proceed if the authCode exists
     const performAuthentication = async () => {
       if (!authCode) {
         console.error('No authorization code found');
@@ -47,13 +44,11 @@ const GoogleCallback = () => {
         navigate('/login');
         return;
       }
-
+  
       try {
-        console.log('Attempting to send POST request to:', 
-          `${process.env.REACT_APP_AWS_URL}/auth/google/callback`
-        );
-
-        // Configure axios for detailed logging
+        console.log('Attempting to send POST request to:', `${process.env.REACT_APP_AWS_URL}/auth/google/callback`);
+  
+        // Make sure you log the request properly with axios interceptors
         axios.interceptors.request.use(request => {
           console.log('Starting Request:', {
             url: request.url,
@@ -62,23 +57,25 @@ const GoogleCallback = () => {
           });
           return request;
         });
-
+  
+        // Send the authentication request to your backend
         const response = await axios.post(
-          `${process.env.REACT_APP_AWS_URL}/auth/google/callback`, 
+          `${process.env.REACT_APP_AWS_URL}/auth/google/callback`,
           { code: authCode },
           {
             withCredentials: true,
             headers: {
               'Content-Type': 'application/json',
             },
-            timeout: 10000  // 10 seconds timeout
+            timeout: 10000 // 10 seconds timeout
           }
         );
-
+  
         console.log('Full Server Response:', response);
         console.log('Response Status:', response.status);
         console.log('Response Data:', response.data);
-
+  
+        // Handle successful response
         if (response.data.status === 'success') {
           try {
             await checkAuthStatus();
@@ -104,7 +101,7 @@ const GoogleCallback = () => {
       } catch (error) {
         console.group('Detailed Error Information');
         console.error('Error during token exchange:', error);
-        
+  
         // Axios error details
         if (error.response) {
           // The request was made and the server responded with a status code
@@ -121,7 +118,8 @@ const GoogleCallback = () => {
           console.error('Request Setup Error:', error.message);
         }
         console.groupEnd();
-
+  
+        // Update state and navigate on error
         setComponentState(prev => ({
           ...prev,
           isLoading: false,
@@ -130,11 +128,13 @@ const GoogleCallback = () => {
         navigate('/login');
       }
     };
-
+  
+    // Call the performAuthentication function
     performAuthentication();
-    console.groupEnd();
+    
   }, [location.search, navigate, checkAuthStatus]);
-
+  
+  
   // Render loading state
   if (componentState.isLoading) {
     return (
