@@ -14,7 +14,7 @@ const GoogleCallback = () => {
       const handleCallback = async () => {
         const params = new URLSearchParams(location.search);
         const authCode = params.get('code');  // Extract the 'code' from the URL
-        console.log("this is the code", authCode);
+        // console.log("this is the code", authCode);
         if (authCode) {
           try {
             // Send the authorization code to your backend to exchange for tokens
@@ -29,7 +29,7 @@ const GoogleCallback = () => {
               }
               
             );
-            console.log("this is the response", response.data);
+            // console.log("this is the response", response.data);
             
           // Check the response status and data
           if (response.data.status === 'success') {
