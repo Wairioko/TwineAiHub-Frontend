@@ -1,65 +1,80 @@
-import { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../src/authProvider';
-import Cookies from 'js-cookie';
 import axios from 'axios';
 
-
 const GoogleCallback = () => {
-    const { checkAuthStatus } = useContext(AuthContext);
-    const navigate = useNavigate();
-    const location = useLocation();
-  
-    useEffect(() => {
-      const handleCallback = async () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { checkAuthStatus } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleCallback = async () => {
+      try {
         const params = new URLSearchParams(location.search);
-        const authCode = params.get('code');  // Extract the 'code' from the URL
-        console.log("this is the code", authCode);
-        console.log('Location search:', location.search); 
+        const authCode = params.get('code');
+
         if (authCode) {
           try {
-            // Send the authorization code to your backend to exchange for tokens
             const response = await axios.post(
-              `${process.env.REACT_APP_AWS_URL}/auth/google/callback`, 
+              `${process.env.REACT_APP_AWS_URL}/auth/google/callback`,
               { code: authCode },
-              { 
-                withCredentials: true, // Important for handling cookies from the server
+              {
+                withCredentials: true,
                 headers: {
                   'Content-Type': 'application/json',
                 }
               }
-              
             );
-            // console.log("this is the response", response.data);
-            console.log('Response from server:', response.data);
-          // Check the response status and data
-          if (response.data.status === 'success') {
-            // Tokens are set by the server, attempt to check authentication status
-            try {
+
+            if (response.data.status === 'success') {
               await checkAuthStatus();
               navigate('/');
-            } catch (error) {
-              console.error('Authentication check failed:', error);
+            } else {
+              setError('Authentication failed');
               navigate('/login');
             }
-          } else {
-            // Response indicates authentication failure
-            console.error('Authentication failed:', response.data.message);
+          } catch (serverError) {
+            setError('Server error during authentication');
+            console.error('Server request error:', serverError);
             navigate('/login');
           }
-          } catch (error) {
-            console.error('Error during token exchange:', error);
-            navigate('/login');
-          }
+        } else {
+          setError('No authorization code found');
+          navigate('/login');
         }
-      };
-  
-      handleCallback();
-    }, [location.search, navigate, checkAuthStatus]);
-  
-    return <div>Completing authentication...</div>;
-  };
-  
-  
-  export default GoogleCallback;
+      } catch (error) {
+        setError('Unexpected error in callback');
+        console.error('Unexpected error:', error);
+        navigate('/login');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    handleCallback();
+  }, [location.search, navigate, checkAuthStatus]);
+
+  if (isLoading) {
+    return (
+      <div className="callback-container">
+        <div className="loading-spinner"></div>
+        <p>Completing authentication...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="callback-container error">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export default GoogleCallback;
