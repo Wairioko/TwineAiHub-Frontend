@@ -37,7 +37,7 @@ export const GoogleLoginButton = () => {
       console.log('Google Sign-In Successful:', serverResponse.data);
       
       // Optionally navigate to a dashboard or home page
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       // Handle login error
       console.error('Google Sign-In Error:', error.response ? error.response.data : error);
