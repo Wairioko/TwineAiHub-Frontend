@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { AuthContext } from "../../authProvider";
 
 
 export const GoogleLoginButton = () => {
@@ -35,6 +36,8 @@ export const GoogleLoginButton = () => {
 
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
+      const { checkAuthStatus } = useContext(AuthContext);
+      await checkAuthStatus();
       
       // Optionally navigate to a dashboard or home page
       navigate('/');
