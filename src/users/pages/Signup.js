@@ -7,6 +7,7 @@ import { useContext } from "react";
 
 export const GoogleLoginButton = () => {
   const navigate = useNavigate();
+  const { checkAuthStatus } = useContext(AuthContext);
 
   const handleGoogleLogin = () => {
     // Initialize Google Sign-In
@@ -37,7 +38,7 @@ export const GoogleLoginButton = () => {
 
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
-      const { checkAuthStatus } = useContext(AuthContext);
+      
       await checkAuthStatus();
       
       // Optionally navigate to a dashboard or home page
