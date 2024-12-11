@@ -4,6 +4,11 @@ import { AuthContext } from '../../src/authProvider';
 import axios from 'axios';
 
 const GoogleCallback = () => {
+  console.log('COMPONENT MOUNTED: GoogleCallback'); // Add this at the top of the component
+
+  // Log environment variable
+  console.log('Backend URL:', process.env.REACT_APP_AWS_URL);
+
   const [componentState, setComponentState] = useState({
     isLoading: true,
     authCode: null,
