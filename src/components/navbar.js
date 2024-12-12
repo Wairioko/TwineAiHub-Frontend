@@ -33,8 +33,8 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
         {!isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
-            <NavLink to="/login" onClick={() => {auth.signinRedirect(); onClose()}}>Login</NavLink>
-            <NavLink to="/signup" onClick={() => {auth.signinRedirect(); onClose()}}>Sign Up</NavLink>
+            <NavLink to="/login" onClick={onClose}>Login</NavLink>
+            <NavLink to="/signup" onClick={onClose}>Sign Up</NavLink>
           </div>
         ) : (
           <>
@@ -167,10 +167,10 @@ const Navbar = () => {
       >
         {!isAuthenticated ? (
           <div className="auth-buttons">
-            <NavLink to="/login" onClick={() => {setIsMenuOpen(false); auth.signinRedirect();}}>
+            <NavLink to="/login" onClick={() => setIsMenuOpen(false)}>
               Login
             </NavLink>
-            <NavLink to="/signup" onClick={() => {setIsMenuOpen(false); auth.signinRedirect();}}>
+            <NavLink to="/signup" onClick={() => setIsMenuOpen(false)}>
               Sign Up
             </NavLink>
           </div>
