@@ -125,7 +125,7 @@ const AuthProvider = ({ children }) => {
             user,
             loading,
             handleLogout,
-            checkAuthStatus
+            checkAuthStatus, setIsAuthenticated, setUser
         }}>
             {children}
         </AuthContext.Provider>
