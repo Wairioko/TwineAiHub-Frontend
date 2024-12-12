@@ -61,8 +61,7 @@ const AuthProvider = ({ children }) => {
     
             const data = response.data;
 
-            console.log("this is a json checkauth status response", data);
-    
+         
             // Update auth status based on response data
             if (data.isAuthenticated || data.isSubscribed) {
                 setIsSubscribed(data.isSubscribed);
