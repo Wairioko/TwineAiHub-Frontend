@@ -30,7 +30,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {!isAuthenticated ? (
+        {isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={onClose}>Login</NavLink>
@@ -46,7 +46,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
             </div>
 
             <div className="divider"></div>
-            <div className="logout-section">
+            <div className="sidebar-button">
               <button onClick={handleLogout}>Sign out</button>
             </div>
 
