@@ -58,10 +58,9 @@ const AuthProvider = ({ children }) => {
                     'Content-Type': 'application/json'
                 }
             });
-    
-            const data = response.data;
 
-         
+            const data = JSON.parse(response.data.body);
+
             // Update auth status based on response data
             if (data.isAuthenticated || data.isSubscribed) {
                 setIsSubscribed(data.isSubscribed);
