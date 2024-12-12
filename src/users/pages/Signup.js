@@ -39,7 +39,7 @@ export const GoogleLoginButton = () => {
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
       
-      await checkAuthStatus();
+      checkAuthStatus();
       
       //navigate to a dashboard or home page
       navigate('/');
