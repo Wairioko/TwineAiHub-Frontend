@@ -3,25 +3,25 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { AuthProvider } from 'react-oidc-context';
+// import { AuthProvider } from 'react-oidc-context';
 
-const cognitoAuthConfig = {
-  authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_LTkM1F1HZ",
-  client_id: "7hljljjtpgrqr26m8ssdiv9775",
-  redirect_uri: "https://twineaihub.com/",
-  response_type: "code",
-  scope: "email openid profile",
-};
-
-
+// const cognitoAuthConfig = {
+//   authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_LTkM1F1HZ",
+//   client_id: "7hljljjtpgrqr26m8ssdiv9775",
+//   redirect_uri: "https://twineaihub.com/",
+//   response_type: "code",
+//   scope: "email openid profile",
+// };
 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+
+
+// const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider {...cognitoAuthConfig}>
+    {/* <AuthProvider {...cognitoAuthConfig}> */}
     <App />
-    </AuthProvider>
+    {/* </AuthProvider> */}
   </React.StrictMode>
 );
 
