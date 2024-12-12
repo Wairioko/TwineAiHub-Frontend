@@ -22,7 +22,7 @@ import { SubscriptionManagement } from './subscribe/page/subscriptionManagement'
 import TermsAndConditions from './privacy-terms/pages/terms-conditions';
 import PrivacyTerms from './privacy-terms/pages/privacy-terms';
 import RefundConditions from './privacy-terms/pages/refund-conditions';
-import { useAuth } from 'react-oidc-context';
+
 
 
 
