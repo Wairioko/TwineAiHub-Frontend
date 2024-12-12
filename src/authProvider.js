@@ -75,10 +75,9 @@ const AuthProvider = ({ children }) => {
     
             setLoading(false);
     
-            // Redirect to home if on the callback route
-            if (window.location.pathname === '/google/auth/callback') {
-                navigate('/');
-            }
+            
+            navigate('/');
+            
         } catch (error) {
             console.error('Error checking auth status:', error);
             setIsAuthenticated(false);
@@ -87,7 +86,7 @@ const AuthProvider = ({ children }) => {
             setLoading(false);
 
         }
-    }, [navigate]);
+    }, []);
     
 
     // Separate function to handle initial auth check

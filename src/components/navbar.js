@@ -14,7 +14,6 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const { handleDeleteChat } = useDeleteChat();
   const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
 
-  checkAuthStatus()
  
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
@@ -114,7 +113,6 @@ const Navbar = () => {
   const [ chatHistory, setChatHistory ] = useState([]);
   const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
-  checkAuthStatus()
 
   // Fetch chats 
   const { chats } = useGetHistory(isAuthenticated);
