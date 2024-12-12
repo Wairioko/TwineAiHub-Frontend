@@ -14,6 +14,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const { handleDeleteChat } = useDeleteChat();
   const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
 
+  checkAuthStatus()
  
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
@@ -30,7 +31,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {isAuthenticated ? (
+        {!isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={onClose}>Login</NavLink>
@@ -46,8 +47,8 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
             </div>
 
             <div className="divider"></div>
-            <div className="sidebar-button">
-              <button onClick={handleLogout}>Sign out</button>
+            <div>
+              <button className="sidebar-button" onClick={handleLogout}>Sign out</button>
             </div>
 
             <div className="divider"></div>
@@ -110,9 +111,10 @@ const NavLink = ({ to, onClick, children }) => (
 );
 
 const Navbar = () => {
-  const [chatHistory, setChatHistory] = useState([]);
+  const [ chatHistory, setChatHistory ] = useState([]);
   const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [ isMenuOpen, setIsMenuOpen ] = useState(false);
+  checkAuthStatus()
 
   // Fetch chats 
   const { chats } = useGetHistory(isAuthenticated);
