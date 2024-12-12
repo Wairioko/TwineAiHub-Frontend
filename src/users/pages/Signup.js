@@ -7,7 +7,7 @@ import { useContext } from "react";
 
 export const GoogleLoginButton = () => {
   const navigate = useNavigate();
-  const { checkAuthStatus } = useContext(AuthContext);
+  const { checkAuthStatus, setIsAuthenticated, setUser } = useContext(AuthContext);
 
   const handleGoogleLogin = () => {
     // Initialize Google Sign-In
@@ -38,9 +38,9 @@ export const GoogleLoginButton = () => {
 
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
-      
-      checkAuthStatus();
-      
+      checkAuthStatus()      
+      setIsAuthenticated(true)
+      setUser(serverResponse.data);
       //navigate to a dashboard or home page
       navigate('/');
     } catch (error) {
@@ -119,3 +119,4 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+
