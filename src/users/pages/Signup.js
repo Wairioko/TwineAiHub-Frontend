@@ -41,7 +41,7 @@ export const GoogleLoginButton = () => {
       
       await checkAuthStatus();
       
-      // Optionally navigate to a dashboard or home page
+      //navigate to a dashboard or home page
       navigate('/');
     } catch (error) {
       // Handle login error
