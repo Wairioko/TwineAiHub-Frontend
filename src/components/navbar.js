@@ -12,7 +12,7 @@ import useDeleteChat from '../home/hooks/useDeleteChat.js';
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const auth = AuthContext();
+  const auth = AuthContext;
 
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
@@ -110,7 +110,7 @@ const NavLink = ({ to, onClick, children }) => (
 
 const Navbar = () => {
   const [chatHistory, setChatHistory] = useState([]);
-  const auth = AuthContext();
+  const auth = AuthContext;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Fetch chats 

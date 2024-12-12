@@ -7,7 +7,7 @@ import { useContext } from "react";
 
 export const GoogleLoginButton = () => {
   const navigate = useNavigate();
-  const { checkAuthStatus } = useContext(AuthContext());
+  const { checkAuthStatus } = useContext(AuthContext);
 
   const handleGoogleLogin = () => {
     // Initialize Google Sign-In
