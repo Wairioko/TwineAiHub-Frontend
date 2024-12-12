@@ -18,7 +18,7 @@ const GoogleCallback = () => {
   console.log('GoogleCallback Component State:', componentState);
   const navigate = useNavigate();
   const location = useLocation();
-  const { checkAuthStatus } = useContext(AuthContext);
+  const { checkAuthStatus } = useContext(AuthContext());
 
   useEffect(() => {
     // Log that the useEffect is triggered
