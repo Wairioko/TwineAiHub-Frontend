@@ -12,8 +12,9 @@ import useDeleteChat from '../home/hooks/useDeleteChat.js';
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const auth = AuthContext;
+  const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
 
+ 
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
       .then(() => {
@@ -29,7 +30,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {!auth.isAuthenticated ? (
+        {!isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={() => {auth.signinRedirect(); onClose()}}>Login</NavLink>
@@ -46,7 +47,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
 
             <div className="divider"></div>
             <div className="logout-section">
-              <button onClick={auth.handleLogout}>Sign out</button>
+              <button onClick={handleLogout}>Sign out</button>
             </div>
 
             <div className="divider"></div>
@@ -110,11 +111,11 @@ const NavLink = ({ to, onClick, children }) => (
 
 const Navbar = () => {
   const [chatHistory, setChatHistory] = useState([]);
-  const auth = AuthContext;
+  const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Fetch chats 
-  const { chats } = useGetHistory(auth.isAuthenticated);
+  const { chats } = useGetHistory(isAuthenticated);
 
   // Update chatHistory state when chats are fetched
   useEffect(() => {
@@ -164,7 +165,7 @@ const Navbar = () => {
         chatHistory={chatHistory}
         setChatHistory={setChatHistory} // Pass the function to update chat history
       >
-        {!auth.isAuthenticated ? (
+        {!isAuthenticated ? (
           <div className="auth-buttons">
             <NavLink to="/login" onClick={() => {setIsMenuOpen(false); auth.signinRedirect();}}>
               Login
@@ -174,7 +175,7 @@ const Navbar = () => {
             </NavLink>
           </div>
         ) : (
-          <button onClick={auth.handleLogout}>Logout</button>
+          <button onClick={handleLogout}>Logout</button>
         )}
       </Sidebar>
     </>
