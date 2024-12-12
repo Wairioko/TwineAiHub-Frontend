@@ -38,9 +38,10 @@ export const GoogleLoginButton = () => {
 
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
+      
       checkAuthStatus()      
       setIsAuthenticated(true)
-      setUser(serverResponse.data);
+      
       //navigate to a dashboard or home page
       navigate('/');
     } catch (error) {
