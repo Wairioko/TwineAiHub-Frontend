@@ -30,7 +30,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
       <div className="sidebar-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         
-        {isAuthenticated ? (
+        {!isAuthenticated ? (
           <div className="sidebar-links">
             <NavLink to="/" onClick={onClose}>Home</NavLink>
             <NavLink to="/login" onClick={onClose}>Login</NavLink>
@@ -165,7 +165,7 @@ const Navbar = () => {
         chatHistory={chatHistory}
         setChatHistory={setChatHistory} // Pass the function to update chat history
       >
-        {isAuthenticated ? (
+        {!isAuthenticated ? (
           <div className="auth-buttons">
             <NavLink to="/login" onClick={() => setIsMenuOpen(false)}>
               Login
