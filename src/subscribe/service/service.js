@@ -31,9 +31,10 @@ export const subscriptionService = {
   // Helper function for API requests
   const apiRequest = async (endpoint, options = {}) => {
     try {
-      axios.defaults.withCredentials = true;
+     
       const response = await fetch(endpoint, {
         ...options,
+        withCredentials: true,
         headers: {
           'Content-Type': 'application/json',
           ...options.headers,

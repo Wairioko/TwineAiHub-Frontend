@@ -1,7 +1,7 @@
 import axios from "axios";
 export const GetUserProfile = async () => {
     try {
-        axios.defaults.withCredentials = true;
+       
         const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/api/user/profile`, {
             withCredentials: true,
             headers: {

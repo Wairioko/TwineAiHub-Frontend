@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const userLogin = async (userData) => {
     try {
-        axios.defaults.withCredentials = true;
+       
         const response = await axios.post(
             `${process.env.REACT_APP_AWS_URL}/api/auth/login`,
             userData, 
@@ -29,7 +29,7 @@ export const userLogin = async (userData) => {
 
 export const userRegister = async (userData) => {
     try {
-        axios.defaults.withCredentials = true;
+      
         const response = await axios.post(
             `${process.env.REACT_APP_AWS_URL}/api/auth/signup`,
             userData, 

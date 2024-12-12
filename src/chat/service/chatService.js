@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const fetchChatDetails = async (chatId) => {
     try {
-        axios.defaults.withCredentials = true;
+       
         const url = `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`;
       
         const response = await axios.get(url, { 
@@ -29,7 +29,7 @@ export const fetchChatDetails = async (chatId) => {
 
 export const getChatByIdName = async (chatid, name) => {
     try {
-        axios.defaults.withCredentials = true;
+        
         const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/api/chat/${chatid}/${name}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export const getChatByIdName = async (chatid, name) => {
 
 export const sendFeedback = async (feedbackData) => {
     try {
-        axios.defaults.withCredentials = true;
+        
         const response = await axios.post(`${process.env.REACT_APP_AWS_URL}/api/chat/feedback`, 
             feedbackData, 
             {
@@ -103,7 +103,7 @@ export const sendFeedback = async (feedbackData) => {
 
 export const sendEditMessage = async (editData) => {
     try {
-        axios.defaults.withCredentials = true;
+        
         const response = await axios.put(
             `${process.env.REACT_APP_AWS_URL}/api/chat/edit`,
             editData, 
