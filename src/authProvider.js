@@ -75,11 +75,15 @@ const AuthProvider = ({ children }) => {
             }
     
             setLoading(false);
-    
-            
             navigate('/');
             
         } catch (error) {
+            if (error.response?.status === 401) {
+                console.warn('Unauthorized. Redirecting to login.');
+                setIsAuthenticated(false);
+                setUser(null);
+                setIsSubscribed(false);
+              }
             console.error('Error checking auth status:', error);
             setIsAuthenticated(false);
             setIsSubscribed(false);
