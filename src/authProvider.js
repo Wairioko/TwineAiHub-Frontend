@@ -65,7 +65,7 @@ const AuthProvider = ({ children }) => {
             // Update auth status based on response data
             if (data.isAuthenticated || data.isSubscribed) {
                 setIsSubscribed(data.isSubscribed);
-                setIsAuthenticated(data.isAuthenticated);
+                setIsAuthenticated(true);
                 setUser(data.user);
             } else {
                 setIsAuthenticated(false);
