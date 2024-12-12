@@ -32,15 +32,16 @@ export const GoogleLoginButton = () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          withCredentials: true // Important for handling cookies
+          withCredentials: true 
         }
       );
 
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
       
-      checkAuthStatus()      
       setIsAuthenticated(true)
+      await checkAuthStatus()      
+     
       
       //navigate to a dashboard or home page
       navigate('/');
