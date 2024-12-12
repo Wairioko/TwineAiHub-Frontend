@@ -79,7 +79,7 @@ const AuthProvider = ({ children }) => {
             
         } catch (error) {
             if (error.response?.status === 401) {
-                console.warn('Unauthorized. Redirecting to login.');
+                console.warn('Unauthorized. Please register to access more features.');
                 setIsAuthenticated(false);
                 setUser(null);
                 setIsSubscribed(false);
