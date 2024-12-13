@@ -39,8 +39,17 @@ export const GoogleLoginButton = () => {
 
       // Handle successful login
       console.log('Google Sign-In Successful:', serverResponse.data);
-      
-      await checkAuthStatus()      
+      console.log('Server response before checkAuthStatus:', serverResponse);
+    
+      // Wrapper to ensure the function is called
+      if (typeof checkAuthStatus === 'function') {
+        console.log('Calling checkAuthStatus');
+        await checkAuthStatus();
+        console.log('checkAuthStatus completed');
+      } else {
+        console.error('checkAuthStatus is not a function');
+      }
+      // await checkAuthStatus()      
     
       //navigate to a dashboard or home page
       navigate('/');
