@@ -49,7 +49,7 @@ export const GoogleLoginButton = () => {
       } else {
         console.error('checkAuthStatus is not a function');
       }
-      // await checkAuthStatus()      
+      await checkAuthStatus()      
     
       //navigate to a dashboard or home page
       navigate('/');
