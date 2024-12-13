@@ -58,13 +58,13 @@ const AuthProvider = ({ children }) => {
                     'Content-Type': 'application/json'
                 }
             });
-
-            console.log("the response", response.data)
-
+    
+            // Parse the body
             const data = JSON.parse(response.data.body);
-            console.log("the data", data)
+            console.log("Auth status data:", data);
+    
             // Update auth status based on response data
-            if (data.isAuthenticated || data.isSubscribed) {
+            if (data.isAuthenticated) {
                 setIsSubscribed(data.isSubscribed);
                 setIsAuthenticated(true);
                 setUser(data.user);
@@ -75,21 +75,12 @@ const AuthProvider = ({ children }) => {
             }
     
             setLoading(false);
-            navigate('/');
-            
         } catch (error) {
-            if (error.response?.status === 401) {
-                console.warn('Unauthorized. Please register to access more features.');
-                setIsAuthenticated(false);
-                setUser(null);
-                setIsSubscribed(false);
-              }
             console.error('Error checking auth status:', error);
             setIsAuthenticated(false);
             setIsSubscribed(false);
             setUser(null);
             setLoading(false);
-
         }
     }, []);
     
