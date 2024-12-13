@@ -8,6 +8,7 @@ import { useContext } from "react";
 export const GoogleLoginButton = () => {
   const navigate = useNavigate();
   const { checkAuthStatus } = useContext(AuthContext);
+  console.log("checkAuthStatus:", checkAuthStatus);
   
 
   const handleGoogleLogin = () => {
