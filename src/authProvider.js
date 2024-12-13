@@ -1,128 +1,66 @@
 import { createContext, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
 export const AuthContext = createContext();
 
+export const AuthProvider = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authToken, setAuthToken] = useState(null);
+  const [idToken, setIdToken] = useState(null);
+  const navigate = useNavigate();
 
-const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isSubscribed, setIsSubscribed] = useState(false);
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+  // Check the user's authentication status
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_AWS_URL}/auth/status`, // Example endpoint
+        { withCredentials: true }
+      );
+      
+      const { authToken, idToken } = response.data;
 
-    const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_AWS_URL,
-    withCredentials: true,
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+      if (authToken && idToken) {
+        setIsAuthenticated(true);
+        setAuthToken(authToken);
+        setIdToken(idToken);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Failed to check auth status:", error);
+      setIsAuthenticated(false);
     }
-    });
+  };
 
-    // Add request interceptor for debugging
-    axiosInstance.interceptors.request.use(
-    config => {
-        console.log('Request config:', config);
-        return config;
-    },
-    error => {
-        console.error('Request error:', error);
-        return Promise.reject(error);
+  // Log out the user and clear auth state
+  const logout = async () => {
+    try {
+      await axios.post(`${process.env.REACT_APP_AWS_URL}/auth/logout`, {}, { withCredentials: true });
+      setIsAuthenticated(false);
+      setAuthToken(null);
+      setIdToken(null);
+      navigate('/login'); // Redirect to login page
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
-    );
+  };
 
-    // Add response interceptor for debugging
-    axiosInstance.interceptors.response.use(
-    response => {
-        console.log('Response:', response);
-        return response;
-    },
-    error => {
-        console.error('Response error:', error);
-        if (error.response) {
-        console.error('Error response:', error.response);
-        }
-        return Promise.reject(error);
-    }
-    );
+  // Run on component mount to verify authentication
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
 
-
-    const checkAuthStatus = useCallback(async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/auth/status`, {
-                withCredentials: true,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            // Parse the body
-            const data = JSON.parse(response.data.body);
-            console.log("Auth status data:", data);
-    
-            // Update auth status based on response data
-            if (data.isAuthenticated) {
-                setIsSubscribed(data.isSubscribed);
-                setIsAuthenticated(true);
-                setUser(data.user);
-            } else {
-                setIsAuthenticated(false);
-                setIsSubscribed(false);
-                setUser(null);
-            }
-    
-            setLoading(false);
-        } catch (error) {
-            console.error('Error checking auth status:', error);
-            setIsAuthenticated(false);
-            setIsSubscribed(false);
-            setUser(null);
-            setLoading(false);
-        }
-    }, []);
-    
-
-    // Separate function to handle initial auth check
-    const initialAuthCheck = useCallback(async () => {
-        await checkAuthStatus();
-    }, [checkAuthStatus]);
-
-    useEffect(() => {
-        initialAuthCheck();
-    }, [initialAuthCheck]);
-
-    const handleLogout = useCallback(async () => {
-        try {
-            await axios.post(`${process.env.REACT_APP_AWS_URL}/auth/logout`, {}, {
-                withCredentials: true,
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            setIsAuthenticated(false);
-            setUser(null);
-            setIsSubscribed(false);
-            navigate('/');
-        }
-    }, [navigate]);
-    
-
-    return (
-        <AuthContext.Provider value={{
-            isAuthenticated,
-            user,
-            loading,
-            handleLogout,
-            checkAuthStatus, setIsAuthenticated, setUser
-        }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        authToken,
+        idToken,
+        checkAuthStatus,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
-
-
-export default AuthProvider;
-
