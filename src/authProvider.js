@@ -16,24 +16,28 @@ const AuthProvider = ({ children }) => {
         `${process.env.REACT_APP_AWS_URL}/auth/status`, 
         { withCredentials: true }
       );
-      
-      const { isAuthenticated } = response.data;
-      console.log("this is the tokens from response data", response.data)
-
+  
+      console.log("Raw response data:", response.data);
+  
+      // Parse the nested body
+      const parsedBody = JSON.parse(response.data.body);
+      console.log("Parsed response body:", parsedBody);
+  
+      const { isAuthenticated, isSubscribed, user, message } = parsedBody;
+  
       if (isAuthenticated) {
         setIsAuthenticated(true);
-        setAuthToken(authToken);
-        setIdToken(idToken);
-        console.log("User is authenticated")
+        console.log("User is authenticated:", user);
       } else {
         setIsAuthenticated(false);
+        console.log("User is not authenticated");
       }
     } catch (error) {
-      console.error("Failed to check auth status:", error);
+      console.error("Failed to check auth status:", error.message);
       setIsAuthenticated(false);
     }
   };
-
+  
   // Log out the user and clear auth state
   const logout = async () => {
     try {
