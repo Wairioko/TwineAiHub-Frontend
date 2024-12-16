@@ -17,10 +17,10 @@ const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
       
-      const { authToken, idToken } = response.data;
+      const { isAuthenticated } = response.data;
       console.log("this is the tokens from response data", response.data)
 
-      if (authToken && idToken) {
+      if (isAuthenticated) {
         setIsAuthenticated(true);
         setAuthToken(authToken);
         setIdToken(idToken);
