@@ -13,16 +13,18 @@ const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_AWS_URL}/auth/status`, // Example endpoint
+        `${process.env.REACT_APP_AWS_URL}/auth/status`, 
         { withCredentials: true }
       );
       
       const { authToken, idToken } = response.data;
+      console.log("this is the tokens from response data", response.data)
 
       if (authToken && idToken) {
         setIsAuthenticated(true);
         setAuthToken(authToken);
         setIdToken(idToken);
+        console.log("User is authenticated")
       } else {
         setIsAuthenticated(false);
       }
