@@ -17,25 +17,23 @@ const AuthProvider = ({ children }) => {
         { withCredentials: true }
       );
   
-      console.log("Raw response data:", response.data);
+     
   
       // First parse: Convert response.data.body (string) to an object
       const parsedBody = JSON.parse(response.data.body);
-      console.log("Parsed response body after first parse:", parsedBody);
-  
+    
       // Second parse: Convert nested parsedBody.body (string) to an object
       const finalBody = JSON.parse(parsedBody.body);
-      console.log("Final parsed body:", finalBody);
-  
+   
       // Extract data from finalBody
       const { isAuthenticated, isSubscribed, user, message } = finalBody;
   
       if (isAuthenticated) {
         setIsAuthenticated(true);
-        console.log("User is authenticated:", user);
+    
       } else {
         setIsAuthenticated(false);
-        console.log("User is not authenticated");
+     
       }
     } catch (error) {
       console.error("Failed to check auth status:", error.message);
