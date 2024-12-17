@@ -1271,12 +1271,7 @@
 
 
 
-.login-container {
-  max-width: 500px; /* Limit the size of the login container */
-  width: 100%; /* Make sure it takes up the available space */
-  padding: 20px;
-  box-sizing: border-box;
-}
+
 
 .preview-image {
   max-width: 50%;

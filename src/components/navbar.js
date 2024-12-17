@@ -14,7 +14,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const { handleDeleteChat } = useDeleteChat();
   const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
 
- 
+  checkAuthStatus()
   const deleteChat = (chatId) => {
     handleDeleteChat(chatId)
       .then(() => {
