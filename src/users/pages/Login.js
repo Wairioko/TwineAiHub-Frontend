@@ -20,13 +20,7 @@ export const LoginPage = () => {
     return (
         <div className="login-page">
             {/* Left section for image or slideshow */}
-            <div className="image-section">
-                <img
-                    src="/public/displaypage.jpg" // Replace with your image or slideshow component
-                    alt="App preview"
-                    className="preview-image"
-                />
-            </div>
+            <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
 
             {/* Right section for login form */}
             <div className="login-container">
