@@ -16,9 +16,13 @@ const useSignup = () => {
         e.preventDefault();
 
         // Ensure email is a company email
-        const companyEmailRegex = /^[\w.%+-]+@yourcompany\.com$/;
-        if (!companyEmailRegex.test(email)) {
-            setError('Please use your company email to register.');
+        // const companyEmailRegex = /^[\w.%+-]+@yourcompany\.com$/;
+        // if (!companyEmailRegex.test(email)) {
+        //     setError('Please use your company email to register.');
+        //     return;
+        // }
+        if(!email){
+            setError('Please enter your email');
             return;
         }
 
@@ -33,17 +37,19 @@ const useSignup = () => {
 
             // Call the user registration service
             const response = await userRegister(userData);
+            if(response.success){
+                 // If registration is successful
+                setSuccess(true);
+                setError('');
+                alert('Successfully registered');
+                
+                // Navigate to login page after a short delay
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
 
-            // If registration is successful
-            setSuccess(true);
-            setError('');
-            alert('Successfully registered');
-            
-            // Navigate to login page after a short delay
-            setTimeout(() => {
-                navigate('/login');
-            }, 1000);
-
+            }
+           
         } catch (error) {
             // Capture the error and display it
             setError(error.message);
