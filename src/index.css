@@ -1251,12 +1251,13 @@
 
 
 /* login page */
-/* Main container for the login page */
 .login-page {
   display: flex;
   flex-direction: row;
   height: 100vh;
   width: 100%;
+  justify-content: flex-start;
+  margin: 0;
 }
 
 /* Left section for the image or slideshow */
@@ -1286,7 +1287,7 @@
 /* Right section for the login form */
 .login-container {
   flex: 1;
-  max-width: 500px;
+  max-width: auto;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
