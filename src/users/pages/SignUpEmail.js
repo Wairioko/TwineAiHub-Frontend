@@ -20,6 +20,10 @@ function SignupEmail() {
   
 
   return (
+    <div className='email-signup'>
+
+    <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
+
     <div className="signup-container">
       <form onSubmit={handleSubmit} className="signup-form">
         <h2>Create Account</h2>
@@ -79,7 +83,9 @@ function SignupEmail() {
         <p>Already have an account? <a href="/login">Login</a></p>
       </form>
     </div>
+    </div>
   );
+
 }
 
 export default SignupEmail;
