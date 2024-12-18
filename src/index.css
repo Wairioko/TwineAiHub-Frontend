@@ -1280,156 +1280,219 @@
 }
 
 /* Right section for the login form */
-.login-container {
-  flex: 1;
-  max-width: auto;
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
+/* Main container for the login page */
+.login-page {
   display: flex;
+  align-items: stretch; /* Ensures both image and form match in height */
   justify-content: center;
-  align-items: center;
-  background-color: #ffffff; /* Background for the form */
-  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
+  width: 100vw; /* Ensures the container spans the full viewport width */
+  min-height: 100vh; /* Ensures it spans the full viewport height */
+  background-color: #f9f9f9;
 }
 
+/* Left section for image */
+.preview-image {
+  flex: 1; /* Image will take up half the container */
+  max-width: 50%; /* Restrict image size */
+  height: 100%; /* Ensures the image spans the full container height */
+  object-fit: cover; /* Ensures the image scales proportionally */
+  margin: 0; /* Removes margin around the image */
+}
+
+/* Right section for login form */
+.login-container {
+  flex: 1; /* Ensures the form takes up the other half of the container */
+  display: flex;
+  justify-content: center; /* Centers the login form horizontally */
+  align-items: center; /* Centers the login form vertically */
+  padding: 20px;
+}
+
+/* Login form container */
 .login {
-  width: 80%;
+  width: 100%;
   max-width: 400px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Header styling */
+.header {
+  margin-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
+  color: #333;
+}
+
+/* Error message styling */
+.error {
+  color: #d9534f;
+  font-size: 14px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
-.header {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-.error {
-  color: red;
-  margin-bottom: 1rem;
-}
-
+/* Loading message styling */
 .loading {
-  color: green;
-  margin-bottom: 1rem;
+  color: #007bff;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
 }
 
+/* Login form styling */
 .login-form {
-  margin-bottom: 1.5rem;
-}
-
-.email-label,
-.password-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.email-input,
-.password-input {
   width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Email input field styling */
+.email-label {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.email-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+}
+
+.email-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Password field styling */
+.password-field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.password-label {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.password-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+}
+
+.password-input:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 .toggle-password-btn {
-  margin-left: 1rem;
-  background: none;
+  padding: 10px;
+  font-size: 14px;
+  color: #007bff;
+  background-color: transparent;
   border: none;
-  color: blue;
   cursor: pointer;
 }
 
+/* Submit button styling */
 .submit-btn {
   width: 100%;
-  padding: 0.75rem;
+  padding: 10px;
+  font-size: 16px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
-.submit-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.submit-btn:hover {
+  background-color: #0056b3;
 }
 
+/* Sign-up options section */
 .signup-options {
-  margin-top: 1rem;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .login-span {
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: 10px;
+  font-size: 14px;
   color: #666;
-  font-size: 0.9rem;
 }
 
-/* Responsive Design: Small Screens */
+/* Google Login button styling */
+.google-login-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4285F4;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.google-login-button:hover {
+  background-color: #357AE8;
+}
+
+/* Responsive styles for small devices */
 @media (max-width: 768px) {
   .login-page {
-      flex-direction: column;
+      flex-direction: column; /* Stacks image and form vertically */
   }
 
-  .image-section {
-      height: 40%;
-      flex: 0 0 auto;
+  .preview-image {
+      max-width: 100%; /* Makes the image take full width on small screens */
+      display: block; /* Ensures the image is block-level */
+      height: auto; /* Adjusts the image height proportionally */
   }
 
   .login-container {
-      height: 60%;
-      flex: 0 0 auto;
-      box-shadow: none; /* Remove shadow for a cleaner mobile view */
+      padding: 15px;
   }
 
   .login {
       width: 90%;
+      max-width: none;
+      padding: 20px;
   }
 
   .header {
-      font-size: 1.5rem;
+      font-size: 24px;
   }
 
-  .email-input,
-  .password-input {
-      padding: 0.4rem;
-  }
-
-  .submit-btn {
-      font-size: 0.9rem;
-      padding: 0.6rem;
-  }
-}
-
-/* Extra Small Screens (Phones) */
-@media (max-width: 480px) {
-  .image-section {
-      height: 30%; /* Reduce the height further */
-  }
-
-  .login {
-      width: 100%; /* Use full width for smaller screens */
-  }
-
-  .header {
-      font-size: 1.3rem;
-  }
-
-  .email-input,
-  .password-input {
-      font-size: 0.9rem;
+  .login-form .email-input,
+  .login-form .password-input {
+      font-size: 13px;
+      padding: 8px;
   }
 
   .submit-btn {
-      font-size: 0.8rem;
-      padding: 0.5rem;
+      font-size: 14px;
+      padding: 8px;
   }
 }
-
 
 
 /* email signup page component */
