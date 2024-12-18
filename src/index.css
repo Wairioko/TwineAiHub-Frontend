@@ -1374,6 +1374,20 @@
   margin-top: 1rem;
 }
 
+
+.signup-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+
 .login-span {
   display: block;
   margin-bottom: 1rem;
