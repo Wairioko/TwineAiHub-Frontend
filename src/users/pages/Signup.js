@@ -87,7 +87,7 @@ export const GoogleLoginButton = () => {
   return (
     <button 
       id="googleSignInButton" 
-      className="signup-btn" 
+      className="form-group-btn-google" 
       onClick={handleGoogleLogin}
     >
       <span className="social-logo-wrapper">
@@ -106,22 +106,22 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="signup-options-container">
+    <div className="signup-container">
       <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
-
-      <div className="signup-card">
+      <div className="signup-form">
         <h2>Sign Up</h2>
-        <div className="signup-options">
-          <button className="signup-btn" onClick={redirectToEmailSignup}>
+        <button className="form-group-btn" onClick={redirectToEmailSignup}>
             Register with Email
           </button>
+        <div className="signup-options">
           
           <div className="separator">OR</div>
-
-          <GoogleLoginButton />
+          
         </div>
+        <GoogleLoginButton />
       </div>
     </div>
+
   );
 };
 

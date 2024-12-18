@@ -1250,15 +1250,6 @@
 }
 
 
-/* login page */
-.login-page {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  width: 100%;
-  justify-content: flex-start;
-  margin: 0;
-}
 
 /* Left section for the image or slideshow */
 .image-section {
@@ -1269,44 +1260,17 @@
   background-color: #f4f4f4; /* Light background for contrast */
 }
 
-
-
-
-
+/* 
 .preview-image {
   max-width: 50%;
   height: auto;
-  object-fit: cover; /* Ensures image scales well */
-}
+  object-fit: cover;
+} */
 
-/* Right section for the login form */
-/* Main container for the login page */
-.login-page {
-  display: flex;
-  align-items: stretch; /* Ensures both image and form match in height */
-  justify-content: center;
-  width: 100vw; /* Ensures the container spans the full viewport width */
-  min-height: 100vh; /* Ensures it spans the full viewport height */
-  background-color: #f9f9f9;
-}
 
-/* Left section for image */
-.preview-image {
-  flex: 1; /* Image will take up half the container */
-  max-width: 50%; /* Restrict image size */
-  height: 100%; /* Ensures the image spans the full container height */
-  object-fit: cover; /* Ensures the image scales proportionally */
-  margin: 0; /* Removes margin around the image */
-}
 
-/* Right section for login form */
-.login-container {
-  flex: 1; /* Ensures the form takes up the other half of the container */
-  display: flex;
-  justify-content: center; /* Centers the login form horizontally */
-  align-items: center; /* Centers the login form vertically */
-  padding: 20px;
-}
+
+
 
 /* Login form container */
 .login {
@@ -1345,6 +1309,10 @@
   text-align: center;
 }
 
+
+
+
+
 /* Login form styling */
 .login-page {
   display: flex;
@@ -1361,26 +1329,26 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
   padding: 20px;
   box-sizing: border-box;
   background-color: #fff;
   box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); /* Adds shadow similar to signup */
 }
 
+.preview-image {
+  flex: 1; /* Make the image take up available space */
+  height: 100%; /* Ensure the image matches the container's height */
+  object-fit: cover; /* Maintain aspect ratio and fill the area */
+}
 /* Login form container */
 .login {
-  flex: 1;
-  background-color: #fff;
-  padding: 20px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
+  max-width: 400px; /* Limit maximum width of the login form */
+  background: white; /* Ensure form stands out */
+  padding: 2rem; /* Space inside the login form */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Header styling */
@@ -1599,12 +1567,51 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
   border-color: #007bff;
   outline: none;
 }
+
+.form-group-btn{
+  width: 100%; /* Full width like the input */
+  padding: 10px;
+  font-size: 14px; /* Same font size as input for visual consistency */
+  color: white;
+  background-color: #007bff; /* Add a color for the button */
+  border: none;
+  height: auto;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
+  display: inline-block; /* Matches inline layout */
+
+}
+
+.form-group-btn-google {
+  height: auto;
+  width: 100%; /* Full width like the input */
+  padding: 10px;
+  font-size: 14px; /* Same font size as input for visual consistency */
+  color: white;
+  /* background-color: #007bff;  */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
+  display: inline-block; /* Matches inline layout */
+}
+
+
+.form-group-btn-google :hover{
+  background-color: #c3ddf5;
+}
+
+
 
 .error-msg {
   color: #d9534f;
@@ -1723,113 +1730,101 @@
 }
 
 
-
-/* signup */
-.signup-options-container {
-  flex: 1;
-  max-width: auto;
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
+.signup-container {
   display: flex;
+  align-items: stretch; /* Ensures image and content are equal in height */
   justify-content: center;
-  align-items: stretch;
-  background-color: #ffffff; 
-  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); 
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  padding: 0; /* No extra padding between sections */
+  font-family: Arial, sans-serif;
 }
 
+.preview-image {
+  width: 50%; /* Image takes up half the width */
+  height: auto;
+  object-fit: cover; /* Ensures proportional scaling without distortion */
+  border-radius: 10px 0 0 10px; /* Rounded corners on the left side */
+}
 
-
-/* Signup card container */
 .signup-card {
-  flex: 1;
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
+  flex: 1; /* Form occupies the remaining space */
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
+  flex-direction: column; /* Stacks heading and buttons vertically */
+  justify-content: center; /* Centers content vertically within the available space */
+  align-items: center; /* Centers content horizontally */
+  background: #fff;
+  padding: 30px;
+  border-radius: 0 10px 10px 0; /* Rounded corners on the right side */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-/* Signup header */
 .signup-card h2 {
   margin-bottom: 20px;
-  font-size: 1.8rem;
+  font-size: 24px;
   color: #333;
-  text-align: center;
-  align-self: stretch; 
 }
 
-/* Signup options container */
 .signup-options {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Space between the elements */
-  width: 100%; /* Stretch elements to full width */
-  max-width: 300px; /* Restrict max width of buttons */
+  align-items: center;
+  gap: 15px; /* Space between buttons and separator */
+  width: 100%; /* Ensures buttons span the full width of the form */
 }
 
-/* Signup button */
 .signup-btn {
-
-  background-color: #007bff; /* Primary blue color */
-  color: #fff;
-  border: none;
+  width: 100%; /* Full-width button */
   padding: 10px 20px;
-  font-size: 1rem;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
   border-radius: 5px;
-  cursor: pointer ;
-  transition: background-color 0.3s ease;
-  width: 100%; /* Full width */
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .signup-btn:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
 }
 
-/* Separator text (OR) */
 .separator {
-  font-size: 0.9rem;
-  color: #888;
+  font-size: 14px;
+  color: #666;
   margin: 10px 0;
-  text-transform: uppercase;
-  text-align: center;
 }
 
-/* Responsive Design for Small Devices */
+/* Responsive styles for small devices */
 @media (max-width: 768px) {
-  .signup-options-container {
-    flex-direction: column; /* Switch to column layout */
-    padding: 20px; /* Add spacing */
-    align-items: center; /* Center the content */
+  .signup-container {
+      flex-direction: column; /* Stacks the image and form vertically on small screens */
   }
 
   .preview-image {
-    display: none; /* Hide the image */
+      width: 100%; /* Image takes up full width */
+      height: auto;
+      border-radius: 10px; /* Full rounded corners */
+      margin-bottom: 20px; /* Space between image and form */
   }
 
   .signup-card {
-    flex: none; /* Remove flex behavior */
-    width: 100%; /* Take full width */
-    max-width: 400px; /* Restrict max width */
-    height: auto; /* Allow height to adjust based on content */
-    box-shadow: none; /* Remove shadow for a simpler design */
-  }
-
-  .signup-card h2 {
-    font-size: 1.5rem; /* Slightly smaller font size */
+      width: 100%;
+      padding: 20px;
+      border-radius: 10px; /* Full rounded corners */
+      box-shadow: none;
   }
 
   .signup-btn {
-    font-size: 0.9rem; /* Adjust button size */
-    padding: 10px; /* Keep button padding consistent */
+      font-size: 14px;
+      padding: 8px;
+  }
+
+  .separator {
+      font-size: 12px;
   }
 }
-
 
 /* Loading Spinner */
 .loading-spinner-container {

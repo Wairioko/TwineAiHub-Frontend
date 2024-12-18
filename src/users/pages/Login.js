@@ -18,65 +18,69 @@ export const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <div className="login-page">
-            {/* Left section for image or slideshow */}
+        <div className="signup-container">
+            
             <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
 
-            {/* Right section for login form */}
-            <div className="login-container">
+           
                 <div className="login">
-                    <h1 className="header">Login</h1>
-
+                
                     {error && <div className="error">{error}</div>}
                     {isLoading && <div className="loading">Loading...</div>}
 
                     <form onSubmit={handleSubmit} className="login-form">
-                        <div>
-                            <label className="email-label">Email:</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="email-input"
-                                required
-                            />
+                        <h1 className="header">Login</h1>
+                        <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            placeholder='Please enter your email.'
+                        />
                         </div>
-                        <div className="password-field">
-                            <label className="password-label">Password:</label>
-                            <input
+
+                        <div className="form-group">
+                        <label htmlFor="password">Password:</label>
+                        <input
                                 type={showPassword ? "text" : "password"}
                                 name="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="password-input"
+                                placeholder="Enter your password"
                                 required
                             />
-                            <button
-                                type="button"
-                                className="toggle-password-btn"
-                                onClick={() => setShowPassword(!showPassword)}
+                        <button
+                            type="button"
+                            className="toggle-password-btn"
+                            onClick={() => setShowPassword(!showPassword)}
                             >
-                                {showPassword ? "Hide" : "Show"}
-                            </button>
+                            {showPassword ? "Hide" : "Show"}
+                        </button>
                         </div>
-                        <div>
+
+                        
+                       
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="submit-btn"
+                                className="form-group-btn"
                             >
                                 Login
                             </button>
-                        </div>
+                   
                     </form>
                     <div className="signup-options">
-                        <span className="login-span">Or Continue With</span>
-                        <GoogleLoginButton />
+                    <div className="separator">OR</div>
+                    
                     </div>
+                    <GoogleLoginButton />
                 </div>
             </div>
-        </div>
+        
     );
 };
 
