@@ -1611,13 +1611,7 @@
   box-sizing: border-box; /* Include padding/border in width/height calculations */
 }
 
-/* Style for the image */
-.preview-image {
-  flex: 1; /* Take up equal space as the signup card */
-  height: 100%; /* Match the height of the container */
-  object-fit: cover; /* Maintain the image's aspect ratio */
-  display: block;
-}
+
 
 /* Signup card container */
 .signup-card {
