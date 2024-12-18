@@ -1435,15 +1435,16 @@
 /* email signup page component */
 
 .signup-container {
+  flex: 1;
+  max-width: auto;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
   display: flex;
-  align-items: stretch;
   justify-content: center;
-  min-height: 100vh;
-  background-color: #f9f9f9;
-  padding: 0px;
-  font-family: Arial, sans-serif;
-  gap: 0;
-  margin: 0;
+  align-items: center;
+  background-color: #ffffff; 
+  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); 
 }
 
 .preview-image {
