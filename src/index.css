@@ -1550,123 +1550,98 @@
 
 
 /* General styles for the signup container */
-.signup-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: auto;
-  width: 100%;
-  margin: 0 auto;
-  flex: 1;
-  padding: 20;
-  box-sizing: border-box;
-  height: 100vh;
-
-}
-
-
-/* Page container styles */
+/* Container for the whole page */
 .signup-options-container {
   display: flex;
-  justify-content: center;
-  padding: 10px;
-  background-color: #f9f9f9;
-  min-height: 100vh;
-  align-items: center;
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  height: 100vh; /* Full viewport height */
+  width: 100%; /* Full viewport width */
+  margin: 0; /* Remove any default margins */
+  flex-direction: row; /* Row layout for larger screens */
 }
 
-/* Title styling */
-.signup-options-container h2 {
-  font-size: 28px;
-  color: #333;
+/* Style for the image */
+.preview-image {
+  max-width: 50%; /* Restrict the image to 50% of the page width */
+  height: 100%; /* Let the image fill the vertical space */
+  object-fit: cover; /* Maintain the aspect ratio and cover the container */
+}
+
+/* Signup card container */
+.signup-card {
+  flex-grow: 1; /* Take up the remaining space after the image */
+  max-width: 400px; /* Restrict the signup card width */
+  padding: 20px;
+  box-sizing: border-box; /* Include padding in the element's total width */
+  background-color: #fff; /* White background for the card */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for a card effect */
+  border-radius: 10px; /* Rounded corners */
+  text-align: center; /* Center align the text */
+}
+
+/* Signup header */
+.signup-card h2 {
   margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333;
 }
 
 /* Signup options container */
 .signup-options {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  align-items: center;
-  gap: 15px;
+  gap: 15px; /* Space between the elements */
 }
 
-/* OR separator */
-.separator {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  text-align: center;
-  color: #999;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.separator::before,
-.separator::after {
-  content: "";
-  flex: 1;
-  border-bottom: 1px solid #ccc;
-  margin: 0 10px;
-}
-
-/* Button styles */
+/* Signup button */
 .signup-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px;
-  width: 100%;
-  background-color: #ffffff;
-  border: 2px solid #ccc;
-  border-radius: 15px;
-  font-size: 16px;
-  color: #333;
+  background-color: #007bff; /* Primary blue color */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 .signup-btn:hover {
-  background-color: #34bdf3;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  color: white;
+  background-color: #0056b3; /* Darker blue on hover */
 }
 
-/* Google logo styling */
-.social-logo-wrapper {
-  display: flex;
-  align-items: center;
-  margin-right: 10px;
+/* Separator text (OR) */
+.separator {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 10px 0;
+  text-transform: uppercase;
 }
 
-.social-logo {
-  width: 20px;
-  height: 20px;
-}
-
-.social-text {
-  flex-grow: 1;
-  text-align: center;
-}
-
-/* Responsive behavior */
+/* Responsive Design for Small Devices */
 @media (max-width: 768px) {
-  .signup-options {
-    width: 90%;
+  .signup-options-container {
+    flex-direction: column; /* Switch to column layout */
+    padding: 20px;
+  }
+
+  .preview-image {
+    display: none; /* Hide the image on small screens */
+  }
+
+  .signup-card {
+    max-width: 100%; /* Allow the signup card to take the full width */
+    padding: 20px; /* Add some padding for better spacing */
+    box-shadow: none; /* Remove shadow for a simpler design */
+  }
+
+  .signup-card h2 {
+    font-size: 1.5rem; /* Slightly smaller font size for smaller screens */
   }
 
   .signup-btn {
-    padding: 14px;
-    font-size: 14px;
-  }
-
-  .signup-options-container h2 {
-    font-size: 1.75rem;
+    font-size: 0.9rem; /* Adjust button size */
+    padding: 10px; /* Keep button padding consistent */
   }
 }
 
