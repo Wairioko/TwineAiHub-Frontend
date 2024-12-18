@@ -1435,11 +1435,12 @@
 /* signup page component */
 .signup-container {
   display: flex;
-  flex-direction: row; /* Ensure the form and image are side-by-side */
+  flex-direction: row; 
   justify-content: space-between;
-  align-items: stretch; /* Match the height of child elements */
-  height: 100vh; /* Full viewport height */
-  padding: 0; /* Remove padding to eliminate unwanted space */
+  align-items: stretch; 
+  height: 100vh; 
+  margin: 0;
+  padding: 0; 
   box-sizing: border-box;
   background-color: #fff;
 }
@@ -1447,15 +1448,15 @@
 
 /* Signup form container */
 .signup-form {
-  flex: 1; /* Equal width as the image */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
+  justify-content: center;
+  margin: 0;
   padding: 2rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-left: 1px solid #ddd; /* Optional: Add a separator line */
-  max-width: 500px; /* Ensure it doesn't stretch too much */
+  border-left: 1px solid #ddd; 
+  max-width: 500px; 
   box-sizing: border-box;
 }
 
@@ -1523,30 +1524,30 @@
 /* Responsive Design for Small Devices */
 @media (max-width: 768px) {
   .signup-container {
-    flex-direction: column; /* Stack the image and form vertically */
+    flex-direction: column; 
     justify-content: flex-start;
     align-items: center;
   }
 
   .preview-image {
-    display: none; /* Hide the image on smaller devices */
+    display: none; 
   }
 
   .signup-form {
-    width: 100%; /* Take full width */
-    max-width: 400px; /* Restrict max width */
-    border-left: none; /* Remove separator for simplicity */
-    box-shadow: none; /* Simplify design for smaller screens */
+    width: 100%; 
+    max-width: 400px; 
+    border-left: none; 
+    box-shadow: none; 
     padding: 1.5rem;
   }
 
   .signup-form h2 {
-    font-size: 1.5rem; /* Adjust font size for smaller devices */
+    font-size: 1.5rem; 
   }
 
   .form-group input {
-    font-size: 14px; /* Adjust input font size */
-    padding: 8px; /* Adjust padding */
+    font-size: 14px; 
+    padding: 8px; 
   }
 
   .submit-btn {
