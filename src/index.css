@@ -1436,7 +1436,7 @@
 
 .signup-container {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   min-height: 100vh;
   background-color: #f9f9f9;
