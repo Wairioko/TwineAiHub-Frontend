@@ -1549,35 +1549,40 @@
 
 
 
-/* General styles for the signup container */
-/* Container for the whole page */
+/* signup */
 .signup-options-container {
   display: flex;
   justify-content: center; /* Center the content horizontally */
-  align-items: center; /* Center the content vertically */
+  align-items: stretch; /* Stretch items to match the container height */
   height: 100vh; /* Full viewport height */
-  width: 100%; /* Full viewport width */
-  margin: 0; /* Remove any default margins */
+  margin: 0; /* Remove any extra margin */
+  padding: 0; /* Remove padding */
   flex-direction: row; /* Row layout for larger screens */
+  width: 100%; /* Full width */
+  box-sizing: border-box; /* Include padding/border in width/height calculations */
 }
 
 /* Style for the image */
 .preview-image {
-  max-width: 50%; /* Restrict the image to 50% of the page width */
-  height: 100%; /* Let the image fill the vertical space */
-  object-fit: cover; /* Maintain the aspect ratio and cover the container */
+  flex: 1; /* Take up equal space as the signup card */
+  height: 100%; /* Match the height of the container */
+  object-fit: cover; /* Maintain the image's aspect ratio */
+  display: block;
 }
 
 /* Signup card container */
 .signup-card {
-  flex-grow: 1; /* Take up the remaining space after the image */
-  max-width: 400px; /* Restrict the signup card width */
-  padding: 20px;
-  box-sizing: border-box; /* Include padding in the element's total width */
+  flex: 1; /* Take up equal space as the image */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center the content */
+  align-items: center; /* Horizontally center the content */
+  padding: 20px; /* Add spacing inside the card */
   background-color: #fff; /* White background for the card */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for a card effect */
-  border-radius: 10px; /* Rounded corners */
-  text-align: center; /* Center align the text */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for the card */
+  border-radius: 0; /* No border radius to align with image */
+  height: 100%; /* Match the height of the container */
+  box-sizing: border-box;
 }
 
 /* Signup header */
@@ -1585,6 +1590,7 @@
   margin-bottom: 20px;
   font-size: 1.8rem;
   color: #333;
+  text-align: center;
 }
 
 /* Signup options container */
@@ -1592,6 +1598,8 @@
   display: flex;
   flex-direction: column;
   gap: 15px; /* Space between the elements */
+  width: 100%; /* Stretch elements to full width */
+  max-width: 300px; /* Restrict max width of buttons */
 }
 
 /* Signup button */
@@ -1604,6 +1612,7 @@
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%; /* Full width */
 }
 
 .signup-btn:hover {
@@ -1616,27 +1625,31 @@
   color: #888;
   margin: 10px 0;
   text-transform: uppercase;
+  text-align: center;
 }
 
 /* Responsive Design for Small Devices */
 @media (max-width: 768px) {
   .signup-options-container {
     flex-direction: column; /* Switch to column layout */
-    padding: 20px;
+    padding: 20px; /* Add spacing */
+    align-items: center; /* Center the content */
   }
 
   .preview-image {
-    display: none; /* Hide the image on small screens */
+    display: none; /* Hide the image */
   }
 
   .signup-card {
-    max-width: 100%; /* Allow the signup card to take the full width */
-    padding: 20px; /* Add some padding for better spacing */
+    flex: none; /* Remove flex behavior */
+    width: 100%; /* Take full width */
+    max-width: 400px; /* Restrict max width */
+    height: auto; /* Allow height to adjust based on content */
     box-shadow: none; /* Remove shadow for a simpler design */
   }
 
   .signup-card h2 {
-    font-size: 1.5rem; /* Slightly smaller font size for smaller screens */
+    font-size: 1.5rem; /* Slightly smaller font size */
   }
 
   .signup-btn {
