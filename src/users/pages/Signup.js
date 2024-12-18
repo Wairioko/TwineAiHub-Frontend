@@ -107,7 +107,7 @@ const SignupPage = () => {
 
   return (
     <div className="signup-container">
-      <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
+      <img src="/displaypage.png" alt="App preview" className="preview-image" />
       <div className="signup-form">
         <h2>Sign Up</h2>
         <button className="form-group-btn" onClick={redirectToEmailSignup}>

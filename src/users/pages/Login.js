@@ -20,7 +20,7 @@ export const LoginPage = () => {
     return (
         <div className="signup-container">
             
-            <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
+            <img src="/displaypage.png" alt="App preview" className="preview-image" />
 
            
                 <div className="login">

@@ -22,7 +22,7 @@ function SignupEmail() {
   return (
 
     <div className="signup-container">
-      <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
+      <img src="/displaypage.png" alt="App preview" className="preview-image" />
 
       <form onSubmit={handleSubmit} className="signup-form">
         <h2>Create Account</h2>
