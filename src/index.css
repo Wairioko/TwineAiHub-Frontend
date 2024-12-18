@@ -1591,6 +1591,7 @@
   font-size: 1.8rem;
   color: #333;
   text-align: center;
+  align-self: stretch; 
 }
 
 /* Signup options container */
