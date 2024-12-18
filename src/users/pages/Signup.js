@@ -37,10 +37,17 @@ export const GoogleLoginButton = () => {
         }
       );
 
-      await checkAuthStatus()      
+      
+      if(serverResponse.status === 200) {
+        await checkAuthStatus() 
+         //navigate to a dashboard or home page
+        navigate('/');
+
+      }
+
+          
     
-      //navigate to a dashboard or home page
-      navigate('/');
+     
     } catch (error) {
       // Handle login error
       console.error('Google Sign-In Error:', error.response ? error.response.data : error);
