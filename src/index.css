@@ -1550,7 +1550,6 @@
 
 
 /* General styles for the signup container */
-/* Card container styles */
 .signup-card {
   display: flex;
   flex-direction: column;
@@ -1559,10 +1558,17 @@
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
+  max-width: auto;
   width: 100%;
   margin: 0 auto;
+  flex: 1;
+  padding: 20;
+  box-sizing: border-box;
+
+
+
 }
+
 
 /* Page container styles */
 .signup-options-container {

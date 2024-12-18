@@ -8,8 +8,7 @@ import { useContext } from "react";
 export const GoogleLoginButton = () => {
   const navigate = useNavigate();
   const { checkAuthStatus } = useContext(AuthContext);
-  console.log("checkAuthStatus:", checkAuthStatus);
-  
+
 
   const handleGoogleLogin = () => {
     // Initialize Google Sign-In
@@ -38,18 +37,6 @@ export const GoogleLoginButton = () => {
         }
       );
 
-      // Handle successful login
-      console.log('Google Sign-In Successful:', serverResponse.data);
-      console.log('Server response before checkAuthStatus:', serverResponse);
-    
-      // Wrapper to ensure the function is called
-      if (typeof checkAuthStatus === 'function') {
-        console.log('Calling checkAuthStatus');
-        await checkAuthStatus();
-        console.log('checkAuthStatus completed');
-      } else {
-        console.error('checkAuthStatus is not a function');
-      }
       await checkAuthStatus()      
     
       //navigate to a dashboard or home page
@@ -113,6 +100,8 @@ const SignupPage = () => {
 
   return (
     <div className="signup-options-container">
+      <img src="/displaypage.jpg" alt="App preview" className="preview-image" />
+
       <div className="signup-card">
         <h2>Sign Up</h2>
         <div className="signup-options">
