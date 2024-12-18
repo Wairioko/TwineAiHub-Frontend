@@ -1435,36 +1435,41 @@
 /* signup page component */
 .signup-container {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  height: 100vh;
-  background-color: #f5f5f5;
-  flex: 1;
-  padding: 20px;
-  background-color: #fff; 
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
-  border-radius: 0; 
+  flex-direction: row; /* Ensure the form and image are side-by-side */
+  justify-content: space-between;
+  align-items: stretch; /* Match the height of child elements */
+  height: 100vh; /* Full viewport height */
+  padding: 0; /* Remove padding to eliminate unwanted space */
   box-sizing: border-box;
-  
-}
-
-.signup-form {
   background-color: #fff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  max-height: 100vh;
 }
 
+
+/* Signup form container */
+.signup-form {
+  flex: 1; /* Equal width as the image */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center content vertically */
+  align-items: center; /* Center content horizontally */
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-left: 1px solid #ddd; /* Optional: Add a separator line */
+  max-width: 500px; /* Ensure it doesn't stretch too much */
+  box-sizing: border-box;
+}
+
+/* Form header */
 .signup-form h2 {
   text-align: center;
   margin-bottom: 1.5rem;
+  font-size: 1.8rem;
   color: #333;
 }
 
+/* Form group styling */
 .form-group {
+  width: 100%;
   margin-bottom: 1rem;
 }
 
@@ -1481,8 +1486,10 @@
   border: 1px solid #ddd;
   border-radius: 5px;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
+/* Error and success messages */
 .error-msg {
   color: #ff4d4f;
   text-align: center;
@@ -1495,8 +1502,8 @@
   margin-top: 1rem;
 }
 
+/* Submit button */
 .submit-btn {
-  display: block;
   width: 100%;
   padding: 10px;
   background-color: #007bff;
@@ -1510,9 +1517,43 @@
 }
 
 .submit-btn:hover {
-  background-color: #4caf50;
+  background-color: #0056b3;
 }
 
+/* Responsive Design for Small Devices */
+@media (max-width: 768px) {
+  .signup-container {
+    flex-direction: column; /* Stack the image and form vertically */
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .preview-image {
+    display: none; /* Hide the image on smaller devices */
+  }
+
+  .signup-form {
+    width: 100%; /* Take full width */
+    max-width: 400px; /* Restrict max width */
+    border-left: none; /* Remove separator for simplicity */
+    box-shadow: none; /* Simplify design for smaller screens */
+    padding: 1.5rem;
+  }
+
+  .signup-form h2 {
+    font-size: 1.5rem; /* Adjust font size for smaller devices */
+  }
+
+  .form-group input {
+    font-size: 14px; /* Adjust input font size */
+    padding: 8px; /* Adjust padding */
+  }
+
+  .submit-btn {
+    font-size: 14px; /* Adjust button font size */
+    padding: 8px; /* Adjust button padding */
+  }
+}
 
 
 
