@@ -1444,7 +1444,12 @@
   font-family: Arial, sans-serif;
 }
 
-
+.preview-image {
+  max-width: 50%;
+  height: auto;
+  margin-right: 20px;
+  border-radius: 10px;
+}
 
 .signup-form {
   background: #fff;
