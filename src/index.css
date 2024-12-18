@@ -1440,24 +1440,31 @@
   justify-content: center;
   min-height: 100vh;
   background-color: #f9f9f9;
-  padding: 20px;
+  padding: 0px;
   font-family: Arial, sans-serif;
+  gap: 0;
 }
 
 .preview-image {
+  flex: 1;
   max-width: 50%;
   height: auto;
-  margin-right: 20px;
+  object-fit: cover; 
   border-radius: 10px;
 }
 
 .signup-form {
+  flex: 1;
   background: #fff;
   padding: 20px 30px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
 }
 
 .signup-form h2 {
