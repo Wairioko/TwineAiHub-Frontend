@@ -1288,9 +1288,9 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: center;
-  background-color: #ffffff; /* Background for the form */
-  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
+  align-items: stretch;
+  background-color: #ffffff; 
+  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); 
 }
 
 .login {
