@@ -1564,8 +1564,7 @@
   flex: 1;
   padding: 20;
   box-sizing: border-box;
-
-
+  height: 100vh;
 
 }
 
