@@ -1288,9 +1288,9 @@
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  align-items: stretch;
-  background-color: #ffffff; 
-  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); 
+  align-items: center;
+  background-color: #ffffff; /* Background for the form */
+  box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for effect */
 }
 
 .login {
@@ -1315,35 +1315,23 @@
 }
 
 .login-form {
-  flex: 1;
-  background: #fff;
-  padding: 20px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 0;
+  margin-bottom: 1.5rem;
 }
 
 .email-label,
 .password-label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
   font-weight: bold;
-  color: #555;
 }
 
 .email-input,
 .password-input {
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
   border: 1px solid #ccc;
-  border-radius: 5px;
-  transition: border-color 0.3s;
+  border-radius: 4px;
 }
 
 .toggle-password-btn {
@@ -1373,20 +1361,6 @@
 .signup-options {
   margin-top: 1rem;
 }
-
-
-.signup-btn {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
 
 .login-span {
   display: block;
