@@ -1,4 +1,19 @@
 import axios from "axios";
+import { useEffect } from "react";
+
+export const generateToken = async () => {
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/`);
+    if(response.statusCode === 200){
+      console.log("Welcome to TwineAiHub!");
+    }
+   
+  } catch (error) {
+    console.error('Error generating token:', error);
+  }
+};
+
+
 
 export const ProblemToAssistant = async (formData) => {
   try {
@@ -89,6 +104,7 @@ export const ProblemToModels = async (formData) => {
 
 export const getChatHistory = async () => {
   try {
+
       
       const response = await axios.get(`${process.env.REACT_APP_AWS_URL}/api/user/history`, {
           withCredentials: true, 
