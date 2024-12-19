@@ -18,7 +18,7 @@ export const UseLogin = () => {
             const response = await userLogin(data);
             
             
-            if (response.status === 200) { 
+            if (response.data.status === 200) { 
                
                 navigate('/', {replace: true}); 
             } else {

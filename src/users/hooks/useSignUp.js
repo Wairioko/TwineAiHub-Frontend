@@ -37,7 +37,7 @@ const useSignup = () => {
 
             // Call the user registration service
             const response = await userRegister(userData);
-            if(response.success){
+            if(response.data.status === 200){
                  // If registration is successful
                 setSuccess(true);
                 setError('');
