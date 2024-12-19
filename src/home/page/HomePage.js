@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useSendProblem from '../hooks/useSendProblemToAssisstant';
 import Dropdown from '../components/dropdown';
 import RoleInput from '../components/roleinput';
 import ReactMarkdown from 'react-markdown'
 import CookieBanner from '../../components/cookieBanner';
+import { generateToken } from '../service/service';
 
 
 const HomePage = () => {
@@ -23,6 +24,10 @@ const HomePage = () => {
         handleFileUpload,
         error
     } = useSendProblem();
+
+    useEffect(() => {
+        generateToken();
+    }, [])
 
     const handleModelSelect = (index, model) => {
         setSelectedModels(prevModels => {
@@ -59,6 +64,8 @@ const HomePage = () => {
             </label>
         </div>
     );
+
+
 
     const renderProblemInput = () => (
         <form className='problem-init'>
