@@ -286,7 +286,7 @@ const ChatPage = ({ handleRateLimitError }) => {
 
         const interval = setInterval(updateChatDetails, 5000); 
         return () => clearInterval(interval); 
-    }, [updateChatDetails]);
+    }, [chatId]);
 
     const uniqueModelResponses = modelResponses.data;
     const modelCount = uniqueModelResponses.length;
