@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useEffect } from "react";
 
 
 export const fetchChatDetails = async (chatId) => {
@@ -6,14 +7,14 @@ export const fetchChatDetails = async (chatId) => {
        
         const url = `${process.env.REACT_APP_AWS_URL}/api/chat/${chatId}`;
       
-        const response = await axios.get(url, { 
+        const response = useEffect(await axios.get(url, { 
             headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
             }, 
             withCredentials: true
             }
-        );
+        ), [chatId]);
          // Extract the response body
         const parsedBody = JSON.parse(response.data.body);
 
