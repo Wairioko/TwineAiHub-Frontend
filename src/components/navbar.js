@@ -12,7 +12,7 @@ import useDeleteChat from '../home/hooks/useDeleteChat.js';
 const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
   const navigate = useNavigate();
   const { handleDeleteChat } = useDeleteChat();
-  const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
+  const { isAuthenticated, user, loading, logout, checkAuthStatus } = useContext(AuthContext);
 
   checkAuthStatus()
   const deleteChat = (chatId) => {
@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, onClose, chatHistory, setChatHistory }) => {
 
             <div className="divider"></div>
             <div>
-              <button className="sidebar-button" onClick={handleLogout}>Sign out</button>
+              <button className="sidebar-button" onClick={logout}>Sign out</button>
             </div>
 
             <div className="divider"></div>
@@ -111,7 +111,7 @@ const NavLink = ({ to, onClick, children }) => (
 
 const Navbar = () => {
   const [ chatHistory, setChatHistory ] = useState([]);
-  const { isAuthenticated, user, loading, handleLogout, checkAuthStatus } = useContext(AuthContext);
+  const { isAuthenticated, user, loading, logout, checkAuthStatus } = useContext(AuthContext);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
 
   // Fetch chats 
@@ -175,7 +175,7 @@ const Navbar = () => {
             </NavLink>
           </div>
         ) : (
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={logout}>Logout</button>
         )}
       </Sidebar>
     </>
