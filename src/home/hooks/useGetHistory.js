@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import { getChatHistory } from "../service/service";
 
 const useGetHistory = (isAuthenticated) => {
