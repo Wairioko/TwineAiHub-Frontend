@@ -44,10 +44,12 @@ const AuthProvider = ({ children }) => {
   // Log out the user and clear auth state
   const logout = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_AWS_URL}/auth/logout`, {}, { withCredentials: true });
+      await axios.get(`${process.env.REACT_APP_AWS_URL}/auth/logout`, {}, { withCredentials: true });
       setIsAuthenticated(false);
       setAuthToken(null);
       setIdToken(null);
+      
+
       navigate('/login'); // Redirect to login page
     } catch (error) {
       console.error("Logout failed:", error);
