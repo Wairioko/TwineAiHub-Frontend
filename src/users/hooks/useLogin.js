@@ -12,16 +12,15 @@ export const UseLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setError(null);  // Reset error on each attempt
+        setError(null);  
         try {
             const data = {email, password};
             const response = await userLogin(data);
-            console.log(response);
             
-            if (response.token) {  // Check for token to confirm successful login
-                localStorage.setItem('token', response.token); 
-                navigate('/', {replace: true});
-                
+            
+            if (response.status === 200) { 
+               
+                navigate('/', {replace: true}); 
             } else {
                 setError('Login failed. Please check your credentials.');
             }
