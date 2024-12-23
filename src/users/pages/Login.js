@@ -1,7 +1,7 @@
 import React from "react";
 import { UseLogin } from "../hooks/useLogin";
 import { useState } from "react";
-import { GoogleLoginButton } from "./Signup";
+import { GoogleLoginButton } from "./googleSignUp";
 
 
 export const LoginPage = () => {

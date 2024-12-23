@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import useSignup from '../hooks/useSignUp'
 import { GoogleLoginButton } from './googleSignUp';
-
 function SignUp() {
     const {
         email,
