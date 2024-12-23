@@ -1,129 +1,95 @@
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import React from "react";
-import { AuthContext } from "../../authProvider";
-import { useContext } from "react";
+import React, { useState } from 'react';
+import useSignup from '../hooks/useSignUp'
+import { GoogleLoginButton } from './googleSignUp';
 
-
-export const GoogleLoginButton = () => {
-  const navigate = useNavigate();
-  const { checkAuthStatus } = useContext(AuthContext);
-
-
-  const handleGoogleLogin = () => {
-    // Initialize Google Sign-In
-    window.google.accounts.id.initialize({
-      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID, // Your Google Client ID
-      callback: handleCredentialResponse
-    });
-
-    // Prompt the Google Sign-In dialog
-    window.google.accounts.id.prompt();
-  };
-
-  const handleCredentialResponse = async (response) => {
-    try {
-      // Send the ID token to your backend
-      const serverResponse = await axios.post(
-        `${process.env.REACT_APP_AWS_URL}/auth/google`, 
-        { 
-          tokenId: response.credential 
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          withCredentials: true 
-        }
-      );
-
-      
-      if(serverResponse.status === 200) {
-        await checkAuthStatus() 
-         //navigate to a dashboard or home page
-        navigate('/');
-
-      }
-
-          
+function SignUp() {
+    const {
+        email,
+        setEmail,
+        password,
+        setPassword,
+        confirmPassword,
+        setConfirmPassword,
+        username,
+        setUsername,
+        error,
+        success,
+        handleSubmit
+      } = useSignup();
     
-     
-    } catch (error) {
-      // Handle login error
-      console.error('Google Sign-In Error:', error.response ? error.response.data : error);
-      
-      // Optionally show an error message to the user
-      alert('Failed to sign in. Please try again.');
-    }
-  };
-
-  // Add Google Sign-In script on component mount
-  React.useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
-      // Configure Google Sign-In
-      window.google.accounts.id.initialize({
-        client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-        callback: handleCredentialResponse
-      });
-
-      // Optional: Render the Google Sign-In button
-      window.google.accounts.id.renderButton(
-        document.getElementById('googleSignInButton'),
-        { theme: 'outline', size: 'large' }
-      );
-    };
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  
 
   return (
-    <button 
-      id="googleSignInButton" 
-      className="form-group-btn-google" 
-      onClick={handleGoogleLogin}
-    >
-      <span className="social-logo-wrapper">
-        <img className="social-logo" src="/src/google-logo.png" alt="Google logo" />
-      </span>
-      <span className="social-text">Continue with Google</span>
-    </button>
-  );
-};
 
-const SignupPage = () => {
-  const navigate = useNavigate();
-
-  const redirectToEmailSignup = () => {
-    navigate('/signup-email');
-  };
-
-  return (
     <div className="signup-container">
       <img src="/displaypage.png" alt="App preview" className="preview-image" />
-      <div className="signup-form">
-        <h2>Sign Up</h2>
-        <button className="form-group-btn" onClick={redirectToEmailSignup}>
-            Register with Email
-          </button>
-        <div className="signup-options">
-          
-          <div className="separator">OR</div>
-          
+
+      <form onSubmit={handleSubmit} className="signup-form">
+        <h2>Create Account</h2>
+
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder='username'
+            required
+          />
         </div>
+
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder='register using company email address only.'
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder='password'
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder='confirm password'
+            required
+          />
+        </div>
+
+        {error && <p className="error-msg">{error}</p>}
+        {success && <p className="success-msg">Registration successful!</p>}
+
+        <button type="submit" className="submit-btn">Sign Up</button>
+        <p>Already have an account? <a href="/login">Login</a></p>
+        <div className="separator">OR</div>
+          
         <GoogleLoginButton />
-      </div>
+      </form>
     </div>
-
+ 
   );
-};
 
-export default SignupPage;
+}
+
+
+export default SignUp;
 
