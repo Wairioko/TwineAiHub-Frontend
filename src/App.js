@@ -9,9 +9,7 @@ import ChatPage from './chat/page/chatpage';
 import SingleChatPage from './chat/page/singleChat';
 import { store, persistor } from './store/index';
 import { LoginPage } from './users/pages/Login';
-import SignupPage from './users/pages/Signup';
-import SignupEmail from './users/pages/SignUpEmail';
-import GoogleCallback from './auth/auth';
+import SignUp from './users/pages/Signup';
 import UsagePage from './usage/page/usagePage';
 import ProfilePage from './profile/page/Profile';
 import SubscriptionPage from './subscribe/page/subscribe';
@@ -60,9 +58,8 @@ function App() {
                 } 
               />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/signup-email" element={<SignupEmail />} />
-              <Route path="/google/auth/callback" element={<GoogleCallback />} />
+              <Route path="/signup" element={<SignUp />} />
+              
               <Route 
                 path="/user/usage" 
                 element={
