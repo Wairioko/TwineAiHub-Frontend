@@ -79,8 +79,9 @@ function SignUp() {
 
         <button type="submit" className="submit-btn">Sign Up</button>
         <p>Already have an account? <a href="/login">Login</a></p>
-        <div className="separator">OR</div>
-          
+        <div className="signup-options">
+          <div className="separator">OR</div>  
+        </div>
         <GoogleLoginButton />
       </form>
     </div>
