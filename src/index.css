@@ -48,7 +48,7 @@
 }
 
 .menu-toggle {
-  background: none;
+  background: #007BFF;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
@@ -110,14 +110,7 @@
   color: #ffffff;
 }
 
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #333333;
-  margin-left: auto;
-}
+
 
 /* Sidebar Styles */
 .sidebar {
@@ -217,6 +210,8 @@
 
   .menu-toggle {
     display: block;
+    background-color: #007BFF;
+    
   }
 }
 
@@ -643,7 +638,7 @@
 
   .menu-toggle {
     display: block;
-    background: none;
+    background: #007BFF;
     border: none;
     font-size: 30px;
     color: white;
