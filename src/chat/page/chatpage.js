@@ -318,7 +318,8 @@ const ChatPage = ({ handleRateLimitError }) => {
                     dataInitialized={!pageState.isInitialLoading}
                 />
             )}
-
+            <div className='scrollable-models-container'>
+                
             <div className="models-container">
                 {uniqueModelResponses.map(({ modelName, role, responses, loading }, index) => (
                     <IndividualModelResponse 
@@ -339,6 +340,8 @@ const ChatPage = ({ handleRateLimitError }) => {
                     />
                 ))}
             </div>
+        </div>
+        
         </div>
     );
 };
