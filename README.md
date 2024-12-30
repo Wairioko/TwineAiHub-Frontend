@@ -6,19 +6,19 @@ TwineAIHub is a dynamic SaaS platform allowing users to combine different AI mod
 
 ## Features
 
-- **AI Model Selection**: Easily interchange and assign tasks to various AI models.  
-- **Dynamic Workflow Management**: Flexible interface for combining models and task sequencing.  
-- **User Profiles**: Manage preferences and view task history.  
+-   **AI Model Selection**: Easily interchange and assign tasks to various AI models.
+-   **Dynamic Workflow Management**: Flexible interface for combining models and task sequencing.
+-   **User Profiles**: Manage preferences and view task history.
 
 ---
 
 ## Tech Stack
 
-- **React**  
-- **React Router** for navigation  
-- **Axios** for API calls  
-- **Styled-Components** for styling  
-- **Redux** (or Context API) for state management  
+-   **React**
+-   **React Router** for navigation
+-   **Axios** for API calls
+-   **Styled-Components** for styling
+-   **Redux** (or **Context API**) for state management
 
 ---
 
@@ -26,39 +26,48 @@ TwineAIHub is a dynamic SaaS platform allowing users to combine different AI mod
 
 ### Prerequisites
 
-- Node.js (v16.x or later)
-- npm or yarn package manager
+-   Node.js (v16.x or later)
+-   npm or yarn package manager
 
 ### Installation
 
- Clone the repository:
+1.  Clone the repository:
 
-   ```bash
-   git clone https://github.com/username/twineaihub-frontend.git
-   cd twineaihub-frontend
+    ```bash
+    git clone [https://github.com/username/twineaihub-frontend.git](https://github.com/username/twineaihub-frontend.git)
+    cd twineaihub-frontend
+    ```
 
-### Install dependencies:
+2.  Install dependencies:
 
+    ```bash
     npm install
+    ```
+
+3.  Start the development server:
+
+    ```bash
+    npm start
+    ```
+
+    Open the app in your browser at [http://localhost:3000](http://localhost:3000).
+
+### Environment Variables
+
+Create a `.env` file in the root directory and add the following environment variables:
 
 
-### Start the development server:
-
-
-### npm start
-Open the app in your browser at http://localhost:3000.
-
-Environment Variables
-Create a .env file in the root directory and add the following environment variables:
-    REACT_APP_PADDLE_VENDOR_ID=
-    REACT_APP_BASIC_WEEKLY_ID=
-    REACT_APP_STANDARD_MONTHLY_ID=
-    REACT_APP_PREMIUM_MONTHLY_ID=
-    REACT_APP_AWS_URL=
-    REACT_APP_WS_URL= 
-    REACT_APP_GOOGLE_CLIENT_ID=
-
-
+REACT_APP_PADDLE_VENDOR_ID=
+REACT_APP_BASIC_WEEKLY_ID=
+REACT_APP_STANDARD_MONTHLY_ID=
+REACT_APP_PREMIUM_MONTHLY_ID=
+REACT_APP_AWS_URL=
+REACT_APP_WS_URL=
+REACT_APP_GOOGLE_CLIENT_ID=
 REACT_APP_API_BASE_URL=http://your-backend-url.com/api
+
+**Note:** Replace `http://your-backend-url.com/api` with your actual backend URL. You'll also need to put your Paddle IDs, AWS URL, Web Socket URL and your Google Client ID.
+
 ### Deployment
+
 The frontend can be deployed on platforms like Netlify, Vercel, or AWS Amplify. Follow their documentation for deployment.
