@@ -21,7 +21,7 @@ const SubscriptionPage = () => {
       try {
         const paddleInstance = await initializePaddle({
           token: process.env.REACT_APP_PADDLE_TOKEN,
-          environment: "production",
+          environment: "sandbox",
           checkout: {
             settings: {
               displayMode: "overlay",
