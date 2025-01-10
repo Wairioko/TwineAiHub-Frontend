@@ -78,44 +78,50 @@ const SubscriptionPage = () => {
 
   const handleGetStarted = (plan, billingCycle) => {
     if (!paddleLoaded) {
-      console.error('Paddle is not loaded yet');
+      console.error("Paddle is not loaded yet");
       return;
     }
-
+  
     const productId = PRODUCT_IDS[plan]?.[billingCycle];
     if (!productId) {
       console.error(`No product ID found for plan: ${plan} and billing cycle: ${billingCycle}`);
       return;
     }
-
+  
+    console.log("Opening Paddle checkout with:", {
+      productId,
+      parentURL: window.location.href,
+    });
+  
     setProcessingPlan(plan);
-
+  
     try {
       window.Paddle.Checkout.open({
         product: productId,
-        email: undefined,
+        parentURL: window.location.href || "https://twineaihub.com/user/subscription",
         successCallback: (data) => {
           if (data?.subscription?.subscription_id) {
-            console.log('Checkout complete', data);
+            console.log("Checkout complete", data);
             subscribe(data.subscription.subscription_id);
           } else {
-            console.error('Missing subscription data in success callback');
+            console.error("Missing subscription data in success callback");
           }
           setProcessingPlan(null);
         },
         closeCallback: () => {
-          console.log('Checkout closed');
+          console.log("Checkout closed");
           setProcessingPlan(null);
         },
         loadCallback: () => {
-          console.log('Checkout loaded');
-        }
+          console.log("Checkout loaded");
+        },
       });
     } catch (err) {
-      console.error('Error opening Paddle checkout:', err);
+      console.error("Error opening Paddle checkout:", err);
       setProcessingPlan(null);
     }
   };
+  
 
   const plans = [
     {
@@ -198,3 +204,4 @@ const SubscriptionPage = () => {
 };
 
 export default SubscriptionPage;
+
