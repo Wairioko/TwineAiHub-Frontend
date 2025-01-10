@@ -1,17 +1,47 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
 export const PaddleContext = createContext({
-  paddleLoaded: false
+  paddleLoaded: false,
+  error: null,
+  initializeCheckout: () => {},
 });
 
 export const PaddleProvider = ({ vendorId, children }) => {
   const [paddleLoaded, setPaddleLoaded] = useState(false);
   const [error, setError] = useState(null);
 
+  const initializeCheckout = (checkoutData) => {
+    return new Promise((resolve, reject) => {
+      if (!paddleLoaded) {
+        reject(new Error('Paddle not initialized'));
+        return;
+      }
+
+      try {
+        window.Paddle.Checkout.open({
+          ...checkoutData,
+          success: (data) => {
+            if (checkoutData.successCallback) {
+              checkoutData.successCallback(data);
+            }
+            resolve(data);
+          },
+          closed: () => {
+            if (checkoutData.closeCallback) {
+              checkoutData.closeCallback();
+            }
+            resolve(null);
+          },
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  };
+
   useEffect(() => {
     if (!vendorId) {
-      console.error('Paddle vendor ID is missing');
-      setError('Paddle configuration error');
+      setError('Paddle vendor ID is missing');
       return;
     }
 
@@ -21,7 +51,6 @@ export const PaddleProvider = ({ vendorId, children }) => {
 
     script.onload = () => {
       try {
-        // Convert vendorId to integer
         const vendorIdInt = parseInt(vendorId, 10);
         
         if (isNaN(vendorIdInt)) {
@@ -30,9 +59,10 @@ export const PaddleProvider = ({ vendorId, children }) => {
 
         window.Paddle.Setup({ vendor: vendorIdInt });
         setPaddleLoaded(true);
+        setError(null);
       } catch (err) {
-        console.error('Failed to setup Paddle:', err);
         setError('Failed to initialize payment system');
+        console.error('Paddle setup error:', err);
       }
     };
 
@@ -49,7 +79,7 @@ export const PaddleProvider = ({ vendorId, children }) => {
   }, [vendorId]);
 
   return (
-    <PaddleContext.Provider value={{ paddleLoaded, error }}>
+    <PaddleContext.Provider value={{ paddleLoaded, error, initializeCheckout }}>
       {children}
     </PaddleContext.Provider>
   );
