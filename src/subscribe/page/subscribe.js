@@ -30,6 +30,7 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
+              console.log("these are the event callback", event)
               // Handle checkout events
               if (event.name === 'checkout.completed') {
                 const transactionDetails = {
