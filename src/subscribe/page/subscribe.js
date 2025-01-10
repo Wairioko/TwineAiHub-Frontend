@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "../hook/useSubscription";
 import { initializePaddle } from "@paddle/paddle-js";
+import axios from "axios";
 
 
 
@@ -28,17 +29,63 @@ const SubscriptionPage = () => {
               theme: "light",
               locale: "en",
             },
+            eventCallback: async (event) => {
+              // Handle checkout events
+              if (event.name === 'checkout.completed') {
+                const transactionDetails = {
+                  id: event.id,
+                  status: event.status,
+                  customer_id: event.customer_id,
+                  address_id: event.address_id,
+                  subscription_id: event.subscription_id,
+                  invoice_id: event.invoice_id,
+                  invoice_number: event.invoice_number,
+                  billing_details: event.billing_details,
+                  currency_code: event.currency_code,
+                  billing_period: event.billing_period,
+                  subscription_id: event.subscription_id,
+                  created_at: event.created_at,
+                  updated_at: event.updated_at,
+                  items: event.items,
+                };
+
+                try {
+                  const response = await axios.post(
+                    `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
+                    transactionDetails,
+
+                    { withCredentials: true,
+                      headers: {
+                        'Content-Type': 'application/json',
+                       
+                      }
+                    }
+                  );
+
+                  if (response.status === 200) {
+                    // Update UI state if needed
+                    alert('Subscription confirmed successfully!');
+                    // Redirect to dashboard or home
+                    navigate('/');
+                  }
+                } catch (error) {
+                  console.error('Error confirming subscription:', error.response?.data || error.message);
+                  setError(error.response?.data?.message || 'Failed to confirm subscription');
+                }
+              }
+            }
           },
         });
         setPaddle(paddleInstance);
-        console.log("Paddle initialized:", paddleInstance);
       } catch (initError) {
         console.error("Failed to initialize Paddle:", initError);
       }
     };
 
     initPaddle();
-  }, []);
+  }, [navigate]);
+
+
 
   const handleGetStarted = (plan, billingCycle) => {
     const productId = PRODUCT_IDS[plan]?.[billingCycle];
