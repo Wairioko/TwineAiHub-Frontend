@@ -3,13 +3,16 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { PaddleProvider } from './paddle/PaddleProvider';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
    
+   <PaddleProvider vendorId={process.env.REACT_APP_PADDLE_VENDOR_ID}>
     <App />
+   </PaddleProvider>
    
   </React.StrictMode>
 );
