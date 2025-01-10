@@ -7,7 +7,7 @@ import axios from "axios";
 
 
 const SubscriptionPage = () => {
-  const { subscribe, loading, error, successMessage } = useSubscription();
+  const { subscribe, loading, error, successMessage, setError } = useSubscription();
   const navigate = useNavigate();
   const [paddle, setPaddle] = useState(null);
 
