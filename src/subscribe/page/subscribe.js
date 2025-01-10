@@ -98,7 +98,7 @@ const SubscriptionPage = () => {
     try {
       window.Paddle.Checkout.open({
         product: productId,
-        parentURL: window.location.href || "https://twineaihub.com/user/subscription",
+        parentURL:"https://twineaihub.com",
         successCallback: (data) => {
           if (data?.subscription?.subscription_id) {
             console.log("Checkout complete", data);
