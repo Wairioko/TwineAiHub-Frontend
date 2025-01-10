@@ -10,7 +10,6 @@ const SubscriptionPage = () => {
   const { subscribe, loading, error, successMessage } = useSubscription();
   const navigate = useNavigate();
   const [paddle, setPaddle] = useState(null);
-  const [checkoutError, setCheckoutError] = useState(null);
 
   const PRODUCT_IDS = {
     Basic: { weekly: process.env.REACT_APP_BASIC_WEEKLY_ID },
@@ -31,50 +30,47 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
-              console.log('Received checkout event:', event); 
-
+              // Handle checkout events
               if (event.name === 'checkout.completed') {
                 const transactionDetails = {
-                  checkoutId: event.id,
+                  id: event.id,
                   status: event.status,
-                  customerId: event.customer_id,
-                  addressId: event.address_id,
-                  subscriptionId: event.subscription_id,
-                  invoiceId: event.invoice_id,
-                  invoiceNumber: event.invoice_number,
-                  billingDetails: event.billing_details,
-                  currencyCode: event.currency_code,
-                  billingPeriod: event.billing_period,
-                  createdAt: event.created_at,
-                  updatedAt: event.updated_at,
+                  customer_id: event.customer_id,
+                  address_id: event.address_id,
+                  subscription_id: event.subscription_id,
+                  invoice_id: event.invoice_id,
+                  invoice_number: event.invoice_number,
+                  billing_details: event.billing_details,
+                  currency_code: event.currency_code,
+                  billing_period: event.billing_period,
+                  subscription_id: event.subscription_id,
+                  created_at: event.created_at,
+                  updated_at: event.updated_at,
                   items: event.items,
                 };
 
                 try {
-                  console.log('Sending transaction details:', transactionDetails); // Debug log
-
                   const response = await axios.post(
                     `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
-                    JSON.stringify(transactionDetails), // Explicitly stringify the data
-                    {
-                      withCredentials: true,
+                    transactionDetails,
+
+                    { withCredentials: true,
                       headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                       
                       }
                     }
                   );
 
-                  console.log('Server response:', response); // Debug log
-
                   if (response.status === 200) {
+                    // Update UI state if needed
                     alert('Subscription confirmed successfully!');
+                    // Redirect to dashboard or home
                     navigate('/');
                   }
                 } catch (error) {
-                  console.error('Error confirming subscription:', error);
-                  console.error('Error details:', error.response?.data); // Debug log
-                  setCheckoutError(error.response?.data?.message || 'Failed to confirm subscription');
+                  console.error('Error confirming subscription:', error.response?.data || error.message);
+                  setError(error.response?.data?.message || 'Failed to confirm subscription');
                 }
               }
             }
@@ -83,14 +79,75 @@ const SubscriptionPage = () => {
         setPaddle(paddleInstance);
       } catch (initError) {
         console.error("Failed to initialize Paddle:", initError);
-        setCheckoutError("Failed to initialize payment system");
       }
     };
 
     initPaddle();
   }, [navigate]);
 
-  // Rest of your component code remains the same...
+
+
+  const handleGetStarted = (plan, billingCycle) => {
+    const productId = PRODUCT_IDS[plan]?.[billingCycle];
+    if (!productId) {
+      console.error(`Invalid plan or billing cycle: ${plan}, ${billingCycle}`);
+      return;
+    }
+
+    if (!paddle) {
+      console.error("Paddle.js has not been initialized.");
+      return;
+    }
+
+    try {
+      paddle.Checkout.open({
+        items: [{ priceId: productId, quantity: 1 }],
+      });
+    } catch (checkoutError) {
+      console.error("Failed to open Paddle checkout:", checkoutError);
+    }
+  };
+
+  const plans = [
+    {
+      name: "Basic",
+      price: "7 USD",
+      period: "Week",
+      billingCycle: "weekly",
+      description: [
+        "Access to basic features",
+        "Email support",
+        "Limited to 750,000 tokens",
+      ],
+    },
+    {
+      name: "Standard",
+      price: "25 USD",
+      period: "Month",
+      billingCycle: "monthly",
+      popular: true,
+      description: [
+        "All Standard features included",
+        "Priority support",
+        "Monthly updates",
+        "Access to exclusive content",
+        "Limited to 3,000,000 tokens",
+      ],
+    },
+    {
+      name: "Premium",
+      price: "49 USD",
+      period: "Month",
+      billingCycle: "monthlyPremium",
+      description: [
+        "No token limits",
+        "Full access to premium features",
+        "Priority support",
+        "Advanced analytics",
+        "Access to feature upgrades",
+      ],
+    },
+  ];
 
   return (
     <div className="subscription-container">
@@ -122,7 +179,6 @@ const SubscriptionPage = () => {
         ))}
       </div>
 
-      {checkoutError && <div className="error-message">{checkoutError}</div>}
       {error && <div className="error-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
     </div>
@@ -130,3 +186,4 @@ const SubscriptionPage = () => {
 };
 
 export default SubscriptionPage;
+
