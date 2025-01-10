@@ -48,6 +48,7 @@ const SubscriptionPage = () => {
                   updated_at: event.updated_at,
                   items: event.items,
                 };
+                console.log("the transaction details: " + JSON.string(transactionDetails));
 
                 try {
                   const response = await axios.post(
@@ -61,6 +62,7 @@ const SubscriptionPage = () => {
                       }
                     }
                   );
+                  console.log("sending data to server")
 
                   if (response.status === 200) {
                     // Update UI state if needed
