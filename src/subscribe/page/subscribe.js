@@ -24,15 +24,15 @@ const SubscriptionPage = () => {
         const paddleInstance = await initializePaddle({
           token: process.env.REACT_APP_PADDLE_TOKEN,
           environment: "sandbox",
+          
           checkout: {
             settings: {
               displayMode: "overlay",
               theme: "light",
               locale: "en",
             },
-            eventCallback: async (event) => {
-              console.log("Paddle event received:", event.name);
-
+            eventCallback: async function(event) {
+              
               switch (event.name) {
                 case "checkout.completed":
                   setIsProcessingCheckout(true);
@@ -121,6 +121,7 @@ const SubscriptionPage = () => {
 
       await paddle.Checkout.open({
         items: [{ priceId: productId, quantity: 1 }],
+        successUrl: "http://twineaihub.com/",
       });
     } catch (error) {
       console.error("Checkout error:", error);
