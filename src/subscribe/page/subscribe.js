@@ -28,7 +28,7 @@ const SubscriptionPage = () => {
           checkout: {
             settings: {
               displayMode: "overlay",
-              theme: "dark",
+              theme: "light",
               locale: "en",
             },
             eventCallback: async function(event) {
@@ -121,7 +121,7 @@ const SubscriptionPage = () => {
 
       await paddle.Checkout.open({
         items: [{ priceId: productId, quantity: 1 }],
-        successUrl: "http://twineaihub.com/",
+        
       });
     } catch (error) {
       console.error("Checkout error:", error);
