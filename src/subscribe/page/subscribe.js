@@ -19,6 +19,7 @@ const SubscriptionPage = () => {
 
   useEffect(() => {
     const initPaddle = async () => {
+      console.log('Initializing Paddle...'); // Add initial logging
       try {
         const paddleInstance = await initializePaddle({
           token: process.env.REACT_APP_PADDLE_TOKEN,
@@ -30,14 +31,29 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
-              console.log("Raw event received:", event);
-          
+              // Add detailed event logging
+              console.log('Paddle Event Received:', {
+                eventName: event.name,
+                eventType: event.type,
+                timestamp: new Date().toISOString()
+              });
+
               if (event.name === 'checkout.completed') {
+                console.log('Checkout completed event detected');
                 try {
-                  // Parse the nested JSON string in `event.data`
-                  const parsedData = JSON.parse(event.data);
-                  console.log("Parsed event data:", parsedData);
-          
+                  // Log raw event data before parsing
+                  console.log('Raw event data:', event.data);
+                  
+                  // Safely parse the event data
+                  let parsedData;
+                  try {
+                    parsedData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                    console.log('Successfully parsed event data:', parsedData);
+                  } catch (parseError) {
+                    console.error('Failed to parse event data:', parseError);
+                    return;
+                  }
+
                   const transactionDetails = {
                     id: parsedData.id,
                     status: parsedData.status,
@@ -47,69 +63,81 @@ const SubscriptionPage = () => {
                     invoice_id: parsedData.id,
                     currency_code: parsedData.currency_code,
                     billing_period: parsedData.items?.[0]?.billing_cycle?.interval,
-                    created_at: new Date().toISOString(), // Assuming created_at is not provided in payload
-                    updated_at: new Date().toISOString(), // Assuming updated_at is not provided in payload
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                     items: parsedData.items,
                   };
-          
-                  console.log("Extracted transaction details:", transactionDetails);
-          
-                  // Send transaction details to your backend
-                  const response = await axios.post(
-                    `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
-                    transactionDetails,
-                    {
-                      withCredentials: true,
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
+
+                  console.log('Prepared transaction details:', transactionDetails);
+
+                  try {
+                    const response = await axios.post(
+                      `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
+                      transactionDetails,
+                      {
+                        withCredentials: true,
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      }
+                    );
+
+                    console.log('Server response:', response);
+
+                    if (response.status === 200) {
+                      console.log('Subscription confirmation successful');
+                      alert('Subscription confirmed successfully!');
+                      navigate('/');
                     }
-                  );
-          
-                  console.log("Response from server:", response);
-          
-                  if (response.status === 200) {
-                    alert('Subscription confirmed successfully!');
-                    navigate('/');
+                  } catch (apiError) {
+                    console.error('API request failed:', apiError);
+                    console.log('API error response:', apiError.response);
+                    setError(apiError.response?.data?.message || "Failed to process checkout event");
                   }
-                } catch (error) {
-                  console.error("Error processing checkout.completed event:", error.message);
-                  setError(error.response?.data?.message || "Failed to process checkout event");
+                } catch (checkoutError) {
+                  console.error('Checkout completion processing failed:', checkoutError);
+                  setError("Failed to process checkout completion");
                 }
               }
             },
           }
-          
         });
+        
+        console.log('Paddle initialized successfully');
         setPaddle(paddleInstance);
       } catch (initError) {
-        console.error("Failed to initialize Paddle:", initError);
+        console.error('Paddle initialization failed:', initError);
+        console.log('Initialization error details:', {
+          message: initError.message,
+          stack: initError.stack
+        });
       }
     };
 
     initPaddle();
   }, [navigate]);
 
-
-
   const handleGetStarted = (plan, billingCycle) => {
+    console.log('Starting checkout process:', { plan, billingCycle });
+    
     const productId = PRODUCT_IDS[plan]?.[billingCycle];
     if (!productId) {
-      console.error(`Invalid plan or billing cycle: ${plan}, ${billingCycle}`);
+      console.error('Product ID not found:', { plan, billingCycle, PRODUCT_IDS });
       return;
     }
 
     if (!paddle) {
-      console.error("Paddle.js has not been initialized.");
+      console.error('Paddle instance not initialized');
       return;
     }
 
     try {
+      console.log('Opening Paddle checkout with product:', productId);
       paddle.Checkout.open({
         items: [{ priceId: productId, quantity: 1 }],
       });
     } catch (checkoutError) {
-      console.error("Failed to open Paddle checkout:", checkoutError);
+      console.error('Failed to open checkout:', checkoutError);
     }
   };
 
