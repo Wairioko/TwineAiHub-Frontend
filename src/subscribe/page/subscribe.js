@@ -23,12 +23,12 @@ const SubscriptionPage = () => {
       try {
         const paddleInstance = await initializePaddle({
           token: process.env.REACT_APP_PADDLE_TOKEN,
-          environment: "sandbox",
+          environment: "production",
           
           checkout: {
             settings: {
               displayMode: "overlay",
-              theme: "light",
+              theme: "dark",
               locale: "en",
             },
             eventCallback: async function(event) {
