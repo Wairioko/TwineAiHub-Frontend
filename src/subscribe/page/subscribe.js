@@ -30,76 +30,53 @@ const SubscriptionPage = () => {
               theme: "light",
               locale: "en",
             },
-            eventCallback: async (event) => {
-              // Add detailed event logging
-              console.log('Paddle Event Received:', {
-                eventName: event.name,
-                eventType: event.type,
-                timestamp: new Date().toISOString()
-              });
-
-              if (event.name === 'checkout.completed') {
-                console.log('Checkout completed event detected');
-                try {
-                  // Log raw event data before parsing
-                  console.log('Raw event data:', event.data);
-                  
-                  // Safely parse the event data
-                  let parsedData;
-                  try {
-                    parsedData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                    console.log('Successfully parsed event data:', parsedData);
-                  } catch (parseError) {
-                    console.error('Failed to parse event data:', parseError);
-                    return;
+            successCallback: async (data) => {
+              // Log the success callback
+              console.log('Success callback received:', data);
+              
+              try {
+                const transactionDetails = {
+                  id: data.id,
+                  status: data.status,
+                  customer_id: data.customer?.id,
+                  address_id: data.customer?.address?.id,
+                  subscription_id: data.items?.[0]?.product?.id,
+                  invoice_id: data.id,
+                  currency_code: data.currency_code,
+                  billing_period: data.items?.[0]?.billing_cycle?.interval,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  items: data.items,
+                };
+    
+                console.log('Processing transaction details:', transactionDetails);
+    
+                const response = await axios.post(
+                  `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
+                  transactionDetails,
+                  {
+                    withCredentials: true,
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
                   }
-
-                  const transactionDetails = {
-                    id: parsedData.id,
-                    status: parsedData.status,
-                    customer_id: parsedData.customer?.id,
-                    address_id: parsedData.customer?.address?.id,
-                    subscription_id: parsedData.items?.[0]?.product?.id,
-                    invoice_id: parsedData.id,
-                    currency_code: parsedData.currency_code,
-                    billing_period: parsedData.items?.[0]?.billing_cycle?.interval,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    items: parsedData.items,
-                  };
-
-                  console.log('Prepared transaction details:', transactionDetails);
-
-                  try {
-                    const response = await axios.post(
-                      `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
-                      transactionDetails,
-                      {
-                        withCredentials: true,
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                      }
-                    );
-
-                    console.log('Server response:', response);
-
-                    if (response.status === 200) {
-                      console.log('Subscription confirmation successful');
-                      alert('Subscription confirmed successfully!');
-                      navigate('/');
-                    }
-                  } catch (apiError) {
-                    console.error('API request failed:', apiError);
-                    console.log('API error response:', apiError.response);
-                    setError(apiError.response?.data?.message || "Failed to process checkout event");
-                  }
-                } catch (checkoutError) {
-                  console.error('Checkout completion processing failed:', checkoutError);
-                  setError("Failed to process checkout completion");
+                );
+    
+                console.log('Server response:', response);
+    
+                if (response.status === 200) {
+                  alert('Subscription confirmed successfully!');
+                  navigate('/');
                 }
+              } catch (error) {
+                console.error('Error processing success callback:', error);
+                setError(error.response?.data?.message || "Failed to process checkout");
               }
             },
+            errorCallback: (error) => {
+              console.error('Checkout error:', error);
+              setError("Checkout failed");
+            }
           }
         });
         
@@ -107,13 +84,8 @@ const SubscriptionPage = () => {
         setPaddle(paddleInstance);
       } catch (initError) {
         console.error('Paddle initialization failed:', initError);
-        console.log('Initialization error details:', {
-          message: initError.message,
-          stack: initError.stack
-        });
       }
     };
-
     initPaddle();
   }, [navigate]);
 
