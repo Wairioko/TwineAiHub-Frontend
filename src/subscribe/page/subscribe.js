@@ -4,8 +4,6 @@ import { useSubscription } from "../hook/useSubscription";
 import { initializePaddle } from "@paddle/paddle-js";
 import axios from "axios";
 
-
-
 const SubscriptionPage = () => {
   const { subscribe, loading, error, successMessage } = useSubscription();
   const navigate = useNavigate();
@@ -33,26 +31,21 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
-              console.log('Paddle event received:', event.name);
-              
+              console.log("Paddle event received:", event.name);
+
               switch (event.name) {
-                case 'checkout.completed':
+                case "checkout.completed":
                   setIsProcessingCheckout(true);
-                  
+
+                  const eventData = JSON.parse(event.data || "{}");
                   const transactionDetails = {
-                    id: event.id,
-                    status: event.status,
-                    customer_id: event.customer_id,
-                    address_id: event.address_id,
-                    subscription_id: event.subscription_id,
-                    invoice_id: event.invoice_id,
-                    invoice_number: event.invoice_number,
-                    billing_details: event.billing_details,
-                    currency_code: event.currency_code,
-                    billing_period: event.billing_period,
-                    created_at: event.created_at,
-                    updated_at: event.updated_at,
-                    items: event.items,
+                    id: eventData.id || "",
+                    status: eventData.status || "",
+                    customer_id: eventData.customer?.id || "",
+                    address_id: eventData.customer?.address?.id || "",
+                    items: eventData.items || [],
+                    totals: eventData.totals || {},
+                    currency_code: eventData.currency_code || "",
                   };
 
                   try {
@@ -62,40 +55,42 @@ const SubscriptionPage = () => {
                       {
                         withCredentials: true,
                         headers: {
-                          'Content-Type': 'application/json',
-                        }
+                          "Content-Type": "application/json",
+                        },
                       }
                     );
 
                     if (response.status === 200) {
                       setTimeout(() => {
-                        alert('Subscription confirmed successfully!');
-                        navigate('/');
+                        alert("Subscription confirmed successfully!");
+                        navigate("/");
                       }, 500);
                     }
                   } catch (error) {
-                    console.error('Error confirming subscription:', error);
-                    setCheckoutError(error.response?.data?.message || 'Failed to confirm subscription');
+                    console.error("Error confirming subscription:", error.response || error.message);
+                    setCheckoutError(
+                      error.response?.data?.message || "Failed to confirm subscription. Please contact support."
+                    );
                   } finally {
                     setIsProcessingCheckout(false);
                   }
                   break;
 
-                case 'checkout.error':
-                  setCheckoutError('An error occurred during checkout. Please try again.');
+                case "checkout.error":
+                  setCheckoutError("An error occurred during checkout. Please try again.");
                   setIsProcessingCheckout(false);
                   break;
 
-                case 'checkout.closed':
+                case "checkout.closed":
                   if (isProcessingCheckout) {
-                    setCheckoutError('Please wait while we confirm your subscription...');
+                    setCheckoutError("Please wait while we confirm your subscription...");
                   }
                   break;
 
                 default:
                   break;
               }
-            }
+            },
           },
         });
 
@@ -113,7 +108,7 @@ const SubscriptionPage = () => {
 
   const handleGetStarted = async (plan, billingCycle) => {
     setCheckoutError(null);
-    
+
     try {
       const productId = PRODUCT_IDS[plan]?.[billingCycle];
       if (!productId) {
@@ -133,19 +128,13 @@ const SubscriptionPage = () => {
     }
   };
 
-  
-
   const plans = [
     {
       name: "Basic",
       price: "7 USD",
       period: "Week",
       billingCycle: "weekly",
-      description: [
-        "Access to basic features",
-        "Email support",
-        "Limited to 750,000 tokens",
-      ],
+      description: ["Access to basic features", "Email support", "Limited to 750,000 tokens"],
     },
     {
       name: "Standard",
@@ -182,10 +171,7 @@ const SubscriptionPage = () => {
 
       <div className="plans-grid">
         {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`plan-card ${plan.popular ? "popular-plan" : ""}`}
-          >
+          <div key={plan.name} className={`plan-card ${plan.popular ? "popular-plan" : ""}`}>
             <h3 className="plan-title">{plan.name} Plan</h3>
             <p className="plan-price">{`${plan.price} / ${plan.period}`}</p>
             <ul className="plan-description-list">
@@ -207,6 +193,7 @@ const SubscriptionPage = () => {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+      {checkoutError && <div className="error-message">{checkoutError}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
     </div>
   );
