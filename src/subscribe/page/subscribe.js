@@ -30,29 +30,31 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
-              console.log("Event received:", event); // Log every event
-              try {
-                if (event.name === 'checkout.completed') {
-                  console.log("Checkout completed event detected:", event);
+              console.log("Raw event received:", event);
+          
+              if (event.name === 'checkout.completed') {
+                try {
+                  // Parse the nested JSON string in `event.data`
+                  const parsedData = JSON.parse(event.data);
+                  console.log("Parsed event data:", parsedData);
           
                   const transactionDetails = {
-                    id: event.id,
-                    status: event.status,
-                    customer_id: event.customer_id,
-                    address_id: event.address_id,
-                    subscription_id: event.subscription_id,
-                    invoice_id: event.invoice_id,
-                    invoice_number: event.invoice_number,
-                    billing_details: event.billing_details,
-                    currency_code: event.currency_code,
-                    billing_period: event.billing_period,
-                    created_at: event.created_at,
-                    updated_at: event.updated_at,
-                    items: event.items,
+                    id: parsedData.id,
+                    status: parsedData.status,
+                    customer_id: parsedData.customer?.id,
+                    address_id: parsedData.customer?.address?.id,
+                    subscription_id: parsedData.items?.[0]?.product?.id,
+                    invoice_id: parsedData.id,
+                    currency_code: parsedData.currency_code,
+                    billing_period: parsedData.items?.[0]?.billing_cycle?.interval,
+                    created_at: new Date().toISOString(), // Assuming created_at is not provided in payload
+                    updated_at: new Date().toISOString(), // Assuming updated_at is not provided in payload
+                    items: parsedData.items,
                   };
           
-                  console.log("Transaction details:", transactionDetails);
+                  console.log("Extracted transaction details:", transactionDetails);
           
+                  // Send transaction details to your backend
                   const response = await axios.post(
                     `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
                     transactionDetails,
@@ -63,20 +65,21 @@ const SubscriptionPage = () => {
                       },
                     }
                   );
+          
                   console.log("Response from server:", response);
           
                   if (response.status === 200) {
                     alert('Subscription confirmed successfully!');
                     navigate('/');
                   }
+                } catch (error) {
+                  console.error("Error processing checkout.completed event:", error.message);
+                  setError(error.response?.data?.message || "Failed to process checkout event");
                 }
-              } catch (error) {
-                console.error("Error handling event:", error.message);
-                setError(error.response?.data?.message || "Failed to process event");
               }
             },
+          }
           
-          },
         });
         setPaddle(paddleInstance);
       } catch (initError) {
