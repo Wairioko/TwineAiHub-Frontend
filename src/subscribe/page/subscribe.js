@@ -30,53 +30,52 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
-              console.log("these are the event callback", event)
-              // Handle checkout events
-              if (event.name === 'checkout.completed') {
-                const transactionDetails = {
-                  id: event.id,
-                  status: event.status,
-                  customer_id: event.customer_id,
-                  address_id: event.address_id,
-                  subscription_id: event.subscription_id,
-                  invoice_id: event.invoice_id,
-                  invoice_number: event.invoice_number,
-                  billing_details: event.billing_details,
-                  currency_code: event.currency_code,
-                  billing_period: event.billing_period,
-                  subscription_id: event.subscription_id,
-                  created_at: event.created_at,
-                  updated_at: event.updated_at,
-                  items: event.items,
-                };
-                console.log("the transaction details: " + JSON.string(transactionDetails));
-
-                try {
+              console.log("Event received:", event); // Log every event
+              try {
+                if (event.name === 'checkout.completed') {
+                  console.log("Checkout completed event detected:", event);
+          
+                  const transactionDetails = {
+                    id: event.id,
+                    status: event.status,
+                    customer_id: event.customer_id,
+                    address_id: event.address_id,
+                    subscription_id: event.subscription_id,
+                    invoice_id: event.invoice_id,
+                    invoice_number: event.invoice_number,
+                    billing_details: event.billing_details,
+                    currency_code: event.currency_code,
+                    billing_period: event.billing_period,
+                    created_at: event.created_at,
+                    updated_at: event.updated_at,
+                    items: event.items,
+                  };
+          
+                  console.log("Transaction details:", transactionDetails);
+          
                   const response = await axios.post(
                     `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
                     transactionDetails,
-
-                    { withCredentials: true,
+                    {
+                      withCredentials: true,
                       headers: {
                         'Content-Type': 'application/json',
-                       
-                      }
+                      },
                     }
                   );
-                  console.log("sending data to server")
-
+                  console.log("Response from server:", response);
+          
                   if (response.status === 200) {
-                    // Update UI state if needed
                     alert('Subscription confirmed successfully!');
-                    // Redirect to dashboard or home
                     navigate('/');
                   }
-                } catch (error) {
-                  console.error('Error confirming subscription:', error.response?.data || error.message);
-                  setError(error.response?.data?.message || 'Failed to confirm subscription');
                 }
+              } catch (error) {
+                console.error("Error handling event:", error.message);
+                setError(error.response?.data?.message || "Failed to process event");
               }
-            }
+            },
+          
           },
         });
         setPaddle(paddleInstance);
