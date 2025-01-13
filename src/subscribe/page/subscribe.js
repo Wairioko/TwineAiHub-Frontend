@@ -33,69 +33,70 @@ const SubscriptionPage = () => {
               locale: "en",
             },
             eventCallback: async (event) => {
-              if (event.name === 'checkout.completed') {
-                setIsProcessingCheckout(true);
-                
-                const transactionDetails = {
-                  id: event.id,
-                  status: event.status,
-                  customer_id: event.customer_id,
-                  address_id: event.address_id,
-                  subscription_id: event.subscription_id,
-                  invoice_id: event.invoice_id,
-                  invoice_number: event.invoice_number,
-                  billing_details: event.billing_details,
-                  currency_code: event.currency_code,
-                  billing_period: event.billing_period,
-                  created_at: event.created_at,
-                  updated_at: event.updated_at,
-                  items: event.items,
-                };
+              console.log('Paddle event received:', event.name);
+              
+              switch (event.name) {
+                case 'checkout.completed':
+                  setIsProcessingCheckout(true);
+                  
+                  const transactionDetails = {
+                    id: event.id,
+                    status: event.status,
+                    customer_id: event.customer_id,
+                    address_id: event.address_id,
+                    subscription_id: event.subscription_id,
+                    invoice_id: event.invoice_id,
+                    invoice_number: event.invoice_number,
+                    billing_details: event.billing_details,
+                    currency_code: event.currency_code,
+                    billing_period: event.billing_period,
+                    created_at: event.created_at,
+                    updated_at: event.updated_at,
+                    items: event.items,
+                  };
 
-                try {
-                  const response = await axios.post(
-                    `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
-                    transactionDetails,
-                    {
-                      withCredentials: true,
-                      headers: {
-                        'Content-Type': 'application/json',
+                  try {
+                    const response = await axios.post(
+                      `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
+                      transactionDetails,
+                      {
+                        withCredentials: true,
+                        headers: {
+                          'Content-Type': 'application/json',
+                        }
                       }
-                    }
-                  );
+                    );
 
-                  if (response.status === 200) {
-                    // Wait for a short delay to ensure the checkout overlay has time to close
-                    setTimeout(() => {
-                      alert('Subscription confirmed successfully!');
-                      navigate('/');
-                    }, 500);
+                    if (response.status === 200) {
+                      setTimeout(() => {
+                        alert('Subscription confirmed successfully!');
+                        navigate('/');
+                      }, 500);
+                    }
+                  } catch (error) {
+                    console.error('Error confirming subscription:', error);
+                    setCheckoutError(error.response?.data?.message || 'Failed to confirm subscription');
+                  } finally {
+                    setIsProcessingCheckout(false);
                   }
-                } catch (error) {
-                  console.error('Error confirming subscription:', error);
-                  setCheckoutError(error.response?.data?.message || 'Failed to confirm subscription');
-                } finally {
+                  break;
+
+                case 'checkout.error':
+                  setCheckoutError('An error occurred during checkout. Please try again.');
                   setIsProcessingCheckout(false);
-                }
-              } else if (event.name === 'checkout.error') {
-                setCheckoutError('An error occurred during checkout. Please try again.');
-              } else if (event.name === 'checkout.closed') {
-                if (isProcessingCheckout) {
-                  // If the checkout is closed while processing, show a message
-                  setCheckoutError('Please wait while we confirm your subscription...');
-                }
+                  break;
+
+                case 'checkout.closed':
+                  if (isProcessingCheckout) {
+                    setCheckoutError('Please wait while we confirm your subscription...');
+                  }
+                  break;
+
+                default:
+                  break;
               }
             }
           },
-        });
-
-        // Add global event listeners for Paddle events
-        paddleInstance.Checkout.on('checkout.completed', () => {
-          console.log('Checkout completed event received');
-        });
-
-        paddleInstance.Checkout.on('checkout.closed', () => {
-          console.log('Checkout closed event received');
         });
 
         setPaddle(paddleInstance);
@@ -108,14 +109,6 @@ const SubscriptionPage = () => {
     };
 
     initPaddle();
-
-    // Cleanup function to remove event listeners
-    return () => {
-      if (paddle) {
-        paddle.Checkout.off('checkout.completed');
-        paddle.Checkout.off('checkout.closed');
-      }
-    };
   }, [navigate, isProcessingCheckout]);
 
   const handleGetStarted = async (plan, billingCycle) => {
@@ -127,7 +120,7 @@ const SubscriptionPage = () => {
         throw new Error(`Invalid plan or billing cycle: ${plan}, ${billingCycle}`);
       }
 
-      if (!paddle) {
+      if (!paddle || !isReady) {
         throw new Error("Payment system not initialized. Please refresh the page.");
       }
 
@@ -139,6 +132,8 @@ const SubscriptionPage = () => {
       setCheckoutError(error.message || "Failed to start checkout process. Please try again.");
     }
   };
+
+  
 
   const plans = [
     {
