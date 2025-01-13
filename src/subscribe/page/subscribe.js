@@ -7,9 +7,12 @@ import axios from "axios";
 
 
 const SubscriptionPage = () => {
-  const { subscribe, loading, error, successMessage, setError } = useSubscription();
+  const { subscribe, loading, error, successMessage } = useSubscription();
   const navigate = useNavigate();
   const [paddle, setPaddle] = useState(null);
+  const [isReady, setIsReady] = useState(false);
+  const [checkoutError, setCheckoutError] = useState(null);
+  const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
 
   const PRODUCT_IDS = {
     Basic: { weekly: process.env.REACT_APP_BASIC_WEEKLY_ID },
@@ -19,7 +22,6 @@ const SubscriptionPage = () => {
 
   useEffect(() => {
     const initPaddle = async () => {
-      console.log('Initializing Paddle...'); // Add initial logging
       try {
         const paddleInstance = await initializePaddle({
           token: process.env.REACT_APP_PADDLE_TOKEN,
@@ -30,86 +32,111 @@ const SubscriptionPage = () => {
               theme: "light",
               locale: "en",
             },
-            successCallback: async (data) => {
-              // Log the success callback
-              console.log('Success callback received:', data);
-              
-              try {
+            eventCallback: async (event) => {
+              if (event.name === 'checkout.completed') {
+                setIsProcessingCheckout(true);
+                
                 const transactionDetails = {
-                  id: data.id,
-                  status: data.status,
-                  customer_id: data.customer?.id,
-                  address_id: data.customer?.address?.id,
-                  subscription_id: data.items?.[0]?.product?.id,
-                  invoice_id: data.id,
-                  currency_code: data.currency_code,
-                  billing_period: data.items?.[0]?.billing_cycle?.interval,
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                  items: data.items,
+                  id: event.id,
+                  status: event.status,
+                  customer_id: event.customer_id,
+                  address_id: event.address_id,
+                  subscription_id: event.subscription_id,
+                  invoice_id: event.invoice_id,
+                  invoice_number: event.invoice_number,
+                  billing_details: event.billing_details,
+                  currency_code: event.currency_code,
+                  billing_period: event.billing_period,
+                  created_at: event.created_at,
+                  updated_at: event.updated_at,
+                  items: event.items,
                 };
-    
-                console.log('Processing transaction details:', transactionDetails);
-    
-                const response = await axios.post(
-                  `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
-                  transactionDetails,
-                  {
-                    withCredentials: true,
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
+
+                try {
+                  const response = await axios.post(
+                    `${process.env.REACT_APP_AWS_URL}/api/subscription/confirm`,
+                    transactionDetails,
+                    {
+                      withCredentials: true,
+                      headers: {
+                        'Content-Type': 'application/json',
+                      }
+                    }
+                  );
+
+                  if (response.status === 200) {
+                    // Wait for a short delay to ensure the checkout overlay has time to close
+                    setTimeout(() => {
+                      alert('Subscription confirmed successfully!');
+                      navigate('/');
+                    }, 500);
                   }
-                );
-    
-                console.log('Server response:', response);
-    
-                if (response.status === 200) {
-                  alert('Subscription confirmed successfully!');
-                  navigate('/');
+                } catch (error) {
+                  console.error('Error confirming subscription:', error);
+                  setCheckoutError(error.response?.data?.message || 'Failed to confirm subscription');
+                } finally {
+                  setIsProcessingCheckout(false);
                 }
-              } catch (error) {
-                console.error('Error processing success callback:', error);
-                setError(error.response?.data?.message || "Failed to process checkout");
+              } else if (event.name === 'checkout.error') {
+                setCheckoutError('An error occurred during checkout. Please try again.');
+              } else if (event.name === 'checkout.closed') {
+                if (isProcessingCheckout) {
+                  // If the checkout is closed while processing, show a message
+                  setCheckoutError('Please wait while we confirm your subscription...');
+                }
               }
-            },
-            errorCallback: (error) => {
-              console.error('Checkout error:', error);
-              setError("Checkout failed");
             }
-          }
+          },
         });
-        
-        console.log('Paddle initialized successfully');
+
+        // Add global event listeners for Paddle events
+        paddleInstance.Checkout.on('checkout.completed', () => {
+          console.log('Checkout completed event received');
+        });
+
+        paddleInstance.Checkout.on('checkout.closed', () => {
+          console.log('Checkout closed event received');
+        });
+
         setPaddle(paddleInstance);
+        setIsReady(true);
       } catch (initError) {
-        console.error('Paddle initialization failed:', initError);
+        console.error("Failed to initialize Paddle:", initError);
+        setCheckoutError("Failed to initialize payment system. Please try again later.");
+        setIsReady(false);
       }
     };
+
     initPaddle();
-  }, [navigate]);
 
-  const handleGetStarted = (plan, billingCycle) => {
-    console.log('Starting checkout process:', { plan, billingCycle });
+    // Cleanup function to remove event listeners
+    return () => {
+      if (paddle) {
+        paddle.Checkout.off('checkout.completed');
+        paddle.Checkout.off('checkout.closed');
+      }
+    };
+  }, [navigate, isProcessingCheckout]);
+
+  const handleGetStarted = async (plan, billingCycle) => {
+    setCheckoutError(null);
     
-    const productId = PRODUCT_IDS[plan]?.[billingCycle];
-    if (!productId) {
-      console.error('Product ID not found:', { plan, billingCycle, PRODUCT_IDS });
-      return;
-    }
-
-    if (!paddle) {
-      console.error('Paddle instance not initialized');
-      return;
-    }
-
     try {
-      console.log('Opening Paddle checkout with product:', productId);
-      paddle.Checkout.open({
+      const productId = PRODUCT_IDS[plan]?.[billingCycle];
+      if (!productId) {
+        throw new Error(`Invalid plan or billing cycle: ${plan}, ${billingCycle}`);
+      }
+
+      if (!paddle) {
+        throw new Error("Payment system not initialized. Please refresh the page.");
+      }
+
+      await paddle.Checkout.open({
         items: [{ priceId: productId, quantity: 1 }],
       });
-    } catch (checkoutError) {
-      console.error('Failed to open checkout:', checkoutError);
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setCheckoutError(error.message || "Failed to start checkout process. Please try again.");
     }
   };
 
