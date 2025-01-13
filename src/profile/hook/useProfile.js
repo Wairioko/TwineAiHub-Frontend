@@ -11,6 +11,7 @@ const useProfile = () => {
         const fetchUserData = async () => {
             try {
                 const data = await GetUserProfile();
+                console.log("log the user data", data);
                 setUsername(data.username);
                 setEmail(data.email);
             } catch (err) {
