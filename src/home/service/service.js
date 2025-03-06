@@ -35,6 +35,9 @@ export const ProblemToAssistant = async (formData) => {
 
     // Extract the response body
     const parsedBody = JSON.parse(response.data.body);
+    if(parsedBody.statusCode === 401){
+      alert("Please register to continue")
+    }
 
     // Return the parsed body data
     return parsedBody;
