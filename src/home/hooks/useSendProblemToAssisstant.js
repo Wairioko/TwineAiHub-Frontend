@@ -58,11 +58,7 @@ const useSendProblem = () => {
                     dataToSend.append('file', formData.selectedFile);
                 }
     
-                // To properly check what's in dataToSend, use:
-                for (let pair of dataToSend.entries()) {
-                                    }
-
-                
+              
     
                 // Send dataToSend instead of formData
                 const response = await ProblemToAssistant(dataToSend);
