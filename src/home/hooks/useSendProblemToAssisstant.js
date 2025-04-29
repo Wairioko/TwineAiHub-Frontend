@@ -67,7 +67,10 @@ const useSendProblem = () => {
             } catch (error) {
                 if(error.status === 409 || 429){
                     setError(error.message)
-                }else{
+                }else if(error.status === 401){
+                    setError("Please Login To Continue")
+                }
+                else{
                     setError("Unable to submit your problem for breakdown by assistant. Please try again");
                     console.error('Error submitting problem:', error);
                 }
