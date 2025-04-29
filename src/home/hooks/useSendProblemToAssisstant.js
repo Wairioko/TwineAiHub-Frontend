@@ -60,10 +60,9 @@ const useSendProblem = () => {
     
                 // To properly check what's in dataToSend, use:
                 for (let pair of dataToSend.entries()) {
-                    console.log("this is the data", pair[0] + ': ', pair[1]);
-                }
+                                    }
 
-                console.log('data to send: ', dataToSend)
+                
     
                 // Send dataToSend instead of formData
                 const response = await ProblemToAssistant(dataToSend);
@@ -133,7 +132,10 @@ const useSendProblem = () => {
         } catch (error) {
             if (error?.status === 409 || error?.status === 429) {
                 setError(error.message);
-            } else {
+            } 
+            else if(error.status === 401){
+                setError("Please login to access this")
+            }else {
                 setError("Unable to submit your problem to the models. Please try again.");
                 console.error("Error sending problem to models:", error);
             }
